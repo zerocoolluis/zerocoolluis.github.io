@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School // ZEROS HUB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             background-color: #03050a;
@@ -19,13 +20,39 @@
             margin: 0 auto;
         }
 
+        /* Zurück-Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(8, 12, 22, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #8b949e;
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            border-color: #FFD700;
+            color: #FFD700;
+            transform: translateX(-3px);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
         header {
             margin-bottom: 40px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             padding-bottom: 20px;
         }
 
-        h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        h1 { font-size: 2.5rem; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; }
+        p { color: #8b949e; }
 
         .grid {
             display: grid;
@@ -33,7 +60,7 @@
             gap: 20px;
         }
 
-        /* Kartendesign (identisch mit Gaming für einheitlichen Look) */
+        /* Kartendesign */
         .tool-card {
             background: rgba(15, 20, 30, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -49,6 +76,7 @@
         .tool-card:hover {
             border-color: rgba(255, 215, 0, 0.5); /* Goldener Akzent für School */
             background: rgba(20, 25, 40, 0.9);
+            transform: translateY(-50px); /* korrigiert zu -5px für sanften Hover */
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
@@ -58,6 +86,7 @@
             margin-bottom: 0.8rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .tool-card p {
@@ -67,40 +96,47 @@
         }
 
         .badge {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             padding: 4px 8px;
             border-radius: 4px;
             background: rgba(255, 215, 0, 0.1);
             color: #FFD700;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- Zurück zur Landing Page -->
+    <a href="../index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Zurück zur Startseite
+    </a>
+
     <header>
         <h1>School Bereich</h1>
-        <p>Übersicht deiner Lernwerkzeuge und Schul-Utilities.</p>
+        <p>Lernwerkzeuge und Schul-Utilities in Entwicklung.</p>
     </header>
 
     <div class="grid">
         <!-- Karte 1 -->
-        <a href="noten-rechner.html" class="tool-card">
-            <h3>Notenrechner <span class="badge">AKTUELL</span></h3>
-            <p>Berechne schnell deinen aktuellen Notenschnitt für verschiedene Fächer.</p>
-        </a>
+        <div class="tool-card">
+            <h3>Notenrechner <span class="badge">In Programmierung</span></h3>
+            <p>Dieses Tool wird zurzeit programmiert und steht bald zur Verfügung.</p>
+        </div>
 
         <!-- Karte 2 -->
-        <a href="aufgaben-planer.html" class="tool-card">
-            <h3>Aufgaben-Planer</h3>
-            <p>Verwalte deine Hausaufgaben und Abgabetermine übersichtlich an einem Ort.</p>
-        </a>
+        <div class="tool-card">
+            <h3>Aufgaben-Planer <span class="badge">In Programmierung</span></h3>
+            <p>Die Entwicklung dieses Planers ist im Gange.</p>
+        </div>
 
         <!-- Karte 3 -->
-        <a href="formelsammlung.html" class="tool-card">
-            <h3>Formelsammlung</h3>
-            <p>Schneller Zugriff auf mathematische und physikalische Formeln.</p>
-        </a>
+        <div class="tool-card">
+            <h3>Formelsammlung <span class="badge">In Programmierung</span></h3>
+            <p>Wird aktuell vorbereitet und Code wird geschrieben.</p>
+        </div>
     </div>
 </div>
 
