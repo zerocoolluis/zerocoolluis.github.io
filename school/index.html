@@ -20,7 +20,6 @@
             margin: 0 auto;
         }
 
-        /* Zurück-Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -60,23 +59,20 @@
             gap: 20px;
         }
 
-        /* Kartendesign */
         .tool-card {
             background: rgba(15, 20, 30, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 2rem;
             transition: all 0.3s ease;
-            text-decoration: none;
             color: white;
             display: block;
             backdrop-filter: blur(10px);
         }
 
         .tool-card:hover {
-            border-color: rgba(255, 215, 0, 0.5); /* Goldener Akzent für School */
+            border-color: rgba(255, 215, 0, 0.5);
             background: rgba(20, 25, 40, 0.9);
-            transform: translateY(-50px); /* korrigiert zu -5px für sanften Hover */
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
@@ -109,33 +105,27 @@
 <body>
 
 <div class="container">
-    <!-- Zurück zur Landing Page -->
     <a href="../index.html" class="back-btn">
         <i class="fa-solid fa-arrow-left"></i> Zurück zur Startseite
     </a>
 
     <header>
         <h1>School Bereich</h1>
-        <p>Lernwerkzeuge und Schul-Utilities in Entwicklung.</p>
+        <p>Übersicht der Schul-Rubriken.</p>
     </header>
 
     <div class="grid">
-        <!-- Karte 1 -->
         <div class="tool-card">
-            <h3>Notenrechner <span class="badge">In Programmierung</span></h3>
-            <p>Dieses Tool wird zurzeit programmiert und steht bald zur Verfügung.</p>
+            <h3>Rubrik 1 <span class="badge">In Programmierung</span></h3>
+            <p>Dieser Bereich wird aktuell entwickelt und aufgebaut.</p>
         </div>
-
-        <!-- Karte 2 -->
         <div class="tool-card">
-            <h3>Aufgaben-Planer <span class="badge">In Programmierung</span></h3>
-            <p>Die Entwicklung dieses Planers ist im Gange.</p>
+            <h3>Rubrik 2 <span class="badge">In Programmierung</span></h3>
+            <p>Dieser Bereich wird aktuell entwickelt und aufgebaut.</p>
         </div>
-
-        <!-- Karte 3 -->
         <div class="tool-card">
-            <h3>Formelsammlung <span class="badge">In Programmierung</span></h3>
-            <p>Wird aktuell vorbereitet und Code wird geschrieben.</p>
+            <h3>Rubrik 3 <span class="badge">In Programmierung</span></h3>
+            <p>Dieser Bereich wird aktuell entwickelt und aufgebaut.</p>
         </div>
     </div>
 </div>
