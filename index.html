@@ -3,105 +3,429 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luis' Tools</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>ZERO's Tools</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-color: #050505;
+            --bg-color: #070913;
+            --card-bg: rgba(16, 20, 35, 0.75);
             --neon-gold: #FFD700;
             --neon-cyan: #00f0ff;
-            --text-color: #ffffff;
+            --neon-pink: #ff007f;
+            --neon-purple: #9d00ff;
+            --text-color: #f0f6fc;
+            --text-muted: #8b949e;
         }
 
-        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Inter', sans-serif; margin: 0; min-height: 200vh; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        /* --- 1. INTRO ANIMATION --- */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 250vh; /* Macht die Seite lang genug zum Scrollen */
+        }
+
+        /* --- HOCHOPTIMIERTER MATRIX / CYBER-LADER --- */
         #loader {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-            animation: hideLoader 0.5s ease 2s forwards;
-        }
-        @keyframes hideLoader { to { opacity: 0; visibility: hidden; } }
-        .glitch { font-family: 'Orbitron'; font-size: 3rem; color: var(--neon-gold); animation: blink 0.5s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* --- 2. HEADER & NAGEL-ANIMATION --- */
-        header { padding: 100px 20px; text-align: center; }
-        h1 { font-family: 'Orbitron'; font-size: 5rem; position: relative; display: inline-block; }
-        
-        .apostrophe { 
-            position: absolute; top: -20px; right: -40px; color: var(--neon-gold);
-            animation: hammerDown 1.5s ease-out forwards;
-        }
-        @keyframes hammerDown {
-            0% { transform: translateY(-200px) rotate(45deg); opacity: 0; }
-            50% { transform: translateY(0) rotate(0); opacity: 1; }
-            70% { transform: translateY(-20px); }
-            100% { transform: translateY(0); }
+            position: fixed;
+            inset: 0;
+            background: #020307;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            animation: loaderFadeOut 0.8s ease 2.2s forwards;
+            pointer-events: none;
         }
 
-        /* --- 3. HAMMER --- */
-        .hammer-wrapper { display: inline-block; margin-left: 20px; cursor: pointer; transition: 0.3s; }
-        #hammer { color: var(--neon-gold); font-size: 3rem; text-shadow: 0 0 20px var(--neon-gold); }
-        .hammer-wrapper:hover #hammer { transform: rotate(180deg) scale(1.2); }
-
-        /* --- 4. GRID --- */
-        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
-        .tool-card { 
-            background: #111; padding: 40px; border: 1px solid #333; border-radius: 20px;
-            text-decoration: none; color: white; transition: 0.3s; display: block;
+        .loader-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,215,0,0.15) 0%, rgba(0,240,255,0) 70%);
+            border-radius: 50%;
+            animation: loaderPulse 1.5s infinite alternate;
         }
-        .tool-card:hover { border-color: var(--neon-gold); box-shadow: 0 0 20px rgba(255,215,0,0.2); }
 
-        /* --- 5. MODAL (Kein Inhalt) --- */
-        .modal { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            justify-content: center; align-items: center; z-index: 1000;
+        .loader-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--neon-gold);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            animation: glitchText 1.5s infinite;
         }
-        .modal.active { display: flex; }
-        .modal-content { background: #222; padding: 50px; border: 2px solid var(--neon-gold); }
+
+        .loader-bar-frame {
+            width: 250px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loader-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-gold));
+            box-shadow: 0 0 10px var(--neon-gold);
+            animation: fillBar 2s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+        }
+
+        @keyframes fillBar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes loaderPulse {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        @keyframes loaderFadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        @keyframes glitchText {
+            0% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { text-shadow: 2px 2px 0px var(--neon-pink), -2px -2px 0px var(--neon-cyan); }
+            100% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+        }
+
+        /* --- HAUPTCONTAINER & ENTRITTS-ANIMATION --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: pageEntrance 1s ease 2.3s forwards;
+        }
+
+        @keyframes pageEntrance {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- HEADER & HAMMER --- */
+        header {
+            text-align: center;
+            margin-bottom: 80px;
+            padding-top: 20px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            color: var(--text-color);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .hammer-wrapper {
+            display: inline-block;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .hammer-wrapper:hover {
+            transform: rotate(-45deg) scale(1.3);
+        }
+
+        #hammer {
+            color: var(--neon-gold);
+            font-size: 3.2rem;
+            text-shadow: 0 0 25px var(--neon-gold), 0 0 50px rgba(255, 215, 0, 0.4);
+            transition: transform 0.1s linear;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* --- RUBRIKEN & GRID --- */
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.2);
+            padding-bottom: 12px;
+            color: var(--neon-gold);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        /* --- TOOL KARTEN MIT BEWEGENDEN ICON-EFFEKTEN --- */
+        .tool-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 30px;
+            text-decoration: none;
+            color: var(--text-color);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-gold), var(--neon-cyan), var(--neon-pink));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 215, 0, 0.4);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.15);
+        }
+
+        .tool-card:hover::before {
+            opacity: 1;
+        }
+
+        .tool-icon-box {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        /* Bewegungseffekte für Icons beim Hover über die Karte */
+        .tool-card:hover .fa-code { transform: scale(1.2) rotate(10deg); color: var(--neon-cyan); }
+        .tool-card:hover .fa-terminal { transform: scale(1.2) translateY(-4px); color: var(--neon-pink); }
+        .tool-card:hover .fa-shield-halved { transform: scale(1.2) rotate(-10deg); color: var(--neon-gold); }
+        .tool-card:hover .fa-database { transform: scale(1.2) scaleY(1.1); color: var(--neon-purple); }
+        .tool-card:hover .fa-microchip { transform: scale(1.2) rotate(360deg); color: var(--neon-cyan); transition: transform 0.6s ease; }
+        .tool-card:hover .fa-wand-magic-sparkles { transform: scale(1.2) scale(1.1); color: var(--neon-gold); }
+
+        .tool-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .tool-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* --- MODAL / OVERLAY (HINWEIS) --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 3, 7, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: linear-gradient(135deg, #121629, #0d0f18);
+            border: 2px solid var(--neon-gold);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+            max-width: 450px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1);
+        }
+
+        .modal-box h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-gold);
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        .modal-box p {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .modal-btn {
+            background: transparent;
+            border: 2px solid var(--neon-gold);
+            color: var(--neon-gold);
+            padding: 10px 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn:hover {
+            background: var(--neon-gold);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-gold);
+        }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="glitch">SYSTEM BOOT...</div></div>
-
-    <header>
-        <h1>Luis<span class="apostrophe">'</span>s Tools 
-            <div class="hammer-wrapper"><i class="fa-solid fa-hammer" id="hammer"></i></div>
-        </h1>
-    </header>
-
-    <div class="container">
-        <div class="tools-grid" id="grid">
-            <!-- JS generiert hier Karten -->
+    <!-- HIGH-TECH LADER -->
+    <div id="loader">
+        <div class="loader-glow"></div>
+        <div class="loader-title">ZERO // BOOTING</div>
+        <div class="loader-bar-frame">
+            <div class="loader-bar-fill"></div>
         </div>
     </div>
 
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h2>Hier gibts (noch) nichts zu sehen!</h2>
-            <button onclick="document.getElementById('modal').classList.remove('active')">Schließen</button>
+    <!-- HAUPTSEITE -->
+    <div class="container">
+        <header>
+            <h1>
+                ZERO's Tools 
+                <div class="hammer-wrapper">
+                    <i class="fa-solid fa-hammer" id="hammer"></i>
+                </div>
+            </h1>
+            <p class="subtitle">Zentrale Plattform für High-Performance GitHub Tools & Software</p>
+        </header>
+
+        <section>
+            <div class="section-title">
+                <i class="fa-solid fa-layer-group"></i> Alle Tools
+            </div>
+            
+            <div class="tools-grid">
+                <!-- Tool 1 -->
+                <a href="#" class="tool-card" onclick="openModal(event)">
+                    <i class="fa-solid fa-code tool-icon-box" style="color: var(--neon-cyan);"></i>
+                    <div class="tool-title">Script Engine V1</div>
+                    <div class="tool-desc">Hochoptimierter Code-Compiler zur Automatisierung von Git-Workflows.</div>
+                </a>
+
+                <!-- Tool 2 -->
+                <a href="#" class="tool-card" onclick="openModal(event)">
+                    <i class="fa-solid fa-terminal tool-icon-box" style="color: var(--neon-pink);"></i>
+                    <div class="tool-title">Terminal UI</div>
+                    <div class="tool-desc">Moderne Befehlszeilen-Schnittstelle mit integriertem Neon-Theme.</div>
+                </a>
+
+                <!-- Tool 3 -->
+                <a href="#" class="tool-card" onclick="openModal(event)">
+                    <i class="fa-solid fa-shield-halved tool-icon-box" style="color: var(--neon-gold);"></i>
+                    <div class="tool-title">Security Scanner</div>
+                    <div class="tool-desc">Überprüft Repositories automatisch auf Sicherheitslücken und veraltete Packages.</div>
+                </a>
+
+                <!-- Tool 4 -->
+                <a href="#" class="tool-card" onclick="openModal(event)">
+                    <i class="fa-solid fa-database tool-icon-box" style="color: var(--neon-purple);"></i>
+                    <div class="tool-title">Data Sync Pro</div>
+                    <div class="tool-desc">Synchronisiert lokale Projekt-Backups in Echtzeit mit GitHub-Servern.</div>
+                </a>
+
+                <!-- Tool 5 -->
+                <a href="#" class="tool-card" onclick="openModal(event)">
+                    <i class="fa-solid fa-microchip tool-icon-box" style="color: var(--neon-cyan);"></i>
+                    <div class="tool-title">Hardware Monitor</div>
+                    <div class="tool-desc">Live-Leistungsüberwachung von CPU, GPU und RAM während des Codeschreibens.</div>
+                </a>
+
+                <!-- Tool 6 -->
+                <a href="#" class="tool-card" onclick="openModal(event)">
+                    <i class="fa-solid fa-wand-magic-sparkles tool-icon-box" style="color: var(--neon-gold);"></i>
+                    <div class="tool-title">Asset Generator</div>
+                    <div class="tool-desc">Erstellt automatisch Icons und Grafiken für README-Dateien.</div>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL / HINWEIS -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <h2>Systemmeldung</h2>
+            <p>Hier gibts (noch) nichts zu sehen...</p>
+            <button class="modal-btn" onclick="closeModal()">VERSTANDEN</button>
         </div>
     </div>
 
     <script>
-        // Mehr Inhalt generieren
-        const grid = document.getElementById('grid');
-        for(let i=1; i<=9; i++) {
-            grid.innerHTML += `<a href="#" class="tool-card" onclick="document.getElementById('modal').classList.add('active')">
-                <h3>Tool ${i}</h3><p>Beschreibung des Tools...</p>
-            </a>`;
+        // Dynamische Drehung des goldenen Hammers beim Scrollen
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const hammer = document.getElementById('hammer');
+            hammer.style.transform = `rotate(${scrollY * 0.4}deg)`;
+        });
+
+        // Modal-Steuerung für Tool-Klicks
+        function openModal(event) {
+            event.preventDefault();
+            document.getElementById('modalOverlay').classList.add('active');
         }
 
-        // Hammer Scroll Drehung
-        window.addEventListener('scroll', () => {
-            const h = document.getElementById('hammer');
-            h.style.transform = `rotate(${window.scrollY / 2}deg)`;
-        });
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
     </script>
 </body>
 </html>
