@@ -36,7 +36,7 @@
             position: relative;
         }
 
-        /* Dynamischer Partikel-Hintergrund */
+        /* Partikel-Hintergrund */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -87,52 +87,6 @@
             letter-spacing: 4px;
             text-transform: uppercase;
             text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
-        }
-
-        /* --- FEATURED / SPOTLIGHT BANNER --- */
-        .featured-banner {
-            background: linear-gradient(135deg, rgba(255, 0, 127, 0.1), rgba(0, 240, 255, 0.1));
-            border: 1px solid var(--neon-pink);
-            border-radius: 12px;
-            padding: 25px 35px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 0 30px rgba(255, 0, 127, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .featured-banner::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-            background: var(--neon-pink);
-            box-shadow: 0 0 15px var(--neon-pink);
-        }
-
-        .featured-info h3 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            color: #fff;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .featured-info h3 i {
-            color: var(--neon-pink);
-            animation: pulseIcon 1.5s infinite alternate;
-        }
-
-        .featured-info p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        @keyframes pulseIcon {
-            0% { transform: scale(1); text-shadow: 0 0 5px var(--neon-pink); }
-            100% { transform: scale(1.2); text-shadow: 0 0 20px var(--neon-pink); }
         }
 
         /* --- "ABOUT HUB" SEKTION --- */
@@ -310,7 +264,7 @@
             line-height: 1.6;
         }
 
-        /* --- SPEZIELLE HOVER-ANIMATIONEN --- */
+        /* Spezielle Hover-Animationen */
         .keyboard-icon { color: var(--text-muted); transition: all 0.3s ease; }
         .card:hover .keyboard-icon { color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); transform: scale(1.1); }
 
@@ -342,39 +296,31 @@
             <div class="creator-tag">by Zerocoolluis</div>
         </header>
 
-        <!-- Featured / Spotlight Banner -->
-        <div class="featured-banner">
-            <div class="featured-info">
-                <h3><i class="fa-solid fa-fire"></i> Spotlight: Neues Projekt in Arbeit</h3>
-                <p>Bald verfügbar: Dein brandneues Custom-Tool wird hier im Hub integriert.</p>
-            </div>
-        </div>
-
-        <!-- Ausführliche "About Hub"-Sektion -->
+        <!-- Über das Hub -->
         <div class="about-section">
-            <h2>// Willkommen im Cyberpunk Dashboard</h2>
+            <h2>// Willkommen im Dashboard</h2>
             <p>
-                ZEROS TOOL HUB ist deine zentrale Anlaufstelle für alle nützlichen Skripte, Gaming-Utilities, Schul-Helfer und praktischen Tools. Entwickelt, um Performance, Design und Funktionalität nahtlos miteinander zu verbinden.
+                ZEROS TOOL HUB ist deine zentrale Anlaufstelle. Hier findest du übersichtlich sortiert alle deine nützlichen Skripte, Gaming-Utilities, Schul-Helfer und praktischen Tools in separaten Bereichen.
             </p>
             <p>
-                Scrolle nach unten, um zu den verschiedenen Kategorien zu gelangen, oder nutze den Schnellzugriff, um blitzschnell zu filtern.
+                Scrolle nach unten zu den Hauptbereichen oder nutze den Schnellzugriff, um direkt in den gewünschten Bereich zu wechseln.
             </p>
 
             <div class="about-features">
                 <div class="about-feature-box">
-                    <h4><i class="fa-solid fa-bolt" style="color: var(--neon-cyan);"></i> High Performance</h4>
-                    <p>Optimierter Code für blitzschnelle Ladezeiten und reibungslose Animationen.</p>
+                    <h4><i class="fa-solid fa-bolt" style="color: var(--neon-cyan);"></i> Übersichtlich</h4>
+                    <p>Klare Trennung aller Tools in strukturierte Hauptbereiche und Ordner.</p>
                 </div>
                 <div class="about-feature-box">
-                    <h4><i class="fa-solid fa-shield-halved" style="color: var(--neon-pink);"></i> Clean Design</h4>
-                    <p>Futuristische Neon-Optik mit interaktiven Hover-Effekten auf jeder Karte.</p>
+                    <h4><i class="fa-solid fa-shield-halved" style="color: var(--neon-pink);"></i> Modern & Schnell</h4>
+                    <p>Flüssige Animationen und direktes Weiterleiten zu den jeweiligen Skripten.</p>
                 </div>
             </div>
         </div>
 
         <!-- Schnellzugriff / Quick-Select Buttons -->
         <div class="quick-select-container">
-            <button class="quick-btn active" data-filter="all">Alle Tools</button>
+            <button class="quick-btn active" data-filter="all">Alle Bereiche</button>
             <button class="quick-btn" data-filter="gaming">Gaming</button>
             <button class="quick-btn" data-filter="school">School</button>
             <button class="quick-btn" data-filter="utilities">Utilities</button>
@@ -387,25 +333,25 @@
 
         <!-- Kategorien Grid -->
         <div class="grid" id="cardsGrid">
-            <!-- Gaming (Tastatur) -->
+            <!-- Gaming Bereich -->
             <a href="gaming/" class="card" data-category="gaming">
                 <div class="card-icon-container">
                     <i class="fa-solid fa-keyboard keyboard-icon"></i>
                 </div>
-                <div class="card-title">Gaming</div>
-                <div class="card-desc">Mods, Server-Helfer, Konfigurations-Tools und Gamer-Utilities.</div>
+                <div class="card-title">Gaming Bereich</div>
+                <div class="card-desc">Öffnet den Gaming-Ordner mit allen Mods, Server-Helfern und Gamer-Utilities.</div>
             </a>
 
-            <!-- School (Lampe) -->
+            <!-- School Bereich -->
             <a href="school/" class="card" data-category="school">
                 <div class="card-icon-container">
                     <i class="fa-solid fa-lightbulb lamp-icon"></i>
                 </div>
-                <div class="card-title">School</div>
-                <div class="card-desc">Lernskripte, Rechner, Notizen-Tools und Schul-Organisation.</div>
+                <div class="card-title">School Bereich</div>
+                <div class="card-desc">Öffnet den Schul-Ordner mit Lernskripten, Rechnern und Notizen-Tools.</div>
             </a>
 
-            <!-- Utilities (Zahnräder) -->
+            <!-- Utilities Bereich -->
             <a href="utilities/" class="card" data-category="utilities">
                 <div class="card-icon-container">
                     <div class="gears-container">
@@ -414,8 +360,8 @@
                         <i class="fa-solid fa-gear gear-3" style="font-size: 1.4rem;"></i>
                     </div>
                 </div>
-                <div class="card-title">Utilities</div>
-                <div class="card-desc">Hardware-Monitore, Backup-Tools und praktische Alltagshelfer.</div>
+                <div class="card-title">Utilities Bereich</div>
+                <div class="card-desc">Öffnet das Verzeichnis für Hardware-Monitore, Backups und Alltagshelfer.</div>
             </a>
         </div>
     </div>
@@ -483,7 +429,6 @@
 
         quickBtns.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Aktiven Button umschalten
                 quickBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
 
