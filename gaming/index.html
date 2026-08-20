@@ -4,29 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gaming // ZEROS HUB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        :root {
+            --bg-color: #03050a;
+            --card-bg: rgba(15, 20, 30, 0.6);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-color: #ff007f; /* Gaming Pink */
+            --text-color: #f0f6fc;
+            --text-muted: #8b949e;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            background-color: #03050a;
-            color: #f0f6fc;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             font-family: 'Inter', sans-serif;
-            margin: 0;
             padding: 40px 20px;
+            min-height: 100vh;
         }
 
         .container {
             max-width: 1000px;
             margin: 0 auto;
+            animation: fadeIn 0.6s ease forwards;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Zurück-Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
             gap: 10px;
             background: rgba(8, 12, 22, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #8b949e;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
             padding: 10px 20px;
             border-radius: 12px;
             text-decoration: none;
@@ -38,80 +57,89 @@
         }
 
         .back-btn:hover {
-            border-color: #ff007f;
-            color: #ff007f;
-            transform: translateX(-3px);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            transform: translateX(-4px);
             box-shadow: 0 0 15px rgba(255, 0, 127, 0.2);
         }
 
         header {
             margin-bottom: 40px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 20px;
         }
 
-        h1 { font-size: 2.5rem; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; }
-        p { color: #8b949e; }
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 0, 127, 0.3);
+        }
+        
+        p { color: var(--text-muted); }
 
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 25px;
         }
 
+        /* Kacheln mit flüssiger Hover-Animation */
         .tool-card {
-            background: rgba(15, 20, 30, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            color: white;
+            padding: 2.5rem 2rem;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            color: var(--text-color);
             display: block;
             backdrop-filter: blur(10px);
-        }
-
-        .tool-card:hover {
-            border-color: rgba(255, 0, 127, 0.5);
-            background: rgba(20, 25, 40, 0.9);
-            transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
+        .tool-card:hover {
+            border-color: var(--accent-color);
+            background: rgba(20, 25, 40, 0.9);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(255, 0, 127, 0.25);
+        }
+
         .tool-card h3 {
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.25rem;
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .tool-card p {
-            font-size: 0.9rem;
-            color: #a0a0a0;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
 
         .badge {
             font-size: 0.65rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            background: rgba(255, 0, 127, 0.1);
-            color: #ff007f;
+            padding: 5px 10px;
+            border-radius: 6px;
+            background: rgba(255, 0, 127, 0.15);
+            color: var(--accent-color);
             text-transform: uppercase;
             font-family: 'Orbitron', sans-serif;
+            border: 1px solid rgba(255, 0, 127, 0.3);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <a href="../index.html" class="back-btn">
-        <i class="fa-solid fa-arrow-left"></i> Zurück zur Startseite
-    </a>
+    <a href="../index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Zurück zur Startseite</a>
 
     <header>
         <h1>Gaming Bereich</h1>
-        <p>Übersicht der Gaming-Rubriken.</p>
+        <p>Alle Tools und Rubriken im Gaming-Segment.</p>
     </header>
 
     <div class="grid">
