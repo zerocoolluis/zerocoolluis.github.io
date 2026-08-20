@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZERO's Tools // Ultimate Edition</title>
+    <title>ZERO's Tools // Main Hub</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -17,7 +17,6 @@
             --neon-gold: #FFD700;
             --neon-cyan: #00f0ff;
             --neon-pink: #ff007f;
-            --neon-purple: #9d00ff;
             --text-color: #f0f6fc;
             --text-muted: #8b949e;
         }
@@ -37,7 +36,7 @@
             position: relative;
         }
 
-        /* Dynamischer Canvas-Hintergrund für Partikel */
+        /* Partikel-Hintergrund */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -56,70 +55,14 @@
             padding: 60px 20px;
             opacity: 0;
             transform: translateY(20px);
-            animation: pageEntrance 1s ease 2.2s forwards;
+            animation: pageEntrance 1s ease 0.3s forwards;
         }
 
         @keyframes pageEntrance { 
             to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* --- HIGH-TECH BOOT LADER --- */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: #010204;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            animation: loaderFadeOut 0.6s ease 2s forwards;
-            pointer-events: none;
-        }
-
-        .loader-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: var(--neon-gold);
-            text-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
-            letter-spacing: 5px;
-            margin-bottom: 15px;
-        }
-
-        .loader-sub {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            color: var(--neon-cyan);
-            margin-bottom: 25px;
-            height: 20px;
-            letter-spacing: 2px;
-        }
-
-        .loader-bar-frame {
-            width: 300px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid rgba(0, 240, 255, 0.4);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-        }
-
-        .loader-bar-fill {
-            position: absolute;
-            top: 0; left: 0;
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-gold));
-            animation: fillBar 1.8s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
-        }
-
-        @keyframes fillBar { 0% { width: 0%; } 100% { width: 100%; } }
-        @keyframes loaderFadeOut { to { opacity: 0; visibility: hidden; } }
-
-        /* --- HEADER & HAMMER --- */
+        /* Header & Hammer */
         header {
             text-align: center;
             margin-bottom: 50px;
@@ -147,7 +90,7 @@
         #hammer {
             color: var(--neon-gold);
             font-size: 3.2rem;
-            text-shadow: 0 0 30px var(--neon-gold), 0 0 60px rgba(255, 215, 0, 0.4);
+            text-shadow: 0 0 30px var(--neon-gold);
         }
 
         .subtitle {
@@ -157,32 +100,7 @@
             letter-spacing: 1.5px;
         }
 
-        /* --- NAVIGATION BUTTON --- */
-        .back-btn {
-            background: rgba(0, 240, 255, 0.03);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 12px 24px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 35px;
-            display: none;
-            align-items: center;
-            gap: 12px;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.1);
-        }
-        .back-btn:hover {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 25px var(--neon-cyan);
-            transform: translateX(-5px);
-        }
-
-        /* --- GRID & KARTEN --- */
+        /* Grid & Karten (als Links) */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -202,9 +120,9 @@
             cursor: pointer;
             backdrop-filter: blur(15px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: block;
         }
 
-        /* High-Tech Ecklinien-Effekt */
         .card::before {
             content: '';
             position: absolute;
@@ -244,69 +162,21 @@
             align-items: center;
         }
 
-        /* --- ANIMIERTE ICON EFFEKTE --- */
-        
-        /* 1. Controller Tasten drücken */
-        .gamepad-icon {
-            color: var(--neon-pink);
-            transition: transform 0.2s ease;
-            text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
-        }
-        .card:hover .gamepad-icon {
-            animation: gamePadPulse 0.5s ease infinite alternate;
-        }
-        @keyframes gamePadPulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(0.9) translateY(3px); color: var(--neon-cyan); text-shadow: 0 0 20px var(--neon-cyan); }
-        }
+        /* Spezifische Hover-Effekte für die Icons */
+        .gamepad-icon { color: var(--neon-pink); transition: transform 0.2s ease; }
+        .card:hover .gamepad-icon { transform: scale(1.15) rotate(5deg); }
 
-        /* 2. Buch öffnen */
-        .book-icon {
-            color: var(--neon-cyan);
-            transition: transform 0.4s ease;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-        }
-        .card:hover .book-icon {
-            transform: scale(1.15) rotate(-8deg);
-            color: var(--neon-gold);
-            text-shadow: 0 0 20px var(--neon-gold);
-        }
+        .book-icon { color: var(--neon-cyan); transition: transform 0.4s ease; }
+        .card:hover .book-icon { transform: scale(1.15) rotate(-8deg); }
 
-        /* 3. Werkzeuge aus Baukasten herausheben */
-        .toolbox-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        .toolbox-icon {
-            color: var(--neon-gold);
-            position: relative;
-            z-index: 2;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-        }
-        .tool-lift {
-            position: absolute;
-            top: 0; left: 25px;
-            font-size: 1.6rem;
-            color: var(--neon-cyan);
-            opacity: 0;
-            z-index: 1;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .card:hover .tool-lift {
-            opacity: 1;
-            transform: translateY(-30px) rotate(20deg) scale(1.2);
-            text-shadow: 0 0 20px var(--neon-cyan);
-        }
-        .card:hover .toolbox-icon {
-            transform: translateY(4px);
-        }
+        .toolbox-icon { color: var(--neon-gold); transition: transform 0.4s ease; }
+        .card:hover .toolbox-icon { transform: scale(1.15) translateY(-4px); }
 
         .card-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.4rem;
             margin-bottom: 10px;
             color: #fff;
-            letter-spacing: 0.5px;
         }
 
         .card-desc {
@@ -314,72 +184,11 @@
             font-size: 0.95rem;
             line-height: 1.6;
         }
-
-        /* Ansichten-Steuerung */
-        .section-view { display: none; }
-        .section-view.active { 
-            display: block; 
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(2, 3, 7, 0.88);
-            backdrop-filter: blur(10px);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
-        }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        
-        .modal-box {
-            background: linear-gradient(135deg, #0d1222, #070913);
-            border: 2px solid var(--neon-gold);
-            padding: 45px; border-radius: 12px; text-align: center;
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.25); max-width: 450px; width: 90%;
-            transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .modal-overlay.active .modal-box { transform: scale(1); }
-        
-        .modal-box h2 { 
-            font-family: 'Orbitron', sans-serif; 
-            color: var(--neon-gold); 
-            font-size: 1.6rem; 
-            margin-bottom: 15px; 
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-        }
-        .modal-box p { color: var(--text-muted); margin-bottom: 30px; font-size: 1.05rem; }
-        
-        .modal-btn {
-            background: transparent; border: 2px solid var(--neon-gold); color: var(--neon-gold);
-            padding: 12px 35px; font-family: 'Orbitron', sans-serif; font-weight: bold; border-radius: 6px;
-            cursor: pointer; transition: all 0.3s ease;
-        }
-        .modal-btn:hover { 
-            background: var(--neon-gold); color: #000; 
-            box-shadow: 0 0 25px var(--neon-gold); 
-            transform: scale(1.05);
-        }
     </style>
 </head>
 <body>
 
-    <!-- Dynamischer Hintergrund-Canvas -->
     <canvas id="bg-canvas"></canvas>
-
-    <!-- BOOT LADER -->
-    <div id="loader">
-        <div class="loader-title">BOOTING...</div>
-        <div class="loader-sub" id="loaderText">INITIALIZING SYSTEM...</div>
-        <div class="loader-bar-frame">
-            <div class="loader-bar-fill"></div>
-        </div>
-    </div>
 
     <div class="container">
         <header>
@@ -392,106 +201,39 @@
             <p class="subtitle">Wähle eine Kategorie, um auf deine Tools zuzugreifen</p>
         </header>
 
-        <!-- ZURÜCK BUTTON -->
-        <button class="back-btn" id="backBtn" onclick="showCategories()">
-            <i class="fa-solid fa-arrow-left"></i> Zurück zu Kategorien
-        </button>
+        <!-- Hauptseiten Grid mit Links zu den Unterseiten -->
+        <div class="grid">
+            <!-- Gaming Unterseite (Ändere den Pfad zu 'gaming.html', falls du keine Ordner nutzt) -->
+            <a href="gaming/" class="card">
+                <div class="card-icon-container">
+                    <i class="fa-solid fa-gamepad gamepad-icon"></i>
+                </div>
+                <div class="card-title">Gaming</div>
+                <div class="card-desc">Mods, Server-Helfer, Konfigurations-Tools und Gamer-Utilities.</div>
+            </a>
 
-        <!-- ANSICHT 1: KATEGORIEN -->
-        <div id="categoriesView" class="section-view active">
-            <div class="grid">
-                <!-- Gaming -->
-                <div class="card" onclick="openCategory('gamingTools')">
-                    <div class="card-icon-container">
-                        <i class="fa-solid fa-gamepad gamepad-icon"></i>
-                    </div>
-                    <div class="card-title">Gaming</div>
-                    <div class="card-desc">Mods, Server-Helfer, Konfigurations-Tools und Gamer-Utilities.</div>
+            <!-- School Unterseite -->
+            <a href="school/" class="card">
+                <div class="card-icon-container">
+                    <i class="fa-solid fa-book-open book-icon"></i>
                 </div>
+                <div class="card-title">School</div>
+                <div class="card-desc">Lernskripte, Rechner, Notizen-Tools und Schul-Organisation.</div>
+            </a>
 
-                <!-- School -->
-                <div class="card" onclick="openCategory('schoolTools')">
-                    <div class="card-icon-container">
-                        <i class="fa-solid fa-book-open book-icon"></i>
-                    </div>
-                    <div class="card-title">School</div>
-                    <div class="card-desc">Lernskripte, Rechner, Notizen-Tools und Schul-Organisation.</div>
+            <!-- Utilities Unterseite -->
+            <a href="utilities/" class="card">
+                <div class="card-icon-container">
+                    <i class="fa-solid fa-toolbox toolbox-icon"></i>
                 </div>
-
-                <!-- Utilities -->
-                <div class="card" onclick="openCategory('utilityTools')">
-                    <div class="card-icon-container">
-                        <div class="toolbox-wrapper">
-                            <i class="fa-solid fa-wrench tool-lift"></i>
-                            <i class="fa-solid fa-toolbox toolbox-icon"></i>
-                        </div>
-                    </div>
-                    <div class="card-title">Utilities</div>
-                    <div class="card-desc">Hardware-Monitore, Backup-Tools und praktische Alltagshelfer.</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ANSICHT 2: GAMING TOOLS -->
-        <div id="gamingTools" class="section-view">
-            <div class="grid">
-                <div class="card" onclick="openModal()">
-                    <div class="card-icon-container"><i class="fa-solid fa-headset" style="color: var(--neon-pink);"></i></div>
-                    <div class="card-title">Voice Enhancer</div>
-                    <div class="card-desc">Audio-Optimierungstool für Gaming-Sessions.</div>
-                </div>
-                <div class="card" onclick="openModal()">
-                    <div class="card-icon-container"><i class="fa-solid fa-server" style="color: var(--neon-pink);"></i></div>
-                    <div class="card-title">Server Quick-Launcher</div>
-                    <div class="card-desc">Startet lokale Test-Game-Server mit einem Klick.</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ANSICHT 3: SCHOOL TOOLS -->
-        <div id="schoolTools" class="section-view">
-            <div class="grid">
-                <div class="card" onclick="openModal()">
-                    <div class="card-icon-container"><i class="fa-solid fa-calculator" style="color: var(--neon-cyan);"></i></div>
-                    <div class="card-title">Mathe Solver</div>
-                    <div class="card-desc">Nützliches Skript zum Überprüfen von Formeln.</div>
-                </div>
-                <div class="card" onclick="openModal()">
-                    <div class="card-icon-container"><i class="fa-solid fa-graduation-cap" style="color: var(--neon-cyan);"></i></div>
-                    <div class="card-title">Notenrechner</div>
-                    <div class="card-desc">Berechnet deinen aktuellen Notendurchschnitt.</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ANSICHT 4: UTILITIES -->
-        <div id="utilityTools" class="section-view">
-            <div class="grid">
-                <div class="card" onclick="openModal()">
-                    <div class="card-icon-container"><i class="fa-solid fa-microchip" style="color: var(--neon-gold);"></i></div>
-                    <div class="card-title">Hardware Monitor</div>
-                    <div class="card-desc">Live-Leistungsüberwachung von CPU, GPU und RAM.</div>
-                </div>
-                <div class="card" onclick="openModal()">
-                    <div class="card-icon-container"><i class="fa-solid fa-database" style="color: var(--neon-gold);"></i></div>
-                    <div class="card-title">Data Sync Pro</div>
-                    <div class="card-desc">Automatisierte Backup-Synchronisation.</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box">
-            <h2>Systemmeldung</h2>
-            <p>Hier gibts (noch) nichts zu sehen...</p>
-            <button class="modal-btn" onclick="closeModal()">VERSTANDEN</button>
+                <div class="card-title">Utilities</div>
+                <div class="card-desc">Hardware-Monitore, Backup-Tools und praktische Alltagshelfer.</div>
+            </a>
         </div>
     </div>
 
     <script>
-        // --- PARTIKEL HINTERGRUND EFFEKT ---
+        // Partikel-Hintergrund
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -516,7 +258,6 @@
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
-            ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
 
             particles.forEach(p => {
                 p.x += p.speedX;
@@ -535,47 +276,11 @@
         }
         animateParticles();
 
-        // --- BOOT TEXT WECHSLER ---
-        const bootTexts = ["LOADING KERNEL...", "ESTABLISHING NEURAL LINK...", "LOADING CATEGORIES...", "SYSTEM READY"];
-        let textIndex = 0;
-        const textInterval = setInterval(() => {
-            textIndex++;
-            if(textIndex < bootTexts.length) {
-                document.getElementById('loaderText').innerText = bootTexts[textIndex];
-            } else {
-                clearInterval(textInterval);
-            }
-        }, 500);
-
-        // --- HAMMER DREHUNG BEIM SCROLLEN ---
+        // Hammer Scroll-Effekt
         window.addEventListener('scroll', () => {
             const hammer = document.getElementById('hammer');
             hammer.style.transform = `rotate(${window.scrollY * 0.4}deg)`;
         });
-
-        // --- NAVIGATION LOGIK ---
-        function openCategory(categoryId) {
-            document.getElementById('categoriesView').classList.remove('active');
-            document.getElementById(categoryId).classList.add('active');
-            document.getElementById('backBtn').style.display = 'inline-flex';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function showCategories() {
-            document.querySelectorAll('.section-view').forEach(view => view.classList.remove('active'));
-            document.getElementById('categoriesView').classList.add('active');
-            document.getElementById('backBtn').style.display = 'none';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // --- MODAL STEUERUNG ---
-        function openModal() {
-            document.getElementById('modalOverlay').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-        }
     </script>
 </body>
 </html>
