@@ -32,7 +32,7 @@
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            min-height: 150vh;
+            min-height: 180vh;
             position: relative;
         }
 
@@ -89,16 +89,13 @@
             text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
         }
 
-        /* --- FEATURED / SPOTLIGHT BANNER & LETZTE ÄNDERUNGEN --- */
+        /* --- FEATURED / SPOTLIGHT BANNER --- */
         .featured-banner {
             background: linear-gradient(135deg, rgba(255, 0, 127, 0.1), rgba(0, 240, 255, 0.1));
             border: 1px solid var(--neon-pink);
             border-radius: 12px;
             padding: 25px 35px;
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin-bottom: 30px;
             backdrop-filter: blur(15px);
             box-shadow: 0 0 30px rgba(255, 0, 127, 0.2);
             position: relative;
@@ -133,75 +130,97 @@
             font-size: 0.95rem;
         }
 
-        .update-badge {
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 8px 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            border-radius: 6px;
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        .update-badge span {
-            display: block;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-top: 3px;
-        }
-
         @keyframes pulseIcon {
             0% { transform: scale(1); text-shadow: 0 0 5px var(--neon-pink); }
             100% { transform: scale(1.2); text-shadow: 0 0 20px var(--neon-pink); }
         }
 
-        /* --- QUICK SEARCH SUCHLEISTE --- */
-        .search-container {
-            margin-bottom: 35px;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
+        /* --- "ABOUT HUB" SEKTION --- */
+        .about-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 15px 20px 15px 50px;
-            font-family: 'Inter', sans-serif;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 50px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .about-section h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: var(--neon-cyan);
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .about-section p {
+            color: var(--text-muted);
             font-size: 1rem;
-            color: var(--text-color);
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .about-feature-box {
+            background: rgba(0, 240, 255, 0.03);
+            border: 1px solid rgba(0, 240, 255, 0.15);
+            padding: 20px;
             border-radius: 8px;
-            outline: none;
+        }
+
+        .about-feature-box h4 {
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .about-feature-box p {
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* --- SCHNELLZUGRIFF / QUICK-SELECT LEISTE --- */
+        .quick-select-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 10px 22px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
 
-        .search-input:focus {
+        .quick-btn:hover, .quick-btn.active {
             border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            transition: color 0.3s ease;
-        }
-
-        .search-input:focus + .search-icon {
             color: var(--neon-cyan);
+            background: rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         /* --- DYNAMISCHES TOOL MENU --- */
         .tool-menu-section {
             text-align: center;
-            margin: 30px 0 25px 0;
+            margin: 40px 0 25px 0;
         }
 
         .tool-menu-title {
@@ -309,8 +328,6 @@
 
         @media(max-width: 768px) {
             .main-title { font-size: 2.5rem; }
-            .featured-banner { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .update-badge { text-align: left; }
         }
     </style>
 </head>
@@ -325,22 +342,42 @@
             <div class="creator-tag">by Zerocoolluis</div>
         </header>
 
-        <!-- Featured / Spotlight Banner & Letzte Änderungen -->
+        <!-- Featured / Spotlight Banner -->
         <div class="featured-banner">
             <div class="featured-info">
                 <h3><i class="fa-solid fa-fire"></i> Spotlight: Neues Projekt in Arbeit</h3>
-                <p>Bald verfügbar: Dein brandneues Custom-Tool wird hier integriert.</p>
-            </div>
-            <div class="update-badge">
-                Letzte Änderung
-                <span>20.08.2026</span>
+                <p>Bald verfügbar: Dein brandneues Custom-Tool wird hier im Hub integriert.</p>
             </div>
         </div>
 
-        <!-- Quick Search Suchleiste -->
-        <div class="search-container">
-            <input type="text" class="search-input" id="searchInput" placeholder="Tools durchsuchen (z.B. Gaming, School)...">
-            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <!-- Ausführliche "About Hub"-Sektion -->
+        <div class="about-section">
+            <h2>// Willkommen im Cyberpunk Dashboard</h2>
+            <p>
+                ZEROS TOOL HUB ist deine zentrale Anlaufstelle für alle nützlichen Skripte, Gaming-Utilities, Schul-Helfer und praktischen Tools. Entwickelt, um Performance, Design und Funktionalität nahtlos miteinander zu verbinden.
+            </p>
+            <p>
+                Scrolle nach unten, um zu den verschiedenen Kategorien zu gelangen, oder nutze den Schnellzugriff, um blitzschnell zu filtern.
+            </p>
+
+            <div class="about-features">
+                <div class="about-feature-box">
+                    <h4><i class="fa-solid fa-bolt" style="color: var(--neon-cyan);"></i> High Performance</h4>
+                    <p>Optimierter Code für blitzschnelle Ladezeiten und reibungslose Animationen.</p>
+                </div>
+                <div class="about-feature-box">
+                    <h4><i class="fa-solid fa-shield-halved" style="color: var(--neon-pink);"></i> Clean Design</h4>
+                    <p>Futuristische Neon-Optik mit interaktiven Hover-Effekten auf jeder Karte.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schnellzugriff / Quick-Select Buttons -->
+        <div class="quick-select-container">
+            <button class="quick-btn active" data-filter="all">Alle Tools</button>
+            <button class="quick-btn" data-filter="gaming">Gaming</button>
+            <button class="quick-btn" data-filter="school">School</button>
+            <button class="quick-btn" data-filter="utilities">Utilities</button>
         </div>
 
         <!-- Dynamisches Tool Menu (Wächst beim Scrollen) -->
@@ -351,7 +388,7 @@
         <!-- Kategorien Grid -->
         <div class="grid" id="cardsGrid">
             <!-- Gaming (Tastatur) -->
-            <a href="gaming/" class="card" data-title="gaming mods server">
+            <a href="gaming/" class="card" data-category="gaming">
                 <div class="card-icon-container">
                     <i class="fa-solid fa-keyboard keyboard-icon"></i>
                 </div>
@@ -360,7 +397,7 @@
             </a>
 
             <!-- School (Lampe) -->
-            <a href="school/" class="card" data-title="school lernen skripte rechner">
+            <a href="school/" class="card" data-category="school">
                 <div class="card-icon-container">
                     <i class="fa-solid fa-lightbulb lamp-icon"></i>
                 </div>
@@ -369,7 +406,7 @@
             </a>
 
             <!-- Utilities (Zahnräder) -->
-            <a href="utilities/" class="card" data-title="utilities hardware backup tools">
+            <a href="utilities/" class="card" data-category="utilities">
                 <div class="card-icon-container">
                     <div class="gears-container">
                         <i class="fa-solid fa-gear gear-1"></i>
@@ -440,19 +477,26 @@
             title.style.textShadow = `0 0 ${10 + (scrollY * 0.1)}px rgba(0, 240, 255, ${0.3 + (scrollY * 0.001)})`;
         });
 
-        // --- QUICK SEARCH FILTER ---
-        const searchInput = document.getElementById('searchInput');
+        // --- SCHNELLZUGRIFF FILTER LOGIK ---
+        const quickBtns = document.querySelectorAll('.quick-btn');
         const cards = document.querySelectorAll('.card');
 
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            cards.forEach(card => {
-                const textData = card.getAttribute('data-title') + ' ' + card.innerText.toLowerCase();
-                if (textData.includes(term)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Aktiven Button umschalten
+                quickBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.getAttribute('data-filter');
+
+                cards.forEach(card => {
+                    const category = card.getAttribute('data-category');
+                    if (filter === 'all' || category === filter) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
             });
         });
     </script>
