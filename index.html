@@ -14,7 +14,6 @@
             --bg-color: #03050a;
             --card-bg: rgba(8, 12, 22, 0.85);
             --border-color: rgba(0, 240, 255, 0.25);
-            --neon-gold: #FFD700;
             --neon-cyan: #00f0ff;
             --neon-pink: #ff007f;
             --text-color: #f0f6fc;
@@ -52,7 +51,7 @@
             z-index: 2;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 60px 20px;
+            padding: 40px 20px;
             opacity: 0;
             transform: translateY(20px);
             animation: pageEntrance 0.8s ease forwards;
@@ -60,6 +59,87 @@
 
         @keyframes pageEntrance { 
             to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* --- TOP BAR MIT HAMBURGER-MENÜ --- */
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 100;
+        }
+
+        .menu-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--neon-cyan);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .menu-toggle:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        /* Dropdown / Overlay Menü */
+        .dropdown-menu {
+            position: absolute;
+            top: 65px;
+            right: 0;
+            width: 240px;
+            background: rgba(8, 12, 22, 0.95);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-10px);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .dropdown-menu.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-item {
+            padding: 15px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cyan);
+            padding-left: 25px;
         }
 
         /* --- HEADER --- */
@@ -139,36 +219,6 @@
         .about-feature-box p {
             font-size: 0.9rem;
             margin-bottom: 0;
-        }
-
-        /* --- SCHNELLZUGRIFF / QUICK-SELECT LEISTE --- */
-        .quick-select-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 35px;
-            flex-wrap: wrap;
-        }
-
-        .quick-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 10px 22px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .quick-btn:hover, .quick-btn.active {
-            border-color: var(--neon-cyan);
-            color: var(--neon-cyan);
-            background: rgba(0, 240, 255, 0.05);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
-            transform: translateY(-2px);
         }
 
         /* --- DYNAMISCHES TOOL MENU --- */
@@ -264,12 +314,12 @@
             line-height: 1.6;
         }
 
-        /* Spezielle Hover-Animationen */
+        /* Hover-Animationen für Icons */
         .keyboard-icon { color: var(--text-muted); transition: all 0.3s ease; }
         .card:hover .keyboard-icon { color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); transform: scale(1.1); }
 
         .lamp-icon { color: var(--text-muted); transition: all 0.3s ease; }
-        .card:hover .lamp-icon { color: var(--neon-gold); text-shadow: 0 0 25px var(--neon-gold); transform: scale(1.1) translateY(-3px); }
+        .card:hover .lamp-icon { color: #FFD700; text-shadow: 0 0 25px #FFD700; transform: scale(1.1) translateY(-3px); }
 
         .gears-container { display: flex; gap: 10px; font-size: 2.2rem; color: var(--text-muted); transition: color 0.3s ease; }
         .card:hover .gears-container { color: var(--neon-cyan); text-shadow: 0 0 15px var(--neon-cyan); }
@@ -290,6 +340,18 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
+        <!-- Top Bar mit Hamburger-Menü -->
+        <div class="top-bar">
+            <div class="menu-toggle" id="menuToggle">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+            <div class="dropdown-menu" id="dropdownMenu">
+                <a href="gaming/" class="dropdown-item"><i class="fa-solid fa-keyboard" style="color: var(--neon-pink);"></i> Gaming</a>
+                <a href="school/" class="dropdown-item"><i class="fa-solid fa-lightbulb" style="color: #FFD700;"></i> School</a>
+                <a href="utilities/" class="dropdown-item"><i class="fa-solid fa-gears" style="color: var(--neon-cyan);"></i> Utilities</a>
+            </div>
+        </div>
+
         <!-- Hauptkopf -->
         <header>
             <h1 class="main-title">ZEROS TOOL HUB</h1>
@@ -303,7 +365,7 @@
                 ZEROS TOOL HUB ist deine zentrale Anlaufstelle. Hier findest du übersichtlich sortiert alle deine nützlichen Skripte, Gaming-Utilities, Schul-Helfer und praktischen Tools in separaten Bereichen.
             </p>
             <p>
-                Scrolle nach unten zu den Hauptbereichen oder nutze den Schnellzugriff, um direkt in den gewünschten Bereich zu wechseln.
+                Nutze das Menü oben rechts für den Schnellzugriff oder scrolle nach unten zu den Hauptbereichen.
             </p>
 
             <div class="about-features">
@@ -318,14 +380,6 @@
             </div>
         </div>
 
-        <!-- Schnellzugriff / Quick-Select Buttons -->
-        <div class="quick-select-container">
-            <button class="quick-btn active" data-filter="all">Alle Bereiche</button>
-            <button class="quick-btn" data-filter="gaming">Gaming</button>
-            <button class="quick-btn" data-filter="school">School</button>
-            <button class="quick-btn" data-filter="utilities">Utilities</button>
-        </div>
-
         <!-- Dynamisches Tool Menu (Wächst beim Scrollen) -->
         <div class="tool-menu-section">
             <h2 class="tool-menu-title" id="toolMenuTitle">TOOL MENU</h2>
@@ -334,7 +388,7 @@
         <!-- Kategorien Grid -->
         <div class="grid" id="cardsGrid">
             <!-- Gaming Bereich -->
-            <a href="gaming/" class="card" data-category="gaming">
+            <a href="gaming/" class="card">
                 <div class="card-icon-container">
                     <i class="fa-solid fa-keyboard keyboard-icon"></i>
                 </div>
@@ -343,7 +397,7 @@
             </a>
 
             <!-- School Bereich -->
-            <a href="school/" class="card" data-category="school">
+            <a href="school/" class="card">
                 <div class="card-icon-container">
                     <i class="fa-solid fa-lightbulb lamp-icon"></i>
                 </div>
@@ -352,7 +406,7 @@
             </a>
 
             <!-- Utilities Bereich -->
-            <a href="utilities/" class="card" data-category="utilities">
+            <a href="utilities/" class="card">
                 <div class="card-icon-container">
                     <div class="gears-container">
                         <i class="fa-solid fa-gear gear-1"></i>
@@ -410,6 +464,20 @@
         }
         animateParticles();
 
+        // --- HAMBURGER-MENÜ TOGGLE ---
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+
+        // Menü schließen, wenn man außerhalb klickt
+        window.addEventListener('click', () => {
+            dropdownMenu.classList.remove('active');
+        });
+
         // --- SCROLL-EFFEKT FÜR DAS TOOL MENU ---
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
@@ -421,28 +489,6 @@
             
             title.style.fontSize = newSize + 'rem';
             title.style.textShadow = `0 0 ${10 + (scrollY * 0.1)}px rgba(0, 240, 255, ${0.3 + (scrollY * 0.001)})`;
-        });
-
-        // --- SCHNELLZUGRIFF FILTER LOGIK ---
-        const quickBtns = document.querySelectorAll('.quick-btn');
-        const cards = document.querySelectorAll('.card');
-
-        quickBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                quickBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                const filter = btn.getAttribute('data-filter');
-
-                cards.forEach(card => {
-                    const category = card.getAttribute('data-category');
-                    if (filter === 'all' || category === filter) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            });
         });
     </script>
 </body>
