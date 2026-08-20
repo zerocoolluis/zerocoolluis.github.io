@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZERO's Tools // Main Hub</title>
+    <title>ZEROS TOOL HUB // by Zerocoolluis</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <!-- FontAwesome Icons -->
@@ -17,6 +17,7 @@
             --neon-gold: #FFD700;
             --neon-cyan: #00f0ff;
             --neon-pink: #ff007f;
+            --neon-purple: #9d00ff;
             --text-color: #f0f6fc;
             --text-muted: #8b949e;
         }
@@ -36,7 +37,7 @@
             position: relative;
         }
 
-        /* Partikel-Hintergrund */
+        /* Dynamischer Partikel-Hintergrund */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -55,63 +56,89 @@
             padding: 60px 20px;
             opacity: 0;
             transform: translateY(20px);
-            animation: pageEntrance 1s ease 0.3s forwards;
+            animation: pageEntrance 0.8s ease forwards;
         }
 
         @keyframes pageEntrance { 
             to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* Header & Hammer */
+        /* --- HEADER & STICKY TRANSITION --- */
         header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 60px;
             padding-bottom: 30px;
             border-bottom: 1px solid var(--border-color);
+            transition: all 0.4s ease;
         }
 
-        h1 {
+        .main-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 3.5rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 20px;
+            font-size: 4rem;
+            font-weight: 900;
             color: var(--text-color);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            text-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            transition: font-size 0.4s ease;
         }
 
-        .hammer-wrapper {
-            display: inline-block;
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .hammer-wrapper:hover { transform: rotate(-50deg) scale(1.35); }
-
-        #hammer {
-            color: var(--neon-gold);
-            font-size: 3.2rem;
-            text-shadow: 0 0 30px var(--neon-gold);
+        .creator-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+            transition: opacity 0.3s ease;
         }
 
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            margin-top: 15px;
-            letter-spacing: 1.5px;
+        /* Scroll-Zustand: Header wird zur kompakten Leiste */
+        header.scrolled {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(3, 5, 10, 0.9);
+            backdrop-filter: blur(15px);
+            padding: 15px 20px;
+            margin-bottom: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--neon-cyan);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
-        /* Grid & Karten (als Links) */
+        header.scrolled .main-title {
+            font-size: 1.6rem;
+            margin-bottom: 0;
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+        }
+
+        header.scrolled .creator-tag {
+            font-size: 0.9rem;
+        }
+
+        .content-spacer {
+            height: 80px; /* Platzhalter, wenn Header sticky wird */
+            display: none;
+        }
+
+        /* --- GRID & KARTEN --- */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 30px;
+            margin-top: 40px;
         }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 35px;
+            border-radius: 12px;
+            padding: 40px 30px;
             text-decoration: none;
             color: var(--text-color);
             position: relative;
@@ -157,20 +184,11 @@
         .card-icon-container {
             font-size: 3rem;
             margin-bottom: 25px;
-            height: 60px;
+            height: 70px;
             display: flex;
             align-items: center;
+            justify-content: flex-start;
         }
-
-        /* Spezifische Hover-Effekte für die Icons */
-        .gamepad-icon { color: var(--neon-pink); transition: transform 0.2s ease; }
-        .card:hover .gamepad-icon { transform: scale(1.15) rotate(5deg); }
-
-        .book-icon { color: var(--neon-cyan); transition: transform 0.4s ease; }
-        .card:hover .book-icon { transform: scale(1.15) rotate(-8deg); }
-
-        .toolbox-icon { color: var(--neon-gold); transition: transform 0.4s ease; }
-        .card:hover .toolbox-icon { transform: scale(1.15) translateY(-4px); }
 
         .card-title {
             font-family: 'Orbitron', sans-serif;
@@ -184,6 +202,60 @@
             font-size: 0.95rem;
             line-height: 1.6;
         }
+
+        /* --- SPEZIELLE HOVER-ANIMATIONEN --- */
+
+        /* 1. GAMING: Tastatur, die beim Hover aufleuchtet */
+        .keyboard-icon {
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+        .card:hover .keyboard-icon {
+            color: var(--neon-pink);
+            text-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink);
+            transform: scale(1.1);
+        }
+
+        /* 2. SCHOOL: Lampe, die beim Drüberfahren aufleuchtet */
+        .lamp-icon {
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+        .card:hover .lamp-icon {
+            color: var(--neon-gold);
+            text-shadow: 0 0 25px var(--neon-gold), 0 0 50px rgba(255, 215, 0, 0.6);
+            transform: scale(1.1) translateY(-3px);
+        }
+
+        /* 3. UTILITIES: Drei Zahnräder, die sich drehen */
+        .gears-container {
+            display: flex;
+            gap: 10px;
+            font-size: 2.2rem;
+            color: var(--text-muted);
+            transition: color 0.3s ease;
+        }
+        .card:hover .gears-container {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-cyan);
+        }
+        .card:hover .gear-1 { animation: rotateGearCW 2s linear infinite; }
+        .card:hover .gear-2 { animation: rotateGearCCW 2s linear infinite; }
+        .card:hover .gear-3 { animation: rotateGearCW 1.5s linear infinite; }
+
+        @keyframes rotateGearCW {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes rotateGearCCW {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        @media(max-width: 768px) {
+            .main-title { font-size: 2.5rem; }
+            header.scrolled .main-title { font-size: 1.2rem; }
+        }
     </style>
 </head>
 <body>
@@ -191,40 +263,41 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
-        <header>
-            <h1>
-                ZERO's Tools 
-                <div class="hammer-wrapper">
-                    <i class="fa-solid fa-hammer" id="hammer"></i>
-                </div>
-            </h1>
-            <p class="subtitle">Wähle eine Kategorie, um auf deine Tools zuzugreifen</p>
+        <!-- Hauptkopf mit Titel & Creator Tag -->
+        <header id="mainHeader">
+            <h1 class="main-title">ZEROS TOOL HUB</h1>
+            <div class="creator-tag">by Zerocoolluis</div>
         </header>
+        <div class="content-spacer" id="spacer"></div>
 
-        <!-- Hauptseiten Grid mit Links zu den Unterseiten -->
+        <!-- Kategorien Grid -->
         <div class="grid">
-            <!-- Gaming Unterseite (Ändere den Pfad zu 'gaming.html', falls du keine Ordner nutzt) -->
+            <!-- Gaming (Tastatur) -->
             <a href="gaming/" class="card">
                 <div class="card-icon-container">
-                    <i class="fa-solid fa-gamepad gamepad-icon"></i>
+                    <i class="fa-solid fa-keyboard keyboard-icon"></i>
                 </div>
                 <div class="card-title">Gaming</div>
                 <div class="card-desc">Mods, Server-Helfer, Konfigurations-Tools und Gamer-Utilities.</div>
             </a>
 
-            <!-- School Unterseite -->
+            <!-- School (Lampe) -->
             <a href="school/" class="card">
                 <div class="card-icon-container">
-                    <i class="fa-solid fa-book-open book-icon"></i>
+                    <i class="fa-solid fa-lightbulb lamp-icon"></i>
                 </div>
                 <div class="card-title">School</div>
                 <div class="card-desc">Lernskripte, Rechner, Notizen-Tools und Schul-Organisation.</div>
             </a>
 
-            <!-- Utilities Unterseite -->
+            <!-- Utilities (Zahnräder) -->
             <a href="utilities/" class="card">
                 <div class="card-icon-container">
-                    <i class="fa-solid fa-toolbox toolbox-icon"></i>
+                    <div class="gears-container">
+                        <i class="fa-solid fa-gear gear-1"></i>
+                        <i class="fa-solid fa-gears gear-2" style="font-size: 1.8rem; align-self: flex-end;"></i>
+                        <i class="fa-solid fa-gear gear-3" style="font-size: 1.4rem;"></i>
+                    </div>
                 </div>
                 <div class="card-title">Utilities</div>
                 <div class="card-desc">Hardware-Monitore, Backup-Tools und praktische Alltagshelfer.</div>
@@ -233,7 +306,7 @@
     </div>
 
     <script>
-        // Partikel-Hintergrund
+        // --- PARTIKEL HINTERGRUND ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -276,10 +349,18 @@
         }
         animateParticles();
 
-        // Hammer Scroll-Effekt
+        // --- STICKY / SHRINKING HEADER BEIM SCROLLEN ---
         window.addEventListener('scroll', () => {
-            const hammer = document.getElementById('hammer');
-            hammer.style.transform = `rotate(${window.scrollY * 0.4}deg)`;
+            const header = document.getElementById('mainHeader');
+            const spacer = document.getElementById('spacer');
+            
+            if (window.scrollY > 80) {
+                header.classList.add('scrolled');
+                spacer.style.display = 'block';
+            } else {
+                header.classList.remove('scrolled');
+                spacer.style.display = 'none';
+            }
         });
     </script>
 </body>
