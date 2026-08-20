@@ -17,7 +17,6 @@
             --neon-gold: #FFD700;
             --neon-cyan: #00f0ff;
             --neon-pink: #ff007f;
-            --neon-purple: #9d00ff;
             --text-color: #f0f6fc;
             --text-muted: #8b949e;
         }
@@ -33,7 +32,7 @@
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            min-height: 100vh;
+            min-height: 150vh; /* Extra Höhe zum Scrollen */
             position: relative;
         }
 
@@ -66,7 +65,7 @@
         /* --- HEADER & STICKY TRANSITION --- */
         header {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
             padding-bottom: 30px;
             border-bottom: 1px solid var(--border-color);
             transition: all 0.4s ease;
@@ -80,7 +79,6 @@
             text-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
             letter-spacing: 2px;
             margin-bottom: 10px;
-            transition: font-size 0.4s ease;
         }
 
         .creator-tag {
@@ -90,40 +88,23 @@
             letter-spacing: 4px;
             text-transform: uppercase;
             text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
-            transition: opacity 0.3s ease;
         }
 
-        /* Scroll-Zustand: Header wird zur kompakten Leiste */
-        header.scrolled {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(3, 5, 10, 0.9);
-            backdrop-filter: blur(15px);
-            padding: 15px 20px;
-            margin-bottom: 0;
-            z-index: 1000;
-            border-bottom: 1px solid var(--neon-cyan);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        /* --- DYNAMISCHES TOOL MENU (Scroll-Größenänderung) --- */
+        .tool-menu-section {
+            text-align: center;
+            margin: 40px 0 30px 0;
         }
 
-        header.scrolled .main-title {
-            font-size: 1.6rem;
-            margin-bottom: 0;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
-        }
-
-        header.scrolled .creator-tag {
-            font-size: 0.9rem;
-        }
-
-        .content-spacer {
-            height: 80px; /* Platzhalter, wenn Header sticky wird */
-            display: none;
+        .tool-menu-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem; /* Startet klein */
+            color: var(--neon-cyan);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+            transition: font-size 0.2s ease, text-shadow 0.2s ease;
+            display: inline-block;
         }
 
         /* --- GRID & KARTEN --- */
@@ -131,7 +112,6 @@
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 30px;
-            margin-top: 40px;
         }
 
         .card {
@@ -204,57 +184,23 @@
         }
 
         /* --- SPEZIELLE HOVER-ANIMATIONEN --- */
+        .keyboard-icon { color: var(--text-muted); transition: all 0.3s ease; }
+        .card:hover .keyboard-icon { color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); transform: scale(1.1); }
 
-        /* 1. GAMING: Tastatur, die beim Hover aufleuchtet */
-        .keyboard-icon {
-            color: var(--text-muted);
-            transition: all 0.3s ease;
-        }
-        .card:hover .keyboard-icon {
-            color: var(--neon-pink);
-            text-shadow: 0 0 20px var(--neon-pink), 0 0 40px var(--neon-pink);
-            transform: scale(1.1);
-        }
+        .lamp-icon { color: var(--text-muted); transition: all 0.3s ease; }
+        .card:hover .lamp-icon { color: var(--neon-gold); text-shadow: 0 0 25px var(--neon-gold); transform: scale(1.1) translateY(-3px); }
 
-        /* 2. SCHOOL: Lampe, die beim Drüberfahren aufleuchtet */
-        .lamp-icon {
-            color: var(--text-muted);
-            transition: all 0.3s ease;
-        }
-        .card:hover .lamp-icon {
-            color: var(--neon-gold);
-            text-shadow: 0 0 25px var(--neon-gold), 0 0 50px rgba(255, 215, 0, 0.6);
-            transform: scale(1.1) translateY(-3px);
-        }
-
-        /* 3. UTILITIES: Drei Zahnräder, die sich drehen */
-        .gears-container {
-            display: flex;
-            gap: 10px;
-            font-size: 2.2rem;
-            color: var(--text-muted);
-            transition: color 0.3s ease;
-        }
-        .card:hover .gears-container {
-            color: var(--neon-cyan);
-            text-shadow: 0 0 15px var(--neon-cyan);
-        }
+        .gears-container { display: flex; gap: 10px; font-size: 2.2rem; color: var(--text-muted); transition: color 0.3s ease; }
+        .card:hover .gears-container { color: var(--neon-cyan); text-shadow: 0 0 15px var(--neon-cyan); }
         .card:hover .gear-1 { animation: rotateGearCW 2s linear infinite; }
         .card:hover .gear-2 { animation: rotateGearCCW 2s linear infinite; }
         .card:hover .gear-3 { animation: rotateGearCW 1.5s linear infinite; }
 
-        @keyframes rotateGearCW {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        @keyframes rotateGearCCW {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(-360deg); }
-        }
+        @keyframes rotateGearCW { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes rotateGearCCW { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
 
         @media(max-width: 768px) {
             .main-title { font-size: 2.5rem; }
-            header.scrolled .main-title { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -263,12 +209,16 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
-        <!-- Hauptkopf mit Titel & Creator Tag -->
-        <header id="mainHeader">
+        <!-- Hauptkopf -->
+        <header>
             <h1 class="main-title">ZEROS TOOL HUB</h1>
             <div class="creator-tag">by Zerocoolluis</div>
         </header>
-        <div class="content-spacer" id="spacer"></div>
+
+        <!-- Dynamisches Tool Menu (Wächst beim Scrollen) -->
+        <div class="tool-menu-section">
+            <h2 class="tool-menu-title" id="toolMenuTitle">TOOL MENU</h2>
+        </div>
 
         <!-- Kategorien Grid -->
         <div class="grid">
@@ -349,18 +299,18 @@
         }
         animateParticles();
 
-        // --- STICKY / SHRINKING HEADER BEIM SCROLLEN ---
+        // --- SCROLL-EFFEKT FÜR DAS TOOL MENU ---
         window.addEventListener('scroll', () => {
-            const header = document.getElementById('mainHeader');
-            const spacer = document.getElementById('spacer');
+            const scrollY = window.scrollY;
+            const title = document.getElementById('toolMenuTitle');
             
-            if (window.scrollY > 80) {
-                header.classList.add('scrolled');
-                spacer.style.display = 'block';
-            } else {
-                header.classList.remove('scrolled');
-                spacer.style.display = 'none';
-            }
+            // Berechnet die Schriftgröße basierend auf dem Scrollen (wächst von 1.5rem bis 3rem)
+            let newSize = 1.5 + (scrollY * 0.025);
+            if (newSize > 3.2) newSize = 3.2; // Maximale Größe limitieren
+            if (newSize < 1.5) newSize = 1.5; // Minimale Größe limitieren
+            
+            title.style.fontSize = newSize + 'rem';
+            title.style.textShadow = `0 0 ${10 + (scrollY * 0.1)}px rgba(0, 240, 255, ${0.3 + (scrollY * 0.001)})`;
         });
     </script>
 </body>
