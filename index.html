@@ -32,7 +32,7 @@
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            min-height: 150vh; /* Extra Höhe zum Scrollen */
+            min-height: 150vh;
             position: relative;
         }
 
@@ -62,13 +62,12 @@
             to { opacity: 1; transform: translateY(0); } 
         }
 
-        /* --- HEADER & STICKY TRANSITION --- */
+        /* --- HEADER --- */
         header {
             text-align: center;
-            margin-bottom: 50px;
-            padding-bottom: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
             border-bottom: 1px solid var(--border-color);
-            transition: all 0.4s ease;
         }
 
         .main-title {
@@ -90,15 +89,124 @@
             text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
         }
 
-        /* --- DYNAMISCHES TOOL MENU (Scroll-Größenänderung) --- */
+        /* --- FEATURED / SPOTLIGHT BANNER & LETZTE ÄNDERUNGEN --- */
+        .featured-banner {
+            background: linear-gradient(135deg, rgba(255, 0, 127, 0.1), rgba(0, 240, 255, 0.1));
+            border: 1px solid var(--neon-pink);
+            border-radius: 12px;
+            padding: 25px 35px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        .featured-info h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .featured-info h3 i {
+            color: var(--neon-pink);
+            animation: pulseIcon 1.5s infinite alternate;
+        }
+
+        .featured-info p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .update-badge {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 8px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .update-badge span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        @keyframes pulseIcon {
+            0% { transform: scale(1); text-shadow: 0 0 5px var(--neon-pink); }
+            100% { transform: scale(1.2); text-shadow: 0 0 20px var(--neon-pink); }
+        }
+
+        /* --- QUICK SEARCH SUCHLEISTE --- */
+        .search-container {
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px 20px 15px 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            color: var(--text-color);
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .search-input:focus + .search-icon {
+            color: var(--neon-cyan);
+        }
+
+        /* --- DYNAMISCHES TOOL MENU --- */
         .tool-menu-section {
             text-align: center;
-            margin: 40px 0 30px 0;
+            margin: 30px 0 25px 0;
         }
 
         .tool-menu-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem; /* Startet klein */
+            font-size: 1.5rem;
             color: var(--neon-cyan);
             letter-spacing: 3px;
             text-transform: uppercase;
@@ -201,6 +309,8 @@
 
         @media(max-width: 768px) {
             .main-title { font-size: 2.5rem; }
+            .featured-banner { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .update-badge { text-align: left; }
         }
     </style>
 </head>
@@ -215,15 +325,33 @@
             <div class="creator-tag">by Zerocoolluis</div>
         </header>
 
+        <!-- Featured / Spotlight Banner & Letzte Änderungen -->
+        <div class="featured-banner">
+            <div class="featured-info">
+                <h3><i class="fa-solid fa-fire"></i> Spotlight: Neues Projekt in Arbeit</h3>
+                <p>Bald verfügbar: Dein brandneues Custom-Tool wird hier integriert.</p>
+            </div>
+            <div class="update-badge">
+                Letzte Änderung
+                <span>20.08.2026</span>
+            </div>
+        </div>
+
+        <!-- Quick Search Suchleiste -->
+        <div class="search-container">
+            <input type="text" class="search-input" id="searchInput" placeholder="Tools durchsuchen (z.B. Gaming, School)...">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        </div>
+
         <!-- Dynamisches Tool Menu (Wächst beim Scrollen) -->
         <div class="tool-menu-section">
             <h2 class="tool-menu-title" id="toolMenuTitle">TOOL MENU</h2>
         </div>
 
         <!-- Kategorien Grid -->
-        <div class="grid">
+        <div class="grid" id="cardsGrid">
             <!-- Gaming (Tastatur) -->
-            <a href="gaming/" class="card">
+            <a href="gaming/" class="card" data-title="gaming mods server">
                 <div class="card-icon-container">
                     <i class="fa-solid fa-keyboard keyboard-icon"></i>
                 </div>
@@ -232,7 +360,7 @@
             </a>
 
             <!-- School (Lampe) -->
-            <a href="school/" class="card">
+            <a href="school/" class="card" data-title="school lernen skripte rechner">
                 <div class="card-icon-container">
                     <i class="fa-solid fa-lightbulb lamp-icon"></i>
                 </div>
@@ -241,7 +369,7 @@
             </a>
 
             <!-- Utilities (Zahnräder) -->
-            <a href="utilities/" class="card">
+            <a href="utilities/" class="card" data-title="utilities hardware backup tools">
                 <div class="card-icon-container">
                     <div class="gears-container">
                         <i class="fa-solid fa-gear gear-1"></i>
@@ -304,13 +432,28 @@
             const scrollY = window.scrollY;
             const title = document.getElementById('toolMenuTitle');
             
-            // Berechnet die Schriftgröße basierend auf dem Scrollen (wächst von 1.5rem bis 3rem)
             let newSize = 1.5 + (scrollY * 0.025);
-            if (newSize > 3.2) newSize = 3.2; // Maximale Größe limitieren
-            if (newSize < 1.5) newSize = 1.5; // Minimale Größe limitieren
+            if (newSize > 3.2) newSize = 3.2;
+            if (newSize < 1.5) newSize = 1.5;
             
             title.style.fontSize = newSize + 'rem';
             title.style.textShadow = `0 0 ${10 + (scrollY * 0.1)}px rgba(0, 240, 255, ${0.3 + (scrollY * 0.001)})`;
+        });
+
+        // --- QUICK SEARCH FILTER ---
+        const searchInput = document.getElementById('searchInput');
+        const cards = document.querySelectorAll('.card');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            cards.forEach(card => {
+                const textData = card.getAttribute('data-title') + ' ' + card.innerText.toLowerCase();
+                if (textData.includes(term)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
         });
     </script>
 </body>
