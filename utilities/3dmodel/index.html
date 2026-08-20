@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web 3D Studio & Level Editor</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, sans-serif; background: #121212; color: #fff; overflow: hidden; height: 100vh; display: flex; }
+        
+        /* Sidebar */
+        #sidebar {
+            width: 300px;
+            background: #1e1e1e;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+            z-index: 10;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+        }
+        h2 { font-size: 1.2rem; color: #4f46e5; border-bottom: 2px solid #333; padding-bottom: 8px; }
+        .section { display: flex; flex-direction: column; gap: 10px; }
+        
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        button:hover { background: #4338ca; }
+        button.danger { background: #dc2626; }
+        button.danger:hover { background: #b91c1c; }
+        
+        label { font-size: 0.85rem; color: #9ca3af; }
+        input, select {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+        }
+        
+        /* Viewport */
+        #viewport { flex-grow: 1; position: relative; }
+        
+        /* Info Overlay */
+        #info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h2>3D Studio Editor</h2>
+        
+        <div class="section">
+            <label>Objekt hinzufügen</label>
+            <button onclick="addObject('box')">+ Würfel</button>
+            <button onclick="addObject('sphere')">+ Kugel</button>
+            <button onclick="addObject('cylinder')">+ Zylinder</button>
+            <button onclick="addObject('cone')">+ Pyramide / Kegel</button>
+        </div>
+
+        <div class="section" id="inspector" style="opacity: 0.5; pointer-events: none;">
+            <label>Ausgewähltes Objekt</label>
+            <label>Farbe:</label>
+            <input type="color" id="objColor" onchange="updateObjectColor(this.value)">
+            <label style="margin-top: 5px;">Position X:</label>
+            <input type="number" id="posX" step="0.5" oninput="updatePosition()">
+            <button class="danger" onclick="deleteSelected()" style="margin-top: 10px;">Objekt löschen</button>
+        </div>
+
+        <div class="section" style="margin-top: auto;">
+            <label>Projekt-Aktionen</label>
+            <button onclick="saveScene()">Szene speichern</button>
+            <button onclick="loadScene()">Szene laden</button>
+            <button onclick="exportJSON()" style="background: #059669;">Als JSON exportieren</button>
+        </div>
+    </div>
+
+    <div id="viewport">
+        <div id="info">Steuerung: Linksklick + Ziehen = Kamera drehen | Rechtsklick + Ziehen = Verschieben | Scrollen = Zoom | Klick auf Objekt = Auswählen</div>
+    </div>
+
+    <!-- Three.js & Controls via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        let scene, camera, renderer, controls;
+        let objects = [];
+        let selectedObject = null;
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+
+        init();
+        animate();
+
+        function init() {
+            const container = document.getElementById('viewport');
+
+            // 1. Szene & Kamera
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x18181b);
+
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(10, 10, 15);
+
+            // 2. Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            // 3. Kamera-Steuerung
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+
+            // 4. Beleuchtung
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(20, 40, 20);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
+
+            // 5. Boden-Raster
+            const gridHelper = new THREE.GridHelper(30, 30, 0x4f46e5, 0x333333);
+            gridHelper.position.y = -0.01;
+            scene.add(gridHelper);
+
+            // Event Listener
+            window.addEventListener('resize', onWindowResize);
+            renderer.domElement.addEventListener('click', onDocumentMouseDown);
+
+            // Starte mit einem Standard-Würfel
+            addObject('box');
+        }
+
+        function addObject(type) {
+            let geometry;
+            if (type === 'box') geometry = new THREE.BoxGeometry(2, 2, 2);
+            else if (type === 'sphere') geometry = new THREE.SphereGeometry(1.2, 32, 32);
+            else if (type === 'cylinder') geometry = new THREE.CylinderGeometry(1, 1, 2, 32);
+            else if (type === 'cone') geometry = new THREE.ConeGeometry(1.2, 2, 32);
+
+            const material = new THREE.MeshStandardMaterial({ 
+                color: Math.random() * 0xffffff,
+                roughness: 0.4,
+                metalness: 0.2
+            });
+
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set((Math.random() - 0.5) * 5, 1, (Math.random() - 0.5) * 5);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            
+            scene.add(mesh);
+            objects.push(mesh);
+            selectObject(mesh);
+        }
+
+        function selectObject(obj) {
+            // Alten Rand zurücksetzen falls vorhanden
+            if (selectedObject && selectedObject.material.emissive) {
+                selectedObject.material.emissive.setHex(0x000000);
+            }
+
+            selectedObject = obj;
+            const inspector = document.getElementById('inspector');
+
+            if (selectedObject) {
+                inspector.style.opacity = '1';
+                inspector.style.pointerEvents = 'auto';
+                selectedObject.material.emissive.setHex(0x332200); // Leichter Leuchteffekt für Auswahl
+                
+                document.getElementById('objColor').value = '#' + selectedObject.material.color.getHexString();
+                document.getElementById('posX').value = selectedObject.position.x;
+            } else {
+                inspector.style.opacity = '0.5';
+                inspector.style.pointerEvents = 'none';
+            }
+        }
+
+        function onDocumentMouseDown(event) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(objects);
+
+            if (intersects.length > 0) {
+                selectObject(intersects[0].object);
+            } else {
+                // Klick ins Leere hebt Auswahl auf (optional)
+            }
+        }
+
+        function updateObjectColor(hexColor) {
+            if (selectedObject) {
+                selectedObject.material.color.set(hexColor);
+            }
+        }
+
+        function updatePosition() {
+            if (selectedObject) {
+                selectedObject.position.x = parseFloat(document.getElementById('posX').value) || 0;
+            }
+        }
+
+        function deleteSelected() {
+            if (selectedObject) {
+                scene.remove(selectedObject);
+                objects = objects.filter(o => o !== selectedObject);
+                selectObject(null);
+            }
+        }
+
+        function saveScene() {
+            const data = objects.map(o => ({
+                type: o.geometry.type,
+                position: [o.position.x, o.position.y, o.position.z],
+                color: o.material.color.getHex()
+            }));
+            localStorage.setItem('saved3DScene', JSON.stringify(data));
+            alert('Szene im Browser-Speicher gesichert!');
+        }
+
+        function loadScene() {
+            const saved = localStorage.getItem('saved3DScene');
+            if (!saved) return alert('Keine gespeicherte Szene gefunden.');
+            
+            // Alte Objekte löschen
+            objects.forEach(o => scene.remove(o));
+            objects = [];
+
+            const data = JSON.parse(saved);
+            data.forEach(item => {
+                let geom;
+                if (item.type === 'BoxGeometry') geom = new THREE.BoxGeometry(2, 2, 2);
+                else if (item.type === 'SphereGeometry') geom = new THREE.SphereGeometry(1.2, 32, 32);
+                else geom = new THREE.BoxGeometry(2, 2, 2);
+
+                const mat = new THREE.MeshStandardMaterial({ color: item.color });
+                const mesh = new THREE.Mesh(geom, mat);
+                mesh.position.set(...item.position);
+                scene.add(mesh);
+                objects.push(mesh);
+            });
+            selectObject(null);
+            alert('Szene erfolgreich geladen!');
+        }
+
+        function exportJSON() {
+            const data = JSON.stringify(objects.map(o => ({
+                pos: o.position,
+                color: o.material.color.getHexString()
+            })), null, 2);
+            
+            const blob = new Blob([data], {type: 'application/json'});
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'level_export.json';
+            link.click();
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('viewport');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
