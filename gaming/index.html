@@ -20,7 +20,6 @@
             margin: 0 auto;
         }
 
-        /* Zurück-Button */
         .back-btn {
             display: inline-flex;
             align-items: center;
@@ -60,21 +59,19 @@
             gap: 20px;
         }
 
-        /* Kartendesign */
         .tool-card {
             background: rgba(15, 20, 30, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 2rem;
             transition: all 0.3s ease;
-            text-decoration: none;
             color: white;
             display: block;
             backdrop-filter: blur(10px);
         }
 
         .tool-card:hover {
-            border-color: rgba(255, 0, 127, 0.5); /* Pinker Gaming-Akzent */
+            border-color: rgba(255, 0, 127, 0.5);
             background: rgba(20, 25, 40, 0.9);
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -108,33 +105,27 @@
 <body>
 
 <div class="container">
-    <!-- Zurück zur Landing Page -->
     <a href="../index.html" class="back-btn">
         <i class="fa-solid fa-arrow-left"></i> Zurück zur Startseite
     </a>
 
     <header>
         <h1>Gaming Bereich</h1>
-        <p>Mods, Server-Helfer und Utilities in Entwicklung.</p>
+        <p>Übersicht der Gaming-Rubriken.</p>
     </header>
 
     <div class="grid">
-        <!-- Karte 1 -->
         <div class="tool-card">
-            <h3>Server Status <span class="badge">In Programmierung</span></h3>
-            <p>Die Live-Überprüfung für Server wird aktuell eingerichtet.</p>
+            <h3>Rubrik 1 <span class="badge">In Programmierung</span></h3>
+            <p>Dieser Bereich wird aktuell entwickelt und aufgebaut.</p>
         </div>
-
-        <!-- Karte 2 -->
         <div class="tool-card">
-            <h3>Mod-Manager <span class="badge">In Programmierung</span></h3>
-            <p>Die Oberfläche für die Mod-Verwaltung befindet sich im Aufbau.</p>
+            <h3>Rubrik 2 <span class="badge">In Programmierung</span></h3>
+            <p>Dieser Bereich wird aktuell entwickelt und aufgebaut.</p>
         </div>
-
-        <!-- Karte 3 -->
         <div class="tool-card">
-            <h3>Key-Generator <span class="badge">In Programmierung</span></h3>
-            <p>Das Skript wird zurzeit geschrieben.</p>
+            <h3>Rubrik 3 <span class="badge">In Programmierung</span></h3>
+            <p>Dieser Bereich wird aktuell entwickelt und aufgebaut.</p>
         </div>
     </div>
 </div>
