@@ -1,353 +1,40 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZERO's Gaming // Subpage</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --bg-color: #03050a;
-            --card-bg: rgba(8, 12, 22, 0.85);
-            --border-color: rgba(0, 240, 255, 0.25);
-            --neon-gold: #FFD700;
-            --neon-cyan: #00f0ff;
-            --neon-pink: #ff007f;
-            --text-color: #f0f6fc;
-            --text-muted: #8b949e;
-        }
+<style>
+    /* Das neue, saubere Kartendesign */
+    .tool-card {
+        background: rgba(15, 20, 30, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: white;
+        display: block;
+        backdrop-filter: blur(10px);
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    .tool-card:hover {
+        border-color: rgba(0, 240, 255, 0.5);
+        background: rgba(20, 25, 40, 0.9);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-            position: relative;
-        }
+    .tool-card h3 {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        color: #fff;
+    }
 
-        /* Partikel-Hintergrund */
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
+    .tool-card p {
+        font-size: 0.9rem;
+        color: #a0a0a0;
+        line-height: 1.5;
+    }
+</style>
 
-        .container {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 60px 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: pageEntrance 1s ease 0.3s forwards;
-        }
-
-        @keyframes pageEntrance { 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        /* Header & Hammer */
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-            padding-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3.5rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 20px;
-            color: var(--text-color);
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .hammer-wrapper {
-            display: inline-block;
-            cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .hammer-wrapper:hover { transform: rotate(-50deg) scale(1.35); }
-
-        #hammer {
-            color: var(--neon-gold);
-            font-size: 3.2rem;
-            text-shadow: 0 0 30px var(--neon-gold);
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            margin-top: 15px;
-            letter-spacing: 1.5px;
-        }
-
-        /* Zurück zur Hauptseite Button */
-        .home-btn {
-            background: rgba(0, 240, 255, 0.03);
-            border: 1px solid var(--neon-cyan);
-            color: var(--neon-cyan);
-            padding: 12px 24px;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-            font-size: 0.9rem;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-bottom: 35px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 0 15px rgba(0, 240, 255, 0.1);
-        }
-        .home-btn:hover {
-            background: var(--neon-cyan);
-            color: #000;
-            box-shadow: 0 0 25px var(--neon-cyan);
-            transform: translateX(-5px);
-        }
-
-        /* Grid & Karten */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 35px;
-            text-decoration: none;
-            color: var(--text-color);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            cursor: pointer;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon-pink), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .card::after {
-            content: '';
-            position: absolute;
-            bottom: 0; right: 0;
-            width: 20px; height: 20px;
-            border-bottom: 2px solid var(--neon-pink);
-            border-right: 2px solid var(--neon-pink);
-            transition: all 0.4s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-8px);
-            border-color: var(--neon-pink);
-            box-shadow: 0 15px 40px rgba(255, 0, 127, 0.2);
-        }
-
-        .card:hover::before { opacity: 1; }
-        .card:hover::after {
-            width: 100%; height: 100%;
-            border-color: rgba(255, 0, 127, 0.35);
-        }
-
-        .card-icon-container {
-            font-size: 3rem;
-            margin-bottom: 25px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-        }
-
-        .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .card-desc {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(2, 3, 7, 0.88);
-            backdrop-filter: blur(10px);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 10000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
-        }
-        .modal-overlay.active { opacity: 1; visibility: visible; }
-        
-        .modal-box {
-            background: linear-gradient(135deg, #0d1222, #070913);
-            border: 2px solid var(--neon-gold);
-            padding: 45px; border-radius: 12px; text-align: center;
-            box-shadow: 0 0 60px rgba(255, 215, 0, 0.25); max-width: 450px; width: 90%;
-            transform: scale(0.7); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .modal-overlay.active .modal-box { transform: scale(1); }
-        
-        .modal-box h2 { 
-            font-family: 'Orbitron', sans-serif; 
-            color: var(--neon-gold); 
-            font-size: 1.6rem; 
-            margin-bottom: 15px; 
-        }
-        .modal-box p { color: var(--text-muted); margin-bottom: 30px; font-size: 1.05rem; }
-        
-        .modal-btn {
-            background: transparent; border: 2px solid var(--neon-gold); color: var(--neon-gold);
-            padding: 12px 35px; font-family: 'Orbitron', sans-serif; font-weight: bold; border-radius: 6px;
-            cursor: pointer; transition: all 0.3s ease;
-        }
-        .modal-btn:hover { 
-            background: var(--neon-gold); color: #000; 
-            box-shadow: 0 0 25px var(--neon-gold); 
-            transform: scale(1.05);
-        }
-    </style>
-</head>
-<body>
-
-    <canvas id="bg-canvas"></canvas>
-
-    <div class="container">
-        <!-- Zurück zur Hauptseite -->
-        <a href="https://zerocoolluis.github.io" class="home-btn">
-            <i class="fa-solid fa-arrow-left"></i> Zurück zu zerocoolluis.github.io
-        </a>
-
-        <header>
-            <h1>
-                Gaming 
-                <div class="hammer-wrapper">
-                    <i class="fa-solid fa-hammer" id="hammer"></i>
-                </div>
-            </h1>
-            <p class="subtitle">Deine Mods, Server-Helfer und Gamer-Utilities</p>
-        </header>
-
-        <!-- Gaming Grid -->
-        <div class="grid">
-            <div class="card" onclick="openModal()">
-                <div class="card-icon-container"><i class="fa-solid fa-gamepad" style="color: var(--neon-pink);"></i></div>
-                <div class="card-title">Game Mods Hub</div>
-                <div class="card-desc">Sammlung von Konfigurationen und Anpassungen für deine Lieblingsspiele.</div>
-            </div>
-
-            <div class="card" onclick="openModal()">
-                <div class="card-icon-container"><i class="fa-solid fa-server" style="color: var(--neon-cyan);"></i></div>
-                <div class="card-title">Server Quick-Launcher</div>
-                <div class="card-desc">Skripte und Tools zum schnellen Starten lokaler Test-Game-Server.</div>
-            </div>
-
-            <div class="card" onclick="openModal()">
-                <div class="card-icon-container"><i class="fa-solid fa-headset" style="color: var(--neon-gold);"></i></div>
-                <div class="card-title">Voice & Audio Tweaks</div>
-                <div class="card-desc">Optimierungs-Tools für Mikrofon und Sound in Sprachchats.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box">
-            <h2>Systemmeldung</h2>
-            <p>Hier gibts (noch) nichts zu sehen...</p>
-            <button class="modal-btn" onclick="closeModal()">VERSTANDEN</button>
-        </div>
-    </div>
-
-    <script>
-        // Partikel-Hintergrund
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        for (let i = 0; i < 40; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2 + 1,
-                speedX: (Math.random() - 0.5) * 0.5,
-                speedY: (Math.random() - 0.5) * 0.5
-            });
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(255, 0, 127, 0.15)';
-
-            particles.forEach(p => {
-                p.x += p.speedX;
-                p.y += p.speedY;
-
-                if (p.x < 0) p.x = canvas.width;
-                if (p.x > canvas.width) p.x = 0;
-                if (p.y < 0) p.y = canvas.height;
-                if (p.y > canvas.height) p.y = 0;
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        // Hammer Scroll-Effekt
-        window.addEventListener('scroll', () => {
-            const hammer = document.getElementById('hammer');
-            hammer.style.transform = `rotate(${window.scrollY * 0.4}deg)`;
-        });
-
-        // Modal Steuerung
-        function openModal() {
-            document.getElementById('modalOverlay').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-        }
-    </script>
-</body>
-</html>
+<!-- Beispiel für ein Tool-Element auf der Unterseite -->
+<div class="tool-card">
+    <h3>Tool Name</h3>
+    <p>Kurze, präzise Beschreibung, was dieses Tool genau macht.</p>
+</div>
