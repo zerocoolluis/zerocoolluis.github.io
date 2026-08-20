@@ -3,271 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luis Tools</title>
-    <!-- Google Fonts für modernen Tech-Look -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome für Icons -->
+    <title>Luis' Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-color: #0d0f18;
-            --card-bg: rgba(20, 24, 39, 0.7);
+            --bg-color: #050505;
+            --neon-gold: #FFD700;
             --neon-cyan: #00f0ff;
-            --neon-pink: #ff007f;
-            --neon-purple: #9d00ff;
-            --text-color: #f0f6fc;
-            --text-muted: #8b949e;
+            --text-color: #ffffff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Inter', sans-serif; margin: 0; min-height: 200vh; }
+
+        /* --- 1. INTRO ANIMATION --- */
+        #loader {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            animation: hideLoader 0.5s ease 2s forwards;
+        }
+        @keyframes hideLoader { to { opacity: 0; visibility: hidden; } }
+        .glitch { font-family: 'Orbitron'; font-size: 3rem; color: var(--neon-gold); animation: blink 0.5s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* --- 2. HEADER & NAGEL-ANIMATION --- */
+        header { padding: 100px 20px; text-align: center; }
+        h1 { font-family: 'Orbitron'; font-size: 5rem; position: relative; display: inline-block; }
+        
+        .apostrophe { 
+            position: absolute; top: -20px; right: -40px; color: var(--neon-gold);
+            animation: hammerDown 1.5s ease-out forwards;
+        }
+        @keyframes hammerDown {
+            0% { transform: translateY(-200px) rotate(45deg); opacity: 0; }
+            50% { transform: translateY(0) rotate(0); opacity: 1; }
+            70% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+        /* --- 3. HAMMER --- */
+        .hammer-wrapper { display: inline-block; margin-left: 20px; cursor: pointer; transition: 0.3s; }
+        #hammer { color: var(--neon-gold); font-size: 3rem; text-shadow: 0 0 20px var(--neon-gold); }
+        .hammer-wrapper:hover #hammer { transform: rotate(180deg) scale(1.2); }
 
-        /* Intro-Animation beim Laden */
-        .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            animation: fadeOut 0.8s ease 1s forwards;
-            pointer-events: none;
+        /* --- 4. GRID --- */
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .tool-card { 
+            background: #111; padding: 40px; border: 1px solid #333; border-radius: 20px;
+            text-decoration: none; color: white; transition: 0.3s; display: block;
         }
+        .tool-card:hover { border-color: var(--neon-gold); box-shadow: 0 0 20px rgba(255,215,0,0.2); }
 
-        .loader-content {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
-            color: var(--neon-cyan);
-            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
-            animation: pulse 1s infinite alternate;
+        /* --- 5. MODAL (Kein Inhalt) --- */
+        .modal { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            justify-content: center; align-items: center; z-index: 1000;
         }
-
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.05); opacity: 1; }
-        }
-
-        /* Hauptcontainer */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideUp 1s ease 1.2s forwards;
-        }
-
-        @keyframes slideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Header Bereich */
-        header {
-            text-align: center;
-            margin-bottom: 60px;
-            padding-top: 20px;
-        }
-
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            color: var(--text-color);
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
-        }
-
-        /* Drehender Hammer beim Scrollen */
-        .hammer-icon {
-            display: inline-block;
-            color: var(--neon-pink);
-            text-shadow: 0 0 15px var(--neon-pink);
-            transition: transform 0.1s ease-out;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            margin-top: 10px;
-        }
-
-        /* Rubrik / Sektion */
-        .section-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            border-bottom: 2px solid rgba(0, 240, 255, 0.2);
-            padding-bottom: 10px;
-            color: var(--neon-cyan);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Grid für Tools (Einfach neue Karten hier hinzufügen) */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-
-        /* Tool Karte */
-        .tool-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 25px;
-            text-decoration: none;
-            color: var(--text-color);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .tool-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(0, 240, 255, 0.3);
-            box-shadow: 0 10px 30px rgba(0, 240, 255, 0.1);
-        }
-
-        .tool-card:hover::before {
-            opacity: 1;
-        }
-
-        .tool-icon {
-            font-size: 2rem;
-            color: var(--neon-cyan);
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .tool-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-        }
-
-        .tool-desc {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 50px;
-            border-top: 1px solid rgba(255, 255, 255,.05);
-            padding-top: 20px;
-        }
+        .modal.active { display: flex; }
+        .modal-content { background: #222; padding: 50px; border: 2px solid var(--neon-gold); }
     </style>
 </head>
 <body>
 
-    <!-- Intro Animation Screen -->
-    <div class="page-loader">
-        <div class="loader-content">LUIS TOOLS // INIT</div>
-    </div>
+    <div id="loader"><div class="glitch">SYSTEM BOOT...</div></div>
+
+    <header>
+        <h1>Luis<span class="apostrophe">'</span>s Tools 
+            <div class="hammer-wrapper"><i class="fa-solid fa-hammer" id="hammer"></i></div>
+        </h1>
+    </header>
 
     <div class="container">
-        <header>
-            <h1>
-                Luis Tools 
-                <i class="fa-solid fa-hammer hammer-icon" id="hammer"></i>
-            </h1>
-            <p class="subtitle">Deine zentrale Anlaufstelle für alle GitHub-Tools und Projekte</p>
-        </header>
+        <div class="tools-grid" id="grid">
+            <!-- JS generiert hier Karten -->
+        </div>
+    </div>
 
-        <!-- Rubrik 1 (Hier kannst du ganz einfach weitere Rubriken im gleichen Stil duplizieren) -->
-        <section>
-            <div class="section-title">
-                <i class="fa-solid fa-layer-group"></i> Alle Tools
-            </div>
-            
-            <div class="tools-grid">
-                <!-- Tool 1 -->
-                <a href="https://github.com/DeinBenutzername/dein-tool-1" target="_blank" class="tool-card">
-                    <i class="fa-solid fa-code tool-icon"></i>
-                    <div class="tool-title">Tool Name 1</div>
-                    <div class="tool-desc">Kurze Beschreibung, was dieses Tool macht und wofür du es nutzt.</div>
-                </a>
-
-                <!-- Tool 2 -->
-                <a href="https://github.com/DeinBenutzername/dein-tool-2" target="_blank" class="tool-card">
-                    <i class="fa-solid fa-terminal tool-icon" style="color: var(--neon-pink);"></i>
-                    <div class="tool-title">Tool Name 2</div>
-                    <div class="tool-desc">Kurze Beschreibung für dein zweites großartiges Projekt.</div>
-                </a>
-
-                <!-- Tool 3 -->
-                <a href="https://github.com/DeinBenutzername/dein-tool-3" target="_blank" class="tool-card">
-                    <i class="fa-solid fa-shield-halved tool-icon" style="color: var(--neon-purple);"></i>
-                    <div class="tool-title">Tool Name 3</div>
-                    <div class="tool-desc">Beschreibung für ein weiteres Tool, das du hinzugefügt hast.</div>
-                </a>
-
-                <!-- 
-                  WICHTIG: Um neue Tools hinzuzufügen, kopiere einfach einen Block von 
-                  <a href="..." ...> bis </a> und passe den Link, den Titel und die Beschreibung an!
-                -->
-            </div>
-        </section>
-
-        <footer>
-            Erstellt mit ❤️ von Luis &bull; Gehostet auf GitHub Pages
-        </footer>
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2>Hier gibts (noch) nichts zu sehen!</h2>
+            <button onclick="document.getElementById('modal').classList.remove('active')">Schließen</button>
+        </div>
     </div>
 
     <script>
-        // JavaScript damit sich der Hammer beim Scrollen dreht
+        // Mehr Inhalt generieren
+        const grid = document.getElementById('grid');
+        for(let i=1; i<=9; i++) {
+            grid.innerHTML += `<a href="#" class="tool-card" onclick="document.getElementById('modal').classList.add('active')">
+                <h3>Tool ${i}</h3><p>Beschreibung des Tools...</p>
+            </a>`;
+        }
+
+        // Hammer Scroll Drehung
         window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            const hammer = document.getElementById('hammer');
-            // Multipliziere den Scroll-Wert, damit sich der Hammer schneller/weiter dreht
-            hammer.style.transform = `rotate(${scrollY * 0.5}deg)`;
+            const h = document.getElementById('hammer');
+            h.style.transform = `rotate(${window.scrollY / 2}deg)`;
         });
     </script>
 </body>
