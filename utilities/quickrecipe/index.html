@@ -14,145 +14,33 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; border-radius: 4px; }
         .toast-enter { transform: translateY(0); opacity: 1; }
         .toast-leave { transform: translateY(150%); opacity: 0; }
-
-        .card-hover {
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .card-hover:hover {
-            transform: translateY(-6px);
-            border-color: #38bdf8;
-            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.15);
-        }
-
-        .btn-hover {
-            transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            cursor: pointer;
-        }
-        .btn-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
-        }
-        .btn-hover:active {
-            transform: scale(0.96);
-        }
-
-        .result-box {
-            background: rgba(56, 189, 248, 0.05);
-            border-left: 4px solid #38bdf8;
-            padding: 20px 24px;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-        .result-box:hover {
-            background: rgba(56, 189, 248, 0.08);
-        }
-
-        .loading-spinner {
-            border: 3px solid rgba(56, 189, 248, 0.1);
-            border-top: 3px solid #38bdf8;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .ingredient-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px 6px 16px;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            background: rgba(56, 189, 248, 0.12);
-            color: #38bdf8;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            transition: all 0.2s;
-            cursor: default;
-        }
-        .ingredient-tag .remove-btn {
-            cursor: pointer;
-            opacity: 0.6;
-            transition: all 0.2s;
-            font-size: 0.8rem;
-        }
-        .ingredient-tag .remove-btn:hover {
-            opacity: 1;
-            color: #ef4444;
-            transform: scale(1.2);
-        }
-
-        .autocomplete-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 10;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            display: none;
-        }
-        .dark .autocomplete-list {
-            background: #1e293b;
-            border-color: #334155;
-        }
-        .autocomplete-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            transition: background 0.15s;
-            font-size: 0.9rem;
-        }
-        .autocomplete-item:hover {
-            background: rgba(56, 189, 248, 0.1);
-        }
-
+        .btn-hover { transition: all 0.25s cubic-bezier(0.25,0.46,0.45,0.94); cursor: pointer; }
+        .btn-hover:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(56,189,248,0.25); }
+        .btn-hover:active { transform: scale(0.96); }
+        .result-box { background: rgba(56,189,248,0.05); border-left: 4px solid #38bdf8; padding: 20px 24px; border-radius: 12px; }
+        .loading-spinner { border: 3px solid rgba(56,189,248,0.1); border-top: 3px solid #38bdf8; border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .ingredient-tag { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px 6px 16px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; background: rgba(56,189,248,0.12); color: #38bdf8; border: 1px solid rgba(56,189,248,0.2); }
+        .ingredient-tag .remove-btn { cursor: pointer; opacity: 0.6; transition: all 0.2s; font-size: 0.8rem; }
+        .ingredient-tag .remove-btn:hover { opacity: 1; color: #ef4444; transform: scale(1.2); }
+        .autocomplete-list { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 12px; max-height: 200px; overflow-y: auto; z-index: 10; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; }
+        .dark .autocomplete-list { background: #1e293b; border-color: #334155; }
+        .autocomplete-item { padding: 10px 16px; cursor: pointer; transition: background 0.15s; font-size: 0.9rem; }
+        .autocomplete-item:hover { background: rgba(56,189,248,0.1); }
         .favorite-btn { transition: all 0.2s; }
         .favorite-btn:hover { transform: scale(1.15); }
         .favorite-btn.active { color: #f59e0b; }
-        .share-btn { transition: all 0.2s; }
-        .share-btn:hover { transform: scale(1.1); }
-
-        .step-indicator {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-        }
-        .step-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #cbd5e1;
-            transition: background 0.3s;
-        }
-        .step-dot.active {
-            background: #38bdf8;
-            box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
-        }
-        .step-dot.done {
-            background: #10b981;
-        }
-
-        @media (max-width: 640px) {
-            .main-title { font-size: 1.8rem; }
-            .ingredient-tag { font-size: 0.75rem; padding: 4px 12px; }
-        }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; transition: background 0.3s; display: inline-block; }
+        .step-dot.active { background: #38bdf8; box-shadow: 0 0 8px rgba(56,189,248,0.5); }
+        .step-dot.done { background: #10b981; }
+        @media (max-width: 640px) { .main-title { font-size: 1.8rem; } .ingredient-tag { font-size: 0.75rem; padding: 4px 12px; } }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen p-4 md:p-8 transition-colors duration-200 font-sans">
 
     <main class="max-w-4xl mx-auto space-y-6">
 
-        <!-- ===== HEADER ===== -->
+        <!-- HEADER -->
         <header class="flex flex-wrap justify-between items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
             <div>
                 <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white main-title">🍳 Quick Recipe</h1>
@@ -171,7 +59,7 @@
             </div>
         </header>
 
-        <!-- ===== EINGABE ===== -->
+        <!-- EINGABE -->
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800">
             <label class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-3">
                 <i class="fa-regular fa-fridge mr-2"></i> Was hast du im Kühlschrank?
@@ -187,9 +75,7 @@
                     <i class="fa-solid fa-plus mr-1"></i> Hinzufügen
                 </button>
             </div>
-
             <div id="ingredient-tags" class="mt-3 flex flex-wrap gap-2"></div>
-
             <div class="mt-4 flex items-center gap-4 flex-wrap border-t border-slate-200 dark:border-slate-700 pt-4">
                 <label class="text-sm font-medium text-slate-600 dark:text-slate-300">
                     <i class="fa-regular fa-users mr-1"></i> Portionen:
@@ -206,7 +92,7 @@
             </div>
         </div>
 
-        <!-- ===== ERGEBNISSE ===== -->
+        <!-- ERGEBNISSE -->
         <div id="result-container" class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 min-h-[200px] flex items-center justify-center">
             <div id="result-content" class="w-full text-center text-slate-400 dark:text-slate-500">
                 <i class="fa-regular fa-utensils text-4xl mb-3 block"></i>
@@ -215,7 +101,7 @@
             </div>
         </div>
 
-        <!-- ===== FAVORITEN ===== -->
+        <!-- FAVORITEN -->
         <div id="favorites-container" class="hidden bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800">
             <div class="flex justify-between items-center mb-3">
                 <h3 class="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
@@ -227,11 +113,11 @@
         </div>
 
         <footer class="text-center text-slate-500 dark:text-slate-400 text-xs pt-6 border-t border-slate-200 dark:border-slate-800">
-            &copy; <span id="year"></span> Quick Recipe – mit Spoonacular API
+            &copy; <span id="year"></span> Quick Recipe – Spoonacular + TheMealDB
         </footer>
     </main>
 
-    <!-- ===== TOAST ===== -->
+    <!-- TOAST -->
     <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 toast-leave transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-50 font-semibold text-sm">
         <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-500"></i>
         <span id="toast-text">Geladen!</span>
@@ -239,7 +125,7 @@
 
     <script>
         // ============================================================
-        // 1. API-KEY (dein Spoonacular-Key)
+        // 1. API-KEYS
         // ============================================================
         const SPOONACULAR_API_KEY = '03fe36cd334448a5b8f296daa182f82b';
 
@@ -293,7 +179,7 @@
         }
 
         // ============================================================
-        // 4. SERVINGS (Portionen)
+        // 4. SERVINGS
         // ============================================================
         let currentServings = 2;
         const servingsDisplay = document.getElementById('servings-display');
@@ -311,16 +197,16 @@
         }
 
         // ============================================================
-        // 5. ZUTATEN-INGABE (mit Autocomplete – lokale Liste für UI)
+        // 5. ZUTATEN-INGABE (Autocomplete)
         // ============================================================
-        // Kleine lokale Liste für Autovervollständigung (nicht die API)
         const FOOD_SUGGESTIONS = [
             'Hähnchen', 'Rindfleisch', 'Schweinefleisch', 'Lachs', 'Thunfisch', 'Garnelen', 'Mozzarella',
             'Tomate', 'Zwiebel', 'Knoblauch', 'Paprika', 'Gurke', 'Salat', 'Karotte', 'Kartoffel',
-            'Süßkartoffel', 'Brokkoli', 'Blumenkohl', 'Spinat', 'Champignons', 'Aubergine', 'Zucchini',
-            'Milch', 'Sahne', 'Butter', 'Käse', 'Parmesan', 'Feta', 'Joghurt', 'Eier', 'Pasta', 'Reis',
-            'Brot', 'Mehl', 'Salz', 'Pfeffer', 'Olivenöl', 'Essig', 'Sojasauce', 'Honig', 'Senf',
-            'Zitrone', 'Orange', 'Apfel', 'Banane', 'Erdbeere', 'Avocado', 'Chili', 'Ingwer'
+            'Brokkoli', 'Blumenkohl', 'Spinat', 'Champignons', 'Aubergine', 'Zucchini', 'Milch',
+            'Sahne', 'Butter', 'Käse', 'Parmesan', 'Feta', 'Eier', 'Pasta', 'Reis', 'Brot', 'Mehl',
+            'Salz', 'Pfeffer', 'Olivenöl', 'Essig', 'Sojasauce', 'Honig', 'Senf', 'Zitrone', 'Orange',
+            'Apfel', 'Banane', 'Erdbeere', 'Avocado', 'Chili', 'Ingwer', 'Knoblauch', 'Basilikum',
+            'Petersilie', 'Thymian', 'Rosmarin', 'Oregano', 'Koriander', 'Kurkuma', 'Kreuzkümmel'
         ];
 
         const ingredientInput = document.getElementById('ingredient-input');
@@ -374,23 +260,10 @@
             addIngredient();
         }
 
-        function normalizeIngredient(input) {
-            const trimmed = input.trim();
-            if (!trimmed) return trimmed;
-            return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
-        }
-
         function addIngredient() {
             const raw = ingredientInput.value.trim();
-            if (!raw) {
-                showToast('Bitte gib eine Zutat ein.');
-                return;
-            }
-            const normalized = normalizeIngredient(raw);
-            if (!normalized) {
-                showToast(`"${raw}" konnte nicht erkannt werden.`);
-                return;
-            }
+            if (!raw) { showToast('Bitte gib eine Zutat ein.'); return; }
+            const normalized = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
             if (!ingredients.includes(normalized)) {
                 ingredients.push(normalized);
                 renderTags();
@@ -420,7 +293,7 @@
         }
 
         // ============================================================
-        // 6. ÜBERSETZUNG (LibreTranslate + Google-Fallback)
+        // 6. ÜBERSETZUNG
         // ============================================================
         async function translateText(text, targetLang = 'de') {
             if (!text) return '';
@@ -428,18 +301,12 @@
                 const response = await fetch('https://libretranslate.de/translate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        q: text,
-                        source: 'en',
-                        target: targetLang,
-                        format: 'text'
-                    })
+                    body: JSON.stringify({ q: text, source: 'en', target: targetLang, format: 'text' })
                 });
-                if (!response.ok) throw new Error('Übersetzungs-API nicht verfügbar');
+                if (!response.ok) throw new Error('Übersetzung nicht verfügbar');
                 const data = await response.json();
                 return data.translatedText || text;
             } catch (error) {
-                // Fallback: Google Translate
                 try {
                     const fbUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
                     const fbResponse = await fetch(fbUrl);
@@ -453,7 +320,7 @@
         }
 
         // ============================================================
-        // 7. REZEPTSUCHE (Spoonacular API)
+        // 7. REZEPTSUCHE (Zwei APIs: Spoonacular + TheMealDB)
         // ============================================================
         async function searchRecipes() {
             if (ingredients.length === 0) {
@@ -465,84 +332,110 @@
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-8">
                     <div class="loading-spinner"></div>
-                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400 font-medium">
-                        Suche Rezepte mit ${ingredients.join(', ')}...
-                    </p>
+                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400 font-medium">Suche Rezepte mit ${ingredients.join(', ')}...</p>
                 </div>
             `;
 
-            try {
-                // Zutaten für die API vorbereiten (kommagetrennt)
-                const ingredientsStr = ingredients.join(',');
+            let recipe = null;
+            let source = '';
 
-                // 1. Rezepte nach Zutaten finden (beste Treffer)
+            // --- Versuche Spoonacular ---
+            try {
+                const ingredientsStr = ingredients.join(',');
                 const response = await fetch(
                     `https://api.spoonacular.com/recipes/findByIngredients?` +
                     `ingredients=${encodeURIComponent(ingredientsStr)}&` +
-                    `number=5&` +
-                    `ranking=1&` +
-                    `ignorePantry=true&` +
-                    `apiKey=${SPOONACULAR_API_KEY}`
+                    `number=3&ranking=1&ignorePantry=true&apiKey=${SPOONACULAR_API_KEY}`
                 );
 
-                if (!response.ok) {
-                    throw new Error(`API-Fehler: ${response.status}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && data.length > 0) {
+                        const bestMatch = data[0];
+                        const detailRes = await fetch(
+                            `https://api.spoonacular.com/recipes/${bestMatch.id}/information?apiKey=${SPOONACULAR_API_KEY}`
+                        );
+                        if (detailRes.ok) {
+                            const detailData = await detailRes.json();
+                            recipe = {
+                                idMeal: detailData.id.toString(),
+                                strMeal: detailData.title,
+                                strCategory: detailData.dishTypes ? detailData.dishTypes.join(', ') : '',
+                                strArea: detailData.cuisines ? detailData.cuisines.join(', ') : '',
+                                strMealThumb: detailData.image,
+                                strInstructions: detailData.instructions || 'Keine Anleitung verfügbar.',
+                                strSource: detailData.sourceUrl || '',
+                                extendedIngredients: detailData.extendedIngredients || [],
+                                servings: detailData.servings || 2
+                            };
+                            source = 'Spoonacular';
+                        }
+                    }
                 }
+            } catch (e) {
+                console.warn('Spoonacular fehlgeschlagen:', e);
+            }
 
-                const data = await response.json();
-
-                if (!data || data.length === 0) {
-                    container.innerHTML = `
-                        <div class="result-box text-center">
-                            <i class="fa-regular fa-face-frown text-4xl text-slate-400 mb-3 block"></i>
-                            <p class="text-slate-900 dark:text-white font-medium">Kein Rezept gefunden</p>
-                            <p class="text-sm text-slate-400">Versuche andere Zutaten oder schreibe sie auf Deutsch.</p>
-                        </div>
-                    `;
-                    return;
+            // --- Fallback: TheMealDB ---
+            if (!recipe) {
+                try {
+                    const mainIng = ingredients[0].toLowerCase();
+                    const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(mainIng)}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.meals && data.meals.length > 0) {
+                            const mealId = data.meals[0].idMeal;
+                            const detailRes = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`);
+                            const detailData = await detailRes.json();
+                            if (detailData.meals && detailData.meals[0]) {
+                                const meal = detailData.meals[0];
+                                const ingredientsList = [];
+                                for (let i = 1; i <= 20; i++) {
+                                    const ing = meal[`strIngredient${i}`];
+                                    const measure = meal[`strMeasure${i}`];
+                                    if (ing && ing.trim()) {
+                                        ingredientsList.push({ name: ing.trim(), measure: measure ? measure.trim() : '' });
+                                    }
+                                }
+                                recipe = {
+                                    idMeal: meal.idMeal,
+                                    strMeal: meal.strMeal,
+                                    strCategory: meal.strCategory || '',
+                                    strArea: meal.strArea || '',
+                                    strMealThumb: meal.strMealThumb,
+                                    strInstructions: meal.strInstructions || 'Keine Anleitung verfügbar.',
+                                    strSource: meal.strSource || '',
+                                    extendedIngredients: ingredientsList,
+                                    servings: 4
+                                };
+                                source = 'TheMealDB';
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('TheMealDB fehlgeschlagen:', e);
                 }
+            }
 
-                // Nimm das beste Rezept (meiste übereinstimmende Zutaten)
-                const bestMatch = data[0];
-
-                // 2. Vollständige Rezeptdetails abrufen
-                const detailRes = await fetch(
-                    `https://api.spoonacular.com/recipes/${bestMatch.id}/information?apiKey=${SPOONACULAR_API_KEY}`
-                );
-                const detailData = await detailRes.json();
-
-                // Konvertiere in das interne Format
-                const recipe = {
-                    idMeal: detailData.id.toString(),
-                    strMeal: detailData.title,
-                    strCategory: detailData.dishTypes ? detailData.dishTypes.join(', ') : '',
-                    strArea: detailData.cuisines ? detailData.cuisines.join(', ') : '',
-                    strMealThumb: detailData.image,
-                    strInstructions: detailData.instructions || 'Keine Anleitung verfügbar.',
-                    strSource: detailData.sourceUrl || '',
-                    strYoutube: '',
-                    extendedIngredients: detailData.extendedIngredients || [],
-                    servings: detailData.servings || 2
-                };
-
-                // Rezept anzeigen
-                await displayRecipe(recipe, currentServings);
-                showToast(`Rezept gefunden: ${recipe.strMeal}`);
-
-            } catch (error) {
-                console.error('Fehler:', error);
+            // --- Kein Rezept gefunden ---
+            if (!recipe) {
                 container.innerHTML = `
                     <div class="result-box text-center">
-                        <i class="fa-regular fa-circle-exclamation text-4xl text-rose-400 mb-3 block"></i>
-                        <p class="text-rose-500 font-medium">Fehler beim Laden: ${error.message}</p>
-                        <p class="text-sm text-slate-400">Bitte versuche es später noch einmal.</p>
+                        <i class="fa-regular fa-face-frown text-4xl text-slate-400 mb-3 block"></i>
+                        <p class="text-slate-900 dark:text-white font-medium">Kein Rezept gefunden</p>
+                        <p class="text-sm text-slate-400">Versuche andere Zutaten oder schreibe sie auf Deutsch.</p>
                     </div>
                 `;
+                return;
             }
+
+            // Rezept anzeigen
+            await displayRecipe(recipe, currentServings);
+            showToast(`Rezept von ${source} gefunden!`);
         }
 
         // ============================================================
-        // 8. REZEPT ANZEIGEN (mit Schritt-für-Schritt + Übersetzung)
+        // 8. REZEPT ANZEIGEN
         // ============================================================
         let currentStepIndex = 0;
         let translatedSteps = [];
@@ -550,25 +443,15 @@
         async function displayRecipe(recipe, servings) {
             const container = document.getElementById('result-content');
 
-            // Zutaten aus Spoonacular-Format extrahieren
             let ingredientsList = [];
             if (recipe.extendedIngredients) {
+                // Spoonacular oder TheMealDB-konvertiert
                 ingredientsList = recipe.extendedIngredients.map(ing => ({
                     name: ing.name,
-                    measure: `${ing.amount} ${ing.unit}`
+                    measure: ing.measure || ''
                 }));
-            } else {
-                // Fallback für TheMealDB (falls vorhanden)
-                for (let i = 1; i <= 20; i++) {
-                    const ing = recipe[`strIngredient${i}`];
-                    const measure = recipe[`strMeasure${i}`];
-                    if (ing && ing.trim()) {
-                        ingredientsList.push({ name: ing.trim(), measure: measure ? measure.trim() : '' });
-                    }
-                }
             }
 
-            // Portionen skalieren
             const baseServings = recipe.servings || 2;
             const scaleFactor = servings / baseServings;
             const scaledIngredients = ingredientsList.map(item => {
@@ -585,7 +468,6 @@
                 return { name: item.name, measure: scaledMeasure };
             });
 
-            // Anleitung in Schritte zerlegen
             let instructions = recipe.strInstructions || '';
             let rawSteps = [];
             if (typeof instructions === 'string' && instructions.length > 0) {
@@ -596,10 +478,9 @@
             }
             currentStepIndex = 0;
 
-            // Übersetzen (Titel, Anleitung, Zutaten)
+            // Übersetzen
             const translatedTitle = await translateText(recipe.strMeal || 'Rezept');
             const translatedInstructions = await translateText(instructions);
-            // Übersetzte Schritte speichern
             if (translatedInstructions && translatedInstructions.length > 0) {
                 translatedSteps = translatedInstructions.split(/(?<=[.!?])\s+/).filter(s => s.length > 10);
                 if (translatedSteps.length === 0) translatedSteps = [translatedInstructions];
@@ -607,17 +488,14 @@
                 translatedSteps = rawSteps.map(s => s);
             }
 
-            // Zutaten einzeln übersetzen (für bessere Lesbarkeit)
             const translatedIngredients = await Promise.all(scaledIngredients.map(async item => {
                 const translatedName = await translateText(item.name);
                 return { ...item, name: translatedName };
             }));
 
-            // Favoriten-Status prüfen
             const favorites = JSON.parse(localStorage.getItem('quickrecipe_favorites') || '[]');
             const isFavorite = favorites.some(f => f.idMeal === recipe.idMeal);
 
-            // HTML aufbauen
             container.innerHTML = `
                 <div class="result-box" data-recipe='${JSON.stringify(recipe)}'>
                     <div class="flex flex-wrap justify-between items-start gap-3">
@@ -651,7 +529,7 @@
                         <div>
                             <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Zubereitung:</p>
                             <div id="step-container" class="mt-1">
-                                <div class="step-indicator">
+                                <div class="step-indicator mb-2">
                                     ${translatedSteps.map((_, idx) =>
                                         `<span class="step-dot ${idx === currentStepIndex ? 'active' : (idx < currentStepIndex ? 'done' : '')}"></span>`
                                     ).join('')}
@@ -669,7 +547,7 @@
                     <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex flex-wrap gap-2">
                         ${recipe.strSource ? `<a href="${recipe.strSource}" target="_blank" class="text-xs text-cyan-400 hover:text-cyan-500 transition"><i class="fa-regular fa-link mr-1"></i> Original-Rezept</a>` : ''}
                     </div>
-                    <p class="text-xs text-slate-400 mt-3">Quelle: Spoonacular</p>
+                    <p class="text-xs text-slate-400 mt-3">Quelle: ${recipe.strSource ? 'Spoonacular' : 'TheMealDB'}</p>
                 </div>
             `;
 
@@ -732,7 +610,6 @@
                 favorites.splice(index, 1);
                 showToast('Aus Favoriten entfernt');
                 saveFavorites(favorites);
-                // Rezept neu anzeigen für Button-Status
                 const container = document.getElementById('result-content');
                 const recipeData = container.dataset.recipe;
                 if (recipeData) {
@@ -746,7 +623,6 @@
                 return;
             }
 
-            // Neues Rezept aus der API laden
             try {
                 const detailRes = await fetch(
                     `https://api.spoonacular.com/recipes/${mealId}/information?apiKey=${SPOONACULAR_API_KEY}`
@@ -804,7 +680,6 @@
                     strMealThumb: detailData.image,
                     strInstructions: detailData.instructions || 'Keine Anleitung verfügbar.',
                     strSource: detailData.sourceUrl || '',
-                    strYoutube: '',
                     extendedIngredients: detailData.extendedIngredients || [],
                     servings: detailData.servings || 2
                 };
@@ -829,7 +704,7 @@
         document.getElementById('year').textContent = new Date().getFullYear();
         updateFavoritesUI();
 
-        console.log('🍳 Quick Recipe mit Spoonacular API gestartet.');
+        console.log('🍳 Quick Recipe mit zwei APIs gestartet (Spoonacular + TheMealDB)');
     </script>
 </body>
 </html>
