@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColorForge - Professional Color Utility</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+
+    <div class="max-w-2xl w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+        
+        <!-- Header & Picker -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-6">
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-white">ColorForge <span class="text-xs font-normal text-slate-500 ml-2">Utility v2.0</span></h1>
+                <p class="text-slate-400 text-xs mt-0.5">Präzise Farbwert-Analyse und Code-Empfehlung</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="randomizeColor()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl text-xs font-medium transition">
+                    Zufallswert
+                </button>
+                <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
+                    <input type="color" id="color-picker" value="#06b6d4" class="w-7 h-7 rounded cursor-pointer bg-transparent border-0">
+                    <span id="picker-hex-label" class="font-mono text-xs font-semibold text-slate-200">#06B6D4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Haupt-Farbdisplay & Intelligente Empfehlung -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Farbvorschau -->
+            <div id="main-color-box" class="h-32 rounded-xl border border-slate-700 p-4 flex flex-col justify-between transition-colors duration-200">
+                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-300 bg-black/40 w-fit px-2 py-0.5 rounded">Farbwert</span>
+                <span id="box-contrast-text" class="text-[11px] font-mono text-slate-200">Kontrast: --</span>
+            </div>
+            
+            <!-- Code-Typ Empfehlung -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Empfohlener Code-Typ</div>
+                <div>
+                    <div id="recommendation-title" class="font-bold text-sm text-cyan-400">HEX Code</div>
+                    <div id="recommendation-desc" class="text-xs text-slate-400 mt-1 leading-relaxed">Optimal für statische Stylesheets und Standard-Webdesign.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code-Formate Grid -->
+        <div class="space-y-3">
+            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Verfügbare Formate (Klick zum Kopieren)</div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- HEX -->
+                <div onclick="copyToClipboard('code-hex')" class="flex items-center justify-between bg-slate-950 px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer transition group">
+                    <div>
+                        <span class="text-[10px] text-slate-500 block uppercase">HEX</span>
+                        <span id="code-hex" class="font-mono font-semibold text-slate-200 text-xs">#06B6D4</span>
+                    </div>
+                    <i class="fa-solid fa-copy text-slate-600 group-hover:text-slate-300 transition text-xs"></i>
+                </div>
+
+                <!-- RGB -->
+                <div onclick="copyToClipboard('code-rgb')" class="flex items-center justify-between bg-slate-950 px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer transition group">
+                    <div>
+                        <span class="text-[10px] text-slate-500 block uppercase">RGB</span>
+                        <span id="code-rgb" class="font-mono font-semibold text-slate-200 text-xs">rgb(6, 182, 212)</span>
+                    </div>
+                    <i class="fa-solid fa-copy text-slate-600 group-hover:text-slate-300 transition text-xs"></i>
+                </div>
+
+                <!-- HSL -->
+                <div onclick="copyToClipboard('code-hsl')" class="flex items-center justify-between bg-slate-950 px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer transition group">
+                    <div>
+                        <span class="text-[10px] text-slate-500 block uppercase">HSL</span>
+                        <span id="code-hsl" class="font-mono font-semibold text-slate-200 text-xs">hsl(187, 94%, 43%)</span>
+                    </div>
+                    <i class="fa-solid fa-copy text-slate-600 group-hover:text-slate-300 transition text-xs"></i>
+                </div>
+
+                <!-- CSS Syntax -->
+                <div onclick="copyToClipboard('code-tw')" class="flex items-center justify-between bg-slate-950 px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer transition group">
+                    <div>
+                        <span class="text-[10px] text-slate-500 block uppercase">Deklaration</span>
+                        <span id="code-tw" class="font-mono font-semibold text-slate-200 text-xs">background-color: #06B6D4;</span>
+                    </div>
+                    <i class="fa-solid fa-copy text-slate-600 group-hover:text-slate-300 transition text-xs"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verlauf -->
+        <div class="space-y-3 border-t border-slate-800 pt-4">
+            <div class="flex items-center justify-between">
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Verlauf</div>
+                <button onclick="clearHistory()" class="text-[10px] text-slate-500 hover:text-slate-300 transition">Zurücksetzen</button>
+            </div>
+            <div id="history-container" class="flex gap-2 flex-wrap">
+                <!-- Wird per JS befüllt -->
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Logik -->
+    <script>
+        const colorPicker = document.getElementById('color-picker');
+        const pickerHexLabel = document.getElementById('picker-hex-label');
+        const mainColorBox = document.getElementById('main-color-box');
+        const boxContrastText = document.getElementById('box-contrast-text');
+        
+        const recommendationTitle = document.getElementById('recommendation-title');
+        const recommendationDesc = document.getElementById('recommendation-desc');
+
+        const codeHex = document.getElementById('code-hex');
+        const codeRgb = document.getElementById('code-rgb');
+        const codeHsl = document.getElementById('code-hsl');
+        const codeTw = document.getElementById('code-tw');
+
+        const historyContainer = document.getElementById('history-container');
+        let colorHistory = JSON.parse(localStorage.getItem('colorforge_history')) || ['#06B6D4', '#6366F1', '#10B981', '#F59E0B', '#EF4444'];
+
+        function updateAll(hex, saveHistory = true) {
+            hex = hex.toUpperCase();
+            colorPicker.value = hex;
+            pickerHexLabel.innerText = hex;
+            
+            let r = parseInt(hex.slice(1, 3), 16);
+            let g = parseInt(hex.slice(3, 5), 16);
+            let b = parseInt(hex.slice(5, 7), 16);
+            
+            const rgbStr = `rgb(${r}, ${g}, ${b})`;
+            let hsl = rgbToHsl(r, g, b);
+            const hslStr = `hsl(${Math.round(hsl[0])}, ${Math.round(hsl[1] * 100)}%, ${Math.round(hsl[2] * 100)}%)`;
+
+            mainColorBox.style.backgroundColor = hex;
+            let brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            mainColorBox.style.color = brightness > 128 ? '#000000' : '#FFFFFF';
+
+            codeHex.innerText = hex;
+            codeRgb.innerText = rgbStr;
+            codeHsl.innerText = hslStr;
+            codeTw.innerText = `background-color: ${hex};`;
+
+            let contrastRatio = ((brightness + 0.05) / 0.05).toFixed(1);
+            boxContrastText.innerText = `Kontrast-Ratio: ${contrastRatio}:1`;
+
+            // Intelligente Code-Empfehlung basierend auf Farbeigenschaften
+            evaluateCodeRecommendation(hsl, hex);
+
+            if (saveHistory) {
+                if (!colorHistory.includes(hex)) {
+                    colorHistory.unshift(hex);
+                    if (colorHistory.length > 10) colorHistory.pop();
+                    localStorage.setItem('colorforge_history', JSON.stringify(colorHistory));
+                }
+                renderHistory();
+            }
+        }
+
+        function evaluateCodeRecommendation(hsl, hex) {
+            // Wenn die Sättigung sehr niedrig ist (Grautöne/Neutral) oder es sich um Standardfarben handelt -> HEX
+            if (hsl[1] < 0.15) {
+                recommendationTitle.innerText = "HEX Code";
+                recommendationDesc.innerText = "Empfohlen für neutrale Töne und Graustufen, da er extrem kompakt im Stylesheet ist.";
+            } 
+            // Wenn feine Helligkeitsabstufungen Sinn machen (z.B. für UI-Zustände) -> HSL
+            else if (hsl[2] > 0.2 && hsl[2] < 0.8) {
+                recommendationTitle.innerText = "HSL Format";
+                recommendationDesc.innerText = "Empfohlen für diese aktive Farbe, da sich Helligkeit und Sättigung im Code programmatisch (z.B. für Hover-Effekte) anpassen lassen.";
+            } 
+            // Standardmäßig HEX
+            else {
+                recommendationTitle.innerText = "HEX Code";
+                recommendationDesc.innerText = "Empfohlen für diesen Farbton als Standard-Referenz im Webdesign.";
+            }
+        }
+
+        colorPicker.addEventListener('input', (e) => updateAll(e.target.value, false));
+        colorPicker.addEventListener('change', (e) => updateAll(e.target.value, true));
+
+        function randomizeColor() {
+            let randomHex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+            updateAll(randomHex, true);
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text);
+            const el = document.getElementById(elementId);
+            let originalText = el.innerText;
+            el.innerText = "Kopiert";
+            setTimeout(() => { el.innerText = originalText; }, 600);
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            let max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) { h = s = 0; } 
+            else {
+                let d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            return [h * 360, s, l];
+        }
+
+        function renderHistory() {
+            historyContainer.innerHTML = '';
+            colorHistory.forEach(hex => {
+                let circle = document.createElement('div');
+                circle.className = "w-7 h-7 rounded-lg cursor-pointer border border-slate-700 hover:scale-105 transition shadow-sm";
+                circle.style.backgroundColor = hex;
+                circle.title = hex;
+                circle.onclick = () => updateAll(hex, false);
+                historyContainer.appendChild(circle);
+            });
+        }
+
+        function clearHistory() {
+            colorHistory = [];
+            localStorage.removeItem('colorforge_history');
+            renderHistory();
+        }
+
+        // Init
+        renderHistory();
+        updateAll('#06B6D4', false);
+    </script>
+</body>
+</html>
