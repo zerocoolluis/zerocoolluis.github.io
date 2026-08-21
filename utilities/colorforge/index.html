@@ -1,187 +1,318 @@
 <!DOCTYPE html>
 <html lang="de" class="dark" id="html-root">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ColorForge</title>
-    <!-- Tailwind CSS Play CDN -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ColorForge – Premium Color Tool</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
         }
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
+        /* ===== BENUTZERDEFINIERTE STYLES ===== */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; border-radius: 4px; }
+
+        /* Toast-Animationen */
         .toast-enter { transform: translateY(0); opacity: 1; }
         .toast-leave { transform: translateY(150%); opacity: 0; }
+
+        /* Glanz-Effekt für Karten */
+        .glass-glow {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Sanfte Übergänge für Farbwechsel */
+        .color-transition {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Tooltip-Style */
+        .tooltip {
+            position: relative;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #f1f5f9;
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 20;
+        }
+
+        /* Kontrast-Ampel */
+        .contrast-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .contrast-good { background: #10b98120; color: #10b981; border: 1px solid #10b98140; }
+        .contrast-medium { background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40; }
+        .contrast-bad { background: #ef444420; color: #ef4444; border: 1px solid #ef444440; }
+
+        /* Letzte-Farben-Leiste */
+        .recent-strip {
+            display: flex;
+            gap: 6px;
+            padding: 6px 0;
+        }
+        .recent-strip .dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .recent-strip .dot:hover {
+            transform: scale(1.2);
+            border-color: #5b9aff;
+        }
+
+        /* Kamera-Overlay Fadenkreuz */
+        .crosshair {
+            width: 48px;
+            height: 48px;
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.2);
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
+        }
+        .crosshair-dot {
+            width: 6px;
+            height: 6px;
+            background: #38bdf8;
+            border-radius: 50%;
+        }
+
+        /* Dropdown-Ergebnisse – Tastatur-Highlight */
+        .search-result-item {
+            transition: background 0.15s, padding-left 0.15s;
+        }
+        .search-result-item.keyboard-selected {
+            background: rgba(56, 189, 248, 0.15);
+            padding-left: 18px;
+            border-left: 3px solid #38bdf8;
+        }
+
+        /* Responsive: kleinere Abstände auf Mobil */
+        @media (max-width: 640px) {
+            .main-title { font-size: 1.8rem; }
+            .card-padding { padding: 1rem; }
+            .btn-text { font-size: 0.7rem; }
+        }
     </style>
 </head>
 <body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen p-4 md:p-8 transition-colors duration-200 font-sans relative overflow-x-hidden">
 
-    <main class="max-w-4xl mx-auto space-y-6">
+    <main class="max-w-5xl mx-auto space-y-6">
         
-        <!-- Header -->
-        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
+        <!-- ===== HEADER ===== -->
+        <header class="flex flex-wrap justify-between items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
             <div>
-                <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+                <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white main-title">
                     ColorForge
                 </h1>
                 <p id="db-status" class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
                     <i class="fa-solid fa-spinner fa-spin text-cyan-500"></i> Lade Farbdatenbanken...
                 </p>
             </div>
-            
-            <!-- Rechte Steuerungs-Buttons -->
-            <div class="flex items-center gap-2 self-end sm:self-auto">
-                <!-- Home / Haus Symbol Button -->
-                <a href="https://zerocoolluis.github.io" title="Hauptseite" class="flex items-center justify-center p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs">
+            <div class="flex items-center gap-2 self-end sm:self-auto flex-wrap">
+                <!-- Home -->
+                <a href="https://zerocoolluis.github.io" title="Hauptseite" class="flex items-center justify-center p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm">
                     <i class="fa-solid fa-house text-base"></i>
                 </a>
-
+                <!-- Zufallsfarbe -->
+                <button onclick="randomColor()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs" title="Zufällige Farbe">
+                    <i class="fa-solid fa-shuffle text-amber-500"></i>
+                    <span class="hidden sm:inline">Zufall</span>
+                </button>
                 <!-- Theme Toggle -->
-                <button onclick="toggleTheme()" id="theme-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs">
+                <button onclick="toggleTheme()" id="theme-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs">
                     <i id="theme-icon" class="fa-solid fa-sun text-amber-500 text-base"></i>
-                    <span id="theme-text">Heller Modus</span>
+                    <span id="theme-text" class="hidden sm:inline">Heller Modus</span>
                 </button>
             </div>
         </header>
 
-        <!-- Live-Suchleiste mit Dropdown -->
+        <!-- ===== LIVE-SUCHE mit Tastatur-Navigation ===== -->
         <div class="relative">
             <div class="relative">
                 <input type="text" id="color-search" 
-                       placeholder="Farbe suchen und Enter drücken (z.B. emerald, neongelb, RAL 1023)..." 
+                       placeholder="Farbe suchen (z.B. emerald, neongelb, RAL 1023) ..." 
                        autocomplete="off"
-                       class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-2 border-slate-300 dark:border-slate-800 focus:border-cyan-500 dark:focus:border-cyan-400 outline-none text-base shadow-lg transition placeholder-slate-400 dark:placeholder-slate-500 font-medium">
+                       class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-2 border-slate-300 dark:border-slate-800 focus:border-cyan-500 dark:focus:border-cyan-400 outline-none text-base shadow-lg transition placeholder-slate-400 dark:placeholder-slate-500 font-medium" />
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-5 text-slate-400 dark:text-slate-500 text-lg"></i>
             </div>
-            
             <!-- Suchergebnisse Dropdown -->
-            <div id="search-results" class="hidden absolute left-0 right-0 top-16 mt-2 max-h-64 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-2xl z-50 custom-scrollbar divide-y divide-slate-100 dark:divide-slate-800">
-            </div>
+            <div id="search-results" class="hidden absolute left-0 right-0 top-16 mt-2 max-h-64 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-2xl shadow-2xl z-50 custom-scrollbar divide-y divide-slate-100 dark:divide-slate-800"></div>
         </div>
 
-        <!-- Hauptbereich Grid -->
-        <div class="grid md:grid-cols-2 gap-6">
+        <!-- ===== HAUPTBEREICH: 3 SPALTEN ===== -->
+        <div class="grid md:grid-cols-3 gap-6">
             
-            <!-- Linke Karte: Farbauswahl, Kamera & Name -->
-            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col justify-between relative group">
-                <div>
+            <!-- Linke Karte: Picker + Name + HEX + Kontrast -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col relative group card-padding color-transition" id="main-color-card">
+                <!-- Glanz-Effekt -->
+                <div class="absolute inset-0 glass-glow rounded-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex-1">
                     <div class="flex justify-between items-center mb-2">
-                        <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Interaktiver Picker & Kamera</label>
-                        
-                        <!-- Kamera Button -->
-                        <button onclick="openCamera()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 font-bold text-xs transition">
-                            <i class="fa-solid fa-camera"></i> Kamera Scanner
+                        <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Interaktiver Picker</label>
+                        <button onclick="openCamera()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 font-bold text-xs transition tooltip" data-tip="Kamera-Scanner">
+                            <i class="fa-solid fa-camera"></i> Scanner
                         </button>
                     </div>
-
-                    <input type="color" id="picker" class="w-full h-32 rounded-2xl cursor-pointer border-0 bg-transparent">
+                    <input type="color" id="picker" class="w-full h-32 rounded-2xl cursor-pointer border-0 bg-transparent" />
                 </div>
-                
-                <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <h2 id="color-name-display" class="text-2xl font-black text-cyan-600 dark:text-cyan-400 tracking-wide truncate">--</h2>
+
+                <div class="relative z-10 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <h2 id="color-name-display" class="text-2xl font-black text-cyan-600 dark:text-cyan-400 tracking-wide truncate transition-all">--</h2>
                     <p id="color-cat-display" class="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Kategorie / Quelle</p>
                     
-                    <!-- HEX Code Copy Area -->
-                    <div class="mt-2 inline-flex items-center gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -ml-1.5 rounded-lg transition" onclick="copyText('hex-display', 'HEX Code', this.querySelector('.copy-icon'))">
+                    <!-- HEX + Copy -->
+                    <div class="mt-2 inline-flex items-center gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -ml-1.5 rounded-lg transition group" onclick="copyText('hex-display', 'HEX Code', this.querySelector('.copy-icon'))">
                         <p id="hex-display" class="font-mono text-slate-900 dark:text-slate-100 font-bold text-base">#000000</p>
                         <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
                     </div>
-                </div>
-            </div>
 
-            <!-- Rechte Karte: Online API Metadaten -->
-            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
-                <div>
-                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 block">Live Online API Werte (Klick zum Kopieren)</label>
-                    <div class="space-y-3 text-xs font-medium">
-                        <!-- RGB -->
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('rgb-val', 'RGB Code', this.querySelector('.copy-icon'))">
-                            <span class="text-slate-500 dark:text-slate-400 font-bold">RGB:</span>
-                            <div class="flex items-center gap-2">
-                                <span id="rgb-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
-                                <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
-                            </div>
-                        </div>
-                        <!-- CMYK -->
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('cmyk-val', 'CMYK Code', this.querySelector('.copy-icon'))">
-                            <span class="text-slate-500 dark:text-slate-400 font-bold">CMYK:</span>
-                            <div class="flex items-center gap-2">
-                                <span id="cmyk-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
-                                <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
-                            </div>
-                        </div>
-                        <!-- HSL -->
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('hsl-val', 'HSL Code', this.querySelector('.copy-icon'))">
-                            <span class="text-slate-500 dark:text-slate-400 font-bold">HSL:</span>
-                            <div class="flex items-center gap-2">
-                                <span id="hsl-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
-                                <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
-                            </div>
-                        </div>
-                        <!-- Web Name -->
-                        <div class="flex justify-between items-center p-1">
-                            <span class="text-slate-500 dark:text-slate-400 font-bold">Wissenschaftlicher Name:</span>
-                            <span id="web-name-val" class="font-bold text-cyan-600 dark:text-cyan-400">--</span>
-                        </div>
+                    <!-- Kontrast-Checker (neu) -->
+                    <div class="mt-3 flex flex-wrap items-center gap-3">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kontrast:</span>
+                        <span id="contrast-badge" class="contrast-badge contrast-medium">
+                            <i class="fa-regular fa-circle"></i> Prüfen
+                        </span>
+                        <span class="text-[10px] text-slate-400">(zu Weiß)</span>
                     </div>
                 </div>
             </div>
 
+            <!-- Mittlere Karte: Live-API-Werte + LAB/LCH (neu) -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col card-padding">
+                <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Live API Werte (Klick zum Kopieren)</label>
+                <div class="space-y-3 text-xs font-medium flex-1">
+                    <!-- RGB -->
+                    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('rgb-val', 'RGB Code', this.querySelector('.copy-icon'))">
+                        <span class="text-slate-500 dark:text-slate-400 font-bold">RGB:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="rgb-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                            <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                        </div>
+                    </div>
+                    <!-- CMYK -->
+                    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('cmyk-val', 'CMYK Code', this.querySelector('.copy-icon'))">
+                        <span class="text-slate-500 dark:text-slate-400 font-bold">CMYK:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="cmyk-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                            <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                        </div>
+                    </div>
+                    <!-- HSL -->
+                    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('hsl-val', 'HSL Code', this.querySelector('.copy-icon'))">
+                        <span class="text-slate-500 dark:text-slate-400 font-bold">HSL:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="hsl-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                            <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                        </div>
+                    </div>
+                    <!-- LAB (neu) -->
+                    <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('lab-val', 'LAB Code', this.querySelector('.copy-icon'))">
+                        <span class="text-slate-500 dark:text-slate-400 font-bold">LAB:</span>
+                        <div class="flex items-center gap-2">
+                            <span id="lab-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                            <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                        </div>
+                    </div>
+                    <!-- Web Name -->
+                    <div class="flex justify-between items-center p-1">
+                        <span class="text-slate-500 dark:text-slate-400 font-bold">Wissenschaftlicher Name:</span>
+                        <span id="web-name-val" class="font-bold text-cyan-600 dark:text-cyan-400">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rechte Karte: Verwandte Farben + Paletten-Export (neu) -->
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col card-padding">
+                <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Verwandte Farben</label>
+                <div id="related-colors" class="grid grid-cols-2 gap-2 mb-4">
+                    <!-- 4 Farben werden dynamisch eingefügt -->
+                </div>
+                <div class="flex gap-2 mt-auto">
+                    <button onclick="exportPalette()" class="flex-1 py-2 rounded-xl bg-cyan-500 text-white font-bold text-xs hover:bg-cyan-600 transition shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-1.5">
+                        <i class="fa-regular fa-file-export"></i> Palette exportieren
+                    </button>
+                    <button onclick="savePalette()" class="flex-1 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center justify-center gap-1.5">
+                        <i class="fa-regular fa-heart"></i> Speichern
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- Verlauf & Historie -->
-        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 space-y-5">
+        <!-- ===== FARBVERLAUF + REGLER + LETZTE FARBEN ===== -->
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 space-y-5 card-padding">
             <!-- Farbverlauf mit Regler -->
             <div>
-                <div class="flex justify-between items-center mb-2">
-                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Farbverlauf & Helligkeits-Regler</label>
-                    <span id="slider-val-label" class="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400">50% (Original)</span>
+                <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
+                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Farbverlauf & Helligkeit</label>
+                    <span id="slider-val-label" class="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400">Original</span>
                 </div>
                 <div id="active-gradient" class="h-12 rounded-2xl shadow-inner border border-slate-300 dark:border-slate-700 transition-all duration-300 mb-3"></div>
                 <input type="range" id="gradient-slider" min="0" max="100" value="50" 
-                       class="w-full accent-cyan-500 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none">
+                       class="w-full accent-cyan-500 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none" />
             </div>
 
-            <!-- Historie (Zuletzt verwendet) -->
+            <!-- Letzte Farben (neue Leiste) -->
             <div>
-                <div class="flex justify-between items-center mb-3">
-                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Zuletzt verwendet</label>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Letzte Farben</label>
                     <button onclick="clearHistory()" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition font-medium">Zurücksetzen</button>
                 </div>
-                <div id="history-container" class="flex gap-3 flex-wrap"></div>
+                <div id="recent-strip" class="recent-strip flex-wrap"></div>
             </div>
         </div>
 
     </main>
 
-    <!-- KAMERA MODAL OVERLAY -->
+    <!-- ===== KAMERA MODAL ===== -->
     <div id="camera-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl flex flex-col items-center space-y-4 relative">
             <button onclick="closeCamera()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition text-xl">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <h3 class="text-lg font-black text-slate-900 dark:text-white">Kamera Farbscanner</h3>
-            <p class="text-xs text-slate-400 text-center">Richte das Fadenkreuz in der Mitte auf den Gegenstand.</p>
+            <p class="text-xs text-slate-400 text-center">Richte das Fadenkreuz auf den Gegenstand.</p>
 
-            <!-- Live Video Container mit Visier -->
             <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-700 flex items-center justify-center">
                 <video id="webcam-video" autoplay playsinline class="w-full h-full object-cover"></video>
                 <canvas id="cam-canvas" class="hidden"></canvas>
-                
-                <!-- Fadenkreuz Visier -->
+                <!-- Fadenkreuz -->
                 <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
-                    <div class="w-10 h-10 border-2 border-white rounded-full flex items-center justify-center shadow-lg">
-                        <div class="w-2 h-2 bg-cyan-400 rounded-full"></div>
-                    </div>
+                    <div class="crosshair"><div class="crosshair-dot"></div></div>
                 </div>
             </div>
 
-            <!-- Live Farb-Vorschau -->
+            <!-- Live Vorschau -->
             <div class="flex items-center gap-3 w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl">
                 <div id="cam-preview-dot" class="w-8 h-8 rounded-lg border border-slate-300 dark:border-slate-600 shadow-sm" style="background-color: #000000;"></div>
                 <div class="flex-1">
@@ -190,37 +321,40 @@
                 </div>
             </div>
 
-            <!-- Steuerungs-Buttons -->
             <div class="flex gap-3 w-full">
-                <button onclick="closeCamera()" class="flex-1 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 transition">
-                    Abbrechen
-                </button>
+                <button onclick="closeCamera()" class="flex-1 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 transition">Abbrechen</button>
                 <button onclick="captureCameraColor()" class="flex-1 py-3 rounded-xl bg-cyan-500 text-white font-bold text-xs hover:bg-cyan-600 transition shadow-lg shadow-cyan-500/20">
-                    <i class="fa-solid fa-check mr-1"></i> Fertig & Übernehmen
+                    <i class="fa-solid fa-check mr-1"></i> Übernehmen
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- TOAST NOTIFICATION -->
+    <!-- ===== TOAST ===== -->
     <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 toast-leave transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-50 font-semibold text-sm">
         <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-500"></i>
         <span id="toast-text">Kopiert!</span>
     </div>
 
-    <!-- JavaScript Logik -->
+    <!-- ===== JAVASCRIPT ===== -->
     <script>
+        // ============================================================
+        // 1. GLOBALE VARIABLEN
+        // ============================================================
         let globalColorCatalog = [];
         let baseColorHex = '#06B6D4';
         let mediaStream = null;
         let animationFrameId = null;
         let currentCamHex = "#000000";
+        let searchResults = [];
+        let keyboardIndex = -1;
+        let debounceTimer = null;
 
         const htmlRoot = document.documentElement;
         const themeIcon = document.getElementById('theme-icon');
         const themeText = document.getElementById('theme-text');
         const searchInput = document.getElementById('color-search');
-        const searchResults = document.getElementById('search-results');
+        const searchResultsContainer = document.getElementById('search-results');
         const picker = document.getElementById('picker');
         const hexDisplay = document.getElementById('hex-display');
         const nameDisplay = document.getElementById('color-name-display');
@@ -228,37 +362,69 @@
         const activeGradient = document.getElementById('active-gradient');
         const gradientSlider = document.getElementById('gradient-slider');
         const sliderLabel = document.getElementById('slider-val-label');
-        const histContainer = document.getElementById('history-container');
+        const recentStrip = document.getElementById('recent-strip');
         const dbStatus = document.getElementById('db-status');
         const toast = document.getElementById('toast');
         const toastText = document.getElementById('toast-text');
+        const contrastBadge = document.getElementById('contrast-badge');
+        const relatedContainer = document.getElementById('related-colors');
 
-        // Theme Switcher
-        function toggleTheme() {
-            if (htmlRoot.classList.contains('dark')) {
-                htmlRoot.classList.remove('dark');
-                localStorage.setItem('colorforge_theme', 'light');
-                themeIcon.className = "fa-solid fa-moon text-indigo-600 text-base";
-                themeText.innerText = "Dunkler Modus";
-            } else {
+        // ============================================================
+        // 2. THEME (DARK/LIGHT/SYSTEM)
+        // ============================================================
+        function setTheme(mode) {
+            if (mode === 'system') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                htmlRoot.classList.toggle('dark', prefersDark);
+                localStorage.setItem('colorforge_theme', 'system');
+            } else if (mode === 'dark') {
                 htmlRoot.classList.add('dark');
                 localStorage.setItem('colorforge_theme', 'dark');
+            } else {
+                htmlRoot.classList.remove('dark');
+                localStorage.setItem('colorforge_theme', 'light');
+            }
+            updateThemeUI();
+        }
+
+        function updateThemeUI() {
+            const isDark = htmlRoot.classList.contains('dark');
+            if (isDark) {
                 themeIcon.className = "fa-solid fa-sun text-amber-500 text-base";
                 themeText.innerText = "Heller Modus";
+            } else {
+                themeIcon.className = "fa-solid fa-moon text-indigo-600 text-base";
+                themeText.innerText = "Dunkler Modus";
             }
         }
 
-        if (localStorage.getItem('colorforge_theme') === 'light') {
-            htmlRoot.classList.remove('dark');
-            themeIcon.className = "fa-solid fa-moon text-indigo-600 text-base";
-            themeText.innerText = "Dunkler Modus";
+        function toggleTheme() {
+            const current = localStorage.getItem('colorforge_theme') || 'dark';
+            if (current === 'dark') setTheme('light');
+            else if (current === 'light') setTheme('system');
+            else setTheme('dark');
         }
 
-        // Hilfsfunktionen Farbberechnung
+        // Theme beim Start laden
+        const savedTheme = localStorage.getItem('colorforge_theme') || 'dark';
+        setTheme(savedTheme);
+
+        // System-Theme-Wechsel abhören
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (localStorage.getItem('colorforge_theme') === 'system') {
+                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                htmlRoot.classList.toggle('dark', isDark);
+                updateThemeUI();
+            }
+        });
+
+        // ============================================================
+        // 3. HILFSFUNKTIONEN (Farbberechnung)
+        // ============================================================
         function hexToRgb(hex) {
             hex = hex.replace('#', '');
             if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
-            let num = parseInt(hex, 16);
+            const num = parseInt(hex, 16);
             return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
         }
 
@@ -266,34 +432,509 @@
             return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
         }
 
-        function interpolateColor(color1, color2, factor) {
-            let c1 = hexToRgb(color1);
-            let c2 = hexToRgb(color2);
-            let r = Math.round(c1.r + factor * (c2.r - c1.r));
-            let g = Math.round(c1.g + factor * (c2.g - c1.g));
-            let b = Math.round(c1.b + factor * (c2.b - c1.b));
-            return rgbToHex(r, g, b);
+        function hexToHsl(hex) {
+            let { r, g, b } = hexToRgb(hex);
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            if (max === min) { h = s = 0; } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+            return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+        }
+
+        function hslToHex(h, s, l) {
+            h /= 360; s /= 100; l /= 100;
+            let r, g, b;
+            if (s === 0) { r = g = b = l; } else {
+                const hue2rgb = (p, q, t) => {
+                    if (t < 0) t += 1;
+                    if (t > 1) t -= 1;
+                    if (t < 1/6) return p + (q - p) * 6 * t;
+                    if (t < 1/2) return q;
+                    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                };
+                const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                const p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+            return rgbToHex(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
+        }
+
+        function interpolateColor(c1, c2, factor) {
+            const a = hexToRgb(c1);
+            const b = hexToRgb(c2);
+            const r = Math.round(a.r + factor * (b.r - a.r));
+            const g = Math.round(a.g + factor * (b.g - a.g));
+            const bl = Math.round(a.b + factor * (b.b - a.b));
+            return rgbToHex(r, g, bl);
         }
 
         function getGradientColor(val) {
-            if (val == 50) return baseColorHex;
-            if (val < 50) {
-                return interpolateColor("#FFFFFF", baseColorHex, val / 50);
+            if (val === 50) return baseColorHex;
+            if (val < 50) return interpolateColor("#FFFFFF", baseColorHex, val / 50);
+            return interpolateColor(baseColorHex, "#000000", (val - 50) / 50);
+        }
+
+        // Kontrastberechnung (WCAG)
+        function luminance(hex) {
+            const { r, g, b } = hexToRgb(hex);
+            const [rs, gs, bs] = [r, g, b].map(c => {
+                c = c / 255;
+                return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+            });
+            return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
+        }
+
+        function contrastRatio(hex1, hex2) {
+            const l1 = luminance(hex1);
+            const l2 = luminance(hex2);
+            return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+        }
+
+        // Verwandte Farben (analog, komplementär, triadisch)
+        function getRelatedColors(hex) {
+            const hsl = hexToHsl(hex);
+            const h = hsl.h;
+            const s = hsl.s;
+            const l = hsl.l;
+            const relatives = [];
+            // Komplementär (h + 180)
+            relatives.push({ name: 'Komplementär', hex: hslToHex((h + 180) % 360, s, l) });
+            // Analog (h + 30)
+            relatives.push({ name: 'Analog 1', hex: hslToHex((h + 30) % 360, s, l) });
+            // Analog (h - 30)
+            relatives.push({ name: 'Analog 2', hex: hslToHex((h - 30 + 360) % 360, s, l) });
+            // Triadisch (h + 120)
+            relatives.push({ name: 'Triadisch', hex: hslToHex((h + 120) % 360, s, l) });
+            return relatives;
+        }
+
+        // ============================================================
+        // 4. DATENBANKEN LADEN (mit Caching)
+        // ============================================================
+        async function loadAllDatabases() {
+            const cached = localStorage.getItem('colorforge_catalog');
+            if (cached) {
+                try {
+                    globalColorCatalog = JSON.parse(cached);
+                    dbStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> ${globalColorCatalog.length.toLocaleString()} Farben (gelesen aus Cache)`;
+                    return;
+                } catch (e) {}
+            }
+
+            const catalog = [];
+            // Deutsche Basis
+            const germanDict = [
+                { name: "Emerald", search: "emerald", hex: "#50C878", cat: "Deutsch / International" },
+                { name: "Neongelb", search: "neongelb", hex: "#EFFF00", cat: "Deutsch / Neon" },
+                { name: "Neongrün", search: "neongrün", hex: "#39FF14", cat: "Deutsch / Neon" },
+                { name: "Neonrot", search: "neonrot", hex: "#FF3131", cat: "Deutsch / Neon" },
+                { name: "Neonpink", search: "neonpink", hex: "#FF10F0", cat: "Deutsch / Neon" },
+                { name: "Himmelblau", search: "himmelblau", hex: "#87CEEB", cat: "Deutsch" },
+                { name: "Feuerrot", search: "feuerrot", hex: "#AF2B1E", cat: "Deutsch / RAL" },
+                { name: "Smaragdgrün", search: "smaragdgrün", hex: "#50C878", cat: "Deutsch" },
+                { name: "Weinrot", search: "weinrot", hex: "#722F37", cat: "Deutsch" },
+                { name: "Mintgrün", search: "mintgrün", hex: "#98FF98", cat: "Deutsch" }
+            ];
+            catalog.push(...germanDict);
+
+            try {
+                const ralRes = await fetch('https://raw.githubusercontent.com/Korchy/blender-color-matching/master/ral_c.json');
+                const ralData = await ralRes.json();
+                ralData.forEach(item => {
+                    const info = item[1];
+                    catalog.push({ name: info[0], search: info[0].toLowerCase(), hex: info[3], cat: "RAL Classic" });
+                });
+            } catch (e) {}
+
+            try {
+                const hugeRes = await fetch('https://unpkg.com/color-name-list/dist/colornames.json');
+                const hugeData = await hugeRes.json();
+                hugeData.forEach(item => {
+                    catalog.push({ name: item.name, search: item.name.toLowerCase(), hex: item.hex, cat: "Global English" });
+                });
+            } catch (e) {}
+
+            globalColorCatalog = catalog;
+            localStorage.setItem('colorforge_catalog', JSON.stringify(catalog));
+            dbStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> ${catalog.length.toLocaleString()} Farben geladen`;
+        }
+
+        // ============================================================
+        // 5. SUCHE mit Tastatur-Navigation
+        // ============================================================
+        function getSortedMatches(query) {
+            const matches = globalColorCatalog.filter(c => 
+                c.search.includes(query) || c.hex.toLowerCase().includes(query)
+            );
+            return matches.sort((a, b) => {
+                const aSearch = a.search;
+                const bSearch = b.search;
+                if (aSearch === query && bSearch !== query) return -1;
+                if (bSearch === query && aSearch !== query) return 1;
+                const aStarts = aSearch.startsWith(query);
+                const bStarts = bSearch.startsWith(query);
+                if (aStarts && !bStarts) return -1;
+                if (!aStarts && bStarts) return 1;
+                return aSearch.length - bSearch.length;
+            });
+        }
+
+        function renderSearchResults(matches) {
+            searchResultsContainer.innerHTML = '';
+            keyboardIndex = -1;
+            if (matches.length === 0) {
+                searchResultsContainer.classList.add('hidden');
+                return;
+            }
+            searchResultsContainer.classList.remove('hidden');
+            matches.slice(0, 20).forEach((color, idx) => {
+                const div = document.createElement('div');
+                div.className = `search-result-item flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition text-slate-900 dark:text-white`;
+                div.dataset.index = idx;
+                div.innerHTML = `
+                    <div class="w-6 h-6 rounded-lg border border-slate-300 dark:border-slate-700 flex-shrink-0" style="background-color: ${color.hex}"></div>
+                    <div class="flex-1 text-xs">
+                        <span class="font-bold">${color.name}</span>
+                        <span class="text-[10px] text-slate-400 ml-2">(${color.cat})</span>
+                    </div>
+                    <span class="font-mono text-xs text-slate-400 font-bold">${color.hex}</span>
+                `;
+                div.onclick = () => {
+                    updateColor(color.hex, color.name, color.cat);
+                    searchResultsContainer.classList.add('hidden');
+                    searchInput.value = `${color.name} (${color.hex})`;
+                    searchInput.blur();
+                };
+                searchResultsContainer.appendChild(div);
+            });
+        }
+
+        function handleSearch(e) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const query = e.target.value.toLowerCase().trim();
+                if (query.length < 1) {
+                    searchResultsContainer.classList.add('hidden');
+                    return;
+                }
+                if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
+                    searchResultsContainer.classList.add('hidden');
+                    return;
+                }
+                const matches = getSortedMatches(query);
+                renderSearchResults(matches);
+            }, 150);
+        }
+
+        searchInput.addEventListener('input', handleSearch);
+
+        searchInput.addEventListener('keydown', (e) => {
+            const items = searchResultsContainer.querySelectorAll('.search-result-item');
+            if (items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                keyboardIndex = Math.min(keyboardIndex + 1, items.length - 1);
+                updateKeyboardHighlight(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                keyboardIndex = Math.max(keyboardIndex - 1, -1);
+                updateKeyboardHighlight(items);
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (keyboardIndex >= 0 && keyboardIndex < items.length) {
+                    items[keyboardIndex].click();
+                } else {
+                    // Fallback: ersten Treffer nehmen
+                    const query = searchInput.value.toLowerCase().trim();
+                    if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
+                        updateColor(query);
+                        searchResultsContainer.classList.add('hidden');
+                        return;
+                    }
+                    const matches = getSortedMatches(query);
+                    if (matches.length > 0) {
+                        const top = matches[0];
+                        updateColor(top.hex, top.name, top.cat);
+                        searchResultsContainer.classList.add('hidden');
+                        searchInput.value = `${top.name} (${top.hex})`;
+                        searchInput.blur();
+                    }
+                }
+            }
+        });
+
+        function updateKeyboardHighlight(items) {
+            items.forEach((el, idx) => {
+                el.classList.toggle('keyboard-selected', idx === keyboardIndex);
+                if (idx === keyboardIndex) {
+                    el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target) && !searchResultsContainer.contains(e.target)) {
+                searchResultsContainer.classList.add('hidden');
+            }
+        });
+
+        // ============================================================
+        // 6. FARBUPDATE (Kernfunktion)
+        // ============================================================
+        async function updateColor(hex, customName = "", customCat = "", save = true, isBaseUpdate = true) {
+            hex = hex.toUpperCase();
+
+            if (isBaseUpdate) {
+                baseColorHex = hex;
+                gradientSlider.value = 50;
+                sliderLabel.innerText = "Original";
+            }
+
+            // Copy-Icons zurücksetzen
+            document.querySelectorAll('.copy-icon').forEach(icon => {
+                icon.className = "copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition";
+            });
+
+            hexDisplay.innerText = hex;
+            picker.value = hex;
+
+            // Farbverlauf aktualisieren
+            activeGradient.style.background = `linear-gradient(90deg, #FFFFFF 0%, ${baseColorHex} 50%, #000000 100%)`;
+            // Karten-Hintergrund sanft ändern
+            document.getElementById('main-color-card').style.backgroundColor = `${hex}15`;
+
+            if (customName) {
+                nameDisplay.innerText = customName;
+                catDisplay.innerText = customCat || "Katalog Treffer";
+            }
+
+            // API-Daten abrufen (mit Debounce)
+            try {
+                const res = await fetch(`https://www.thecolorapi.com/id?hex=${hex.replace('#', '')}`);
+                const data = await res.json();
+
+                if (!customName) {
+                    nameDisplay.innerText = data.name.value;
+                    catDisplay.innerText = "Online API Namenszuweisung";
+                }
+
+                document.getElementById('rgb-val').innerText = data.rgb.value;
+                document.getElementById('cmyk-val').innerText = data.cmyk.value;
+                document.getElementById('hsl-val').innerText = data.hsl.value;
+                document.getElementById('web-name-val').innerText = data.name.value;
+
+                // LAB (selbst berechnet – Näherung)
+                const lab = rgbToLab(hexToRgb(hex));
+                document.getElementById('lab-val').innerText = `L:${Math.round(lab.L)} a:${Math.round(lab.a)} b:${Math.round(lab.b)}`;
+
+                // Kontrast prüfen
+                updateContrast(hex);
+
+                // Verwandte Farben
+                updateRelatedColors(hex);
+
+            } catch (err) {
+                if (!customName) nameDisplay.innerText = "Farbe ausgewählt";
+                document.getElementById('rgb-val').innerText = '--';
+                document.getElementById('cmyk-val').innerText = '--';
+                document.getElementById('hsl-val').innerText = '--';
+                document.getElementById('web-name-val').innerText = '--';
+                document.getElementById('lab-val').innerText = '--';
+            }
+
+            if (save) saveHistory(hex);
+            updateRecentStrip();
+        }
+
+        // ============================================================
+        // 7. KONTRAST-CHECKER
+        // ============================================================
+        function updateContrast(hex) {
+            const ratioWhite = contrastRatio(hex, '#FFFFFF');
+            let level = '';
+            let cls = '';
+            if (ratioWhite >= 7) {
+                level = 'Sehr gut (AAA)';
+                cls = 'contrast-good';
+            } else if (ratioWhite >= 4.5) {
+                level = 'Gut (AA)';
+                cls = 'contrast-medium';
             } else {
-                return interpolateColor(baseColorHex, "#000000", (val - 50) / 50);
+                level = 'Schlecht (nicht barrierefrei)';
+                cls = 'contrast-bad';
+            }
+            contrastBadge.className = `contrast-badge ${cls}`;
+            contrastBadge.innerHTML = `<i class="fa-regular fa-circle"></i> ${level} (${ratioWhite.toFixed(2)})`;
+        }
+
+        // ============================================================
+        // 8. VERWANDTE FARBEN
+        // ============================================================
+        function updateRelatedColors(hex) {
+            const relatives = getRelatedColors(hex);
+            relatedContainer.innerHTML = '';
+            relatives.forEach((rel, idx) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-2 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition";
+                div.style.backgroundColor = rel.hex;
+                div.style.border = '1px solid rgba(255,255,255,0.1)';
+                div.innerHTML = `
+                    <span class="text-[9px] font-bold text-white drop-shadow-md">${rel.name}</span>
+                    <span class="text-[8px] font-mono text-white/80 ml-auto drop-shadow-md">${rel.hex}</span>
+                `;
+                div.onclick = () => {
+                    updateColor(rel.hex);
+                };
+                relatedContainer.appendChild(div);
+            });
+        }
+
+        // ============================================================
+        // 9. LAB-KONVERTIERUNG (Näherung)
+        // ============================================================
+        function rgbToLab(rgb) {
+            let { r, g, b } = rgb;
+            r = r / 255; g = g / 255; b = b / 255;
+            r = r > 0.04045 ? Math.pow((r + 0.055) / 1.055, 2.4) : r / 12.92;
+            g = g > 0.04045 ? Math.pow((g + 0.055) / 1.055, 2.4) : g / 12.92;
+            b = b > 0.04045 ? Math.pow((b + 0.055) / 1.055, 2.4) : b / 12.92;
+            let x = r * 0.4124564 + g * 0.3575761 + b * 0.1804375;
+            let y = r * 0.2126729 + g * 0.7151522 + b * 0.0721750;
+            let z = r * 0.0193339 + g * 0.1191920 + b * 0.9503041;
+            x /= 0.95047; y /= 1.00000; z /= 1.08883;
+            const f = (t) => t > 0.008856 ? Math.pow(t, 1/3) : (7.787 * t) + 16/116;
+            const fx = f(x), fy = f(y), fz = f(z);
+            return {
+                L: 116 * fy - 16,
+                a: 500 * (fx - fy),
+                b: 200 * (fy - fz)
+            };
+        }
+
+        // ============================================================
+        // 10. FARBVERLAUF-REGLER
+        // ============================================================
+        gradientSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            if (val < 50) {
+                const percent = Math.round((1 - val/50) * 100);
+                sliderLabel.innerText = `+${percent}% Helligkeit`;
+            } else if (val > 50) {
+                const percent = Math.round((val/50 - 1) * 100);
+                sliderLabel.innerText = `-${percent}% Dunkelheit`;
+            } else {
+                sliderLabel.innerText = "Original";
+            }
+            const newHex = getGradientColor(val);
+            updateColor(newHex, "", "Nuance / Farbverlauf", false, false);
+        });
+
+        // ============================================================
+        // 11. PICKER
+        // ============================================================
+        picker.addEventListener('input', (e) => updateColor(e.target.value));
+
+        // ============================================================
+        // 12. ZUFALLSFARBE
+        // ============================================================
+        function randomColor() {
+            // Zufällige Farbe aus dem gesamten Farbkreis (HSL)
+            const h = Math.floor(Math.random() * 360);
+            const s = 60 + Math.floor(Math.random() * 40);  // 60-100%
+            const l = 40 + Math.floor(Math.random() * 40);  // 40-80%
+            const hex = hslToHex(h, s, l);
+            // Versuche einen passenden Namen aus der Datenbank zu finden
+            const match = globalColorCatalog.find(c => c.hex.toUpperCase() === hex.toUpperCase());
+            if (match) {
+                updateColor(hex, match.name, match.cat);
+            } else {
+                updateColor(hex, `Zufallsfarbe (HSL: ${h}°, ${s}%, ${l}%)`, "Zufall");
             }
         }
 
-        // KAMERA SCANNER LOGIK
+        // ============================================================
+        // 13. PALETTE EXPORTIEREN
+        // ============================================================
+        function exportPalette() {
+            const currentHex = hexDisplay.innerText;
+            const relatives = getRelatedColors(currentHex);
+            const palette = [currentHex, ...relatives.map(r => r.hex)];
+            const css = palette.map(h => `  --color-${palette.indexOf(h)}: ${h};`).join('\n');
+            const json = JSON.stringify(palette, null, 2);
+            const content = `/* ColorForge Palette */\n:root {\n${css}\n}\n\n/* JSON Export */\n${json}`;
+            navigator.clipboard.writeText(content).then(() => {
+                showToast('Palette exportiert (CSS + JSON in Zwischenablage)');
+            }).catch(() => {
+                // Fallback: als Text anzeigen
+                alert('Palette:\n' + palette.join('\n'));
+            });
+        }
+
+        // ============================================================
+        // 14. PALETTE SPEICHERN (in LocalStorage)
+        // ============================================================
+        function savePalette() {
+            const currentHex = hexDisplay.innerText;
+            const relatives = getRelatedColors(currentHex);
+            const palette = [currentHex, ...relatives.map(r => r.hex)];
+            let saved = JSON.parse(localStorage.getItem('colorforge_palettes') || '[]');
+            saved.push({ date: new Date().toISOString(), colors: palette });
+            localStorage.setItem('colorforge_palettes', JSON.stringify(saved.slice(-20)));
+            showToast('Palette gespeichert!');
+        }
+
+        // ============================================================
+        // 15. HISTORIE & LETZTE FARBEN (neue Leiste)
+        // ============================================================
+        function saveHistory(hex) {
+            let hist = JSON.parse(localStorage.getItem('colorforge_hist') || '[]');
+            hist = hist.filter(h => h !== hex);
+            hist.unshift(hex);
+            localStorage.setItem('colorforge_hist', JSON.stringify(hist.slice(0, 12)));
+            updateRecentStrip();
+        }
+
+        function updateRecentStrip() {
+            const hist = JSON.parse(localStorage.getItem('colorforge_hist') || '[]');
+            recentStrip.innerHTML = '';
+            hist.slice(0, 8).forEach(hex => {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dot.style.backgroundColor = hex;
+                dot.title = hex;
+                dot.onclick = () => updateColor(hex);
+                recentStrip.appendChild(dot);
+            });
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('colorforge_hist');
+            updateRecentStrip();
+            showToast('Verlauf gelöscht');
+        }
+
+        // ============================================================
+        // 16. KAMERA-SCANNER
+        // ============================================================
         async function openCamera() {
             const modal = document.getElementById('camera-modal');
             const video = document.getElementById('webcam-video');
             modal.classList.remove('hidden');
 
             try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: "environment" } 
-                });
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
                 video.srcObject = mediaStream;
                 video.onloadedmetadata = () => {
                     video.play();
@@ -314,20 +955,14 @@
             const video = document.getElementById('webcam-video');
             const canvas = document.getElementById('cam-canvas');
             const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
             if (video.videoWidth === 0 || video.videoHeight === 0) return;
-
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
             const centerX = Math.floor(canvas.width / 2);
             const centerY = Math.floor(canvas.height / 2);
             const pixel = ctx.getImageData(centerX, centerY, 1, 1).data;
-
             currentCamHex = rgbToHex(pixel[0], pixel[1], pixel[2]);
-
             document.getElementById('cam-preview-dot').style.backgroundColor = currentCamHex;
             document.getElementById('cam-preview-hex').innerText = currentCamHex;
         }
@@ -336,7 +971,6 @@
             const match = globalColorCatalog.find(c => c.hex.toUpperCase() === currentCamHex.toUpperCase());
             const matchedName = match ? match.name : "";
             const matchedCat = match ? match.cat : "Kamera Erfassung";
-
             updateColor(currentCamHex, matchedName, matchedCat);
             closeCamera();
         }
@@ -344,7 +978,6 @@
         function closeCamera() {
             const modal = document.getElementById('camera-modal');
             modal.classList.add('hidden');
-
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
             if (mediaStream) {
                 mediaStream.getTracks().forEach(track => track.stop());
@@ -352,207 +985,18 @@
             }
         }
 
-        // Datenbanken Laden & Mergen
-        async function loadAllDatabases() {
-            const germanDict = [
-                { name: "Emerald", search: "emerald", hex: "#50C878", cat: "Deutsch / International" },
-                { name: "Neongelb", search: "neongelb", hex: "#EFFF00", cat: "Deutsch / Neon" },
-                { name: "Neongrün", search: "neongrün", hex: "#39FF14", cat: "Deutsch / Neon" },
-                { name: "Neonrot", search: "neonrot", hex: "#FF3131", cat: "Deutsch / Neon" },
-                { name: "Neonpink", search: "neonpink", hex: "#FF10F0", cat: "Deutsch / Neon" },
-                { name: "Himmelblau", search: "himmelblau", hex: "#87CEEB", cat: "Deutsch" },
-                { name: "Feuerrot", search: "feuerrot", hex: "#AF2B1E", cat: "Deutsch / RAL" },
-                { name: "Smaragdgrün", search: "smaragdgrün", hex: "#50C878", cat: "Deutsch" },
-                { name: "Weinrot", search: "weinrot", hex: "#722F37", cat: "Deutsch" },
-                { name: "Mintgrün", search: "mintgrün", hex: "#98FF98", cat: "Deutsch" }
-            ];
-
-            germanDict.forEach(item => globalColorCatalog.push(item));
-
-            try {
-                const ralRes = await fetch('https://raw.githubusercontent.com/Korchy/blender-color-matching/master/ral_c.json');
-                const ralData = await ralRes.json();
-                ralData.forEach(item => {
-                    const info = item[1];
-                    globalColorCatalog.push({ name: info[0], search: info[0].toLowerCase(), hex: info[3], cat: "RAL Classic" });
-                });
-            } catch (e) {}
-
-            try {
-                const hugeRes = await fetch('https://unpkg.com/color-name-list/dist/colornames.json');
-                const hugeData = await hugeRes.json();
-                hugeData.forEach(item => {
-                    globalColorCatalog.push({ name: item.name, search: item.name.toLowerCase(), hex: item.hex, cat: "Global English" });
-                });
-            } catch (e) {}
-
-            dbStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> ${globalColorCatalog.length.toLocaleString()} Farben durchsuchbar`;
-        }
-
-        // Sortierung für exakte Treffer
-        function getSortedMatches(query) {
-            const matches = globalColorCatalog.filter(c => 
-                c.search.includes(query) || c.hex.toLowerCase().includes(query)
-            );
-
-            return matches.sort((a, b) => {
-                const aSearch = a.search;
-                const bSearch = b.search;
-
-                if (aSearch === query && bSearch !== query) return -1;
-                if (bSearch === query && aSearch !== query) return 1;
-
-                const aStarts = aSearch.startsWith(query);
-                const bStarts = bSearch.startsWith(query);
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
-
-                return aSearch.length - bSearch.length;
-            });
-        }
-
-        // Farbwert Update & API
-        async function updateColor(hex, customName = "", customCat = "", save = true, isBaseUpdate = true) {
-            hex = hex.toUpperCase();
-
-            if (isBaseUpdate) {
-                baseColorHex = hex;
-                if (gradientSlider) gradientSlider.value = 50;
-                if (sliderLabel) sliderLabel.innerText = "50% (Original)";
-            }
-
-            document.querySelectorAll('.copy-icon').forEach(icon => {
-                icon.className = "copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition";
-            });
-
-            hexDisplay.innerText = hex;
-            picker.value = hex;
-
-            activeGradient.style.background = `linear-gradient(90deg, #FFFFFF 0%, ${baseColorHex} 50%, #000000 100%)`;
-
-            if (customName) {
-                nameDisplay.innerText = customName;
-                catDisplay.innerText = customCat || "Katalog Treffer";
-            }
-
-            try {
-                const res = await fetch(`https://www.thecolorapi.com/id?hex=${hex.replace('#', '')}`);
-                const data = await res.json();
-                
-                if (!customName) {
-                    nameDisplay.innerText = data.name.value;
-                    catDisplay.innerText = "Online API Namenszuweisung";
-                }
-
-                document.getElementById('rgb-val').innerText = data.rgb.value;
-                document.getElementById('cmyk-val').innerText = data.cmyk.value;
-                document.getElementById('hsl-val').innerText = data.hsl.value;
-                document.getElementById('web-name-val').innerText = data.name.value;
-            } catch (err) {
-                if(!customName) nameDisplay.innerText = "Farbe ausgewählt";
-            }
-
-            if (save) saveHistory(hex);
-        }
-
-        // Regler für Farbverlauf Listener
-        gradientSlider.addEventListener('input', (e) => {
-            const val = parseInt(e.target.value);
-            if (val < 50) {
-                sliderLabel.innerText = `${val * 2}% (Heller)`;
-            } else if (val > 50) {
-                sliderLabel.innerText = `${(100 - val) * 2}% (Dunkler)`;
-            } else {
-                sliderLabel.innerText = "50% (Original)";
-            }
-            const newHex = getGradientColor(val);
-            updateColor(newHex, "", "Nuance / Farbverlauf", false, false);
-        });
-
-        // Live Suche + Smarte ENTER Funktion
-        searchInput.addEventListener('input', handleSearch);
-        
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                const query = e.target.value.toLowerCase().trim();
-                
-                if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
-                    updateColor(query);
-                    searchResults.classList.add('hidden');
-                    return;
-                }
-
-                const sortedMatches = getSortedMatches(query);
-
-                if (sortedMatches.length > 0) {
-                    const topMatch = sortedMatches[0];
-                    updateColor(topMatch.hex, topMatch.name, topMatch.cat);
-                    searchResults.classList.add('hidden');
-                    searchInput.value = `${topMatch.name} (${topMatch.hex})`;
-                    searchInput.blur();
-                }
-            }
-        });
-
-        function handleSearch(e) {
-            const query = e.target.value.toLowerCase().trim();
-            searchResults.innerHTML = '';
-
-            if (query.length < 1) {
-                searchResults.classList.add('hidden');
-                return;
-            }
-
-            const sortedMatches = getSortedMatches(query).slice(0, 20);
-
-            if (sortedMatches.length > 0) {
-                searchResults.classList.remove('hidden');
-                sortedMatches.forEach(color => {
-                    const item = document.createElement('div');
-                    item.className = "flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition text-slate-900 dark:text-white";
-                    item.innerHTML = `
-                        <div class="w-6 h-6 rounded-lg border border-slate-300 dark:border-slate-700 flex-shrink-0" style="background-color: ${color.hex}"></div>
-                        <div class="flex-1 text-xs">
-                            <span class="font-bold">${color.name}</span>
-                            <span class="text-[10px] text-slate-400 ml-2">(${color.cat})</span>
-                        </div>
-                        <span class="font-mono text-xs text-slate-400 font-bold">${color.hex}</span>
-                    `;
-                    item.onclick = () => {
-                        updateColor(color.hex, color.name, color.cat);
-                        searchResults.classList.add('hidden');
-                        searchInput.value = `${color.name} (${color.hex})`;
-                    };
-                    searchResults.appendChild(item);
-                });
-            } else if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
-                searchResults.classList.add('hidden');
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                searchResults.classList.add('hidden');
-            }
-        });
-
-        picker.addEventListener('input', (e) => updateColor(e.target.value));
-
-        // Copy to Clipboard
+        // ============================================================
+        // 17. COPY & TOAST
+        // ============================================================
         function copyText(elementId, label, iconElement) {
             const textToCopy = document.getElementById(elementId).innerText;
-            if(textToCopy === '--') return;
-
+            if (textToCopy === '--') return;
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast(`${label} kopiert: ${textToCopy}`);
-                
                 if (iconElement) {
                     iconElement.className = "copy-icon fa-solid fa-check text-emerald-500 font-bold transition scale-110";
                 }
-            }).catch(err => {
-                console.error("Fehler beim Kopieren: ", err);
-            });
+            }).catch(() => {});
         }
 
         let toastTimeout;
@@ -560,7 +1004,6 @@
             toastText.innerText = message;
             toast.classList.remove('toast-leave');
             toast.classList.add('toast-enter');
-            
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
                 toast.classList.remove('toast-enter');
@@ -568,38 +1011,13 @@
             }, 2500);
         }
 
-        // History Management
-        function saveHistory(hex) {
-            let hist = JSON.parse(localStorage.getItem('colorforge_hist') || '[]');
-            if (!hist.includes(hex)) {
-                hist.unshift(hex);
-                localStorage.setItem('colorforge_hist', JSON.stringify(hist.slice(0, 12)));
-                renderHistory();
-            }
-        }
-
-        function renderHistory() {
-            histContainer.innerHTML = '';
-            const hist = JSON.parse(localStorage.getItem('colorforge_hist') || '[]');
-            hist.forEach(hex => {
-                const div = document.createElement('div');
-                div.className = "w-10 h-10 rounded-xl cursor-pointer hover:scale-110 transition shadow-sm border border-slate-300 dark:border-slate-700 flex-shrink-0";
-                div.style.backgroundColor = hex;
-                div.title = hex;
-                div.onclick = () => updateColor(hex, "", "", false);
-                histContainer.appendChild(div);
-            });
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('colorforge_hist');
-            renderHistory();
-        }
-
-        // App Start
-        loadAllDatabases();
-        renderHistory();
-        updateColor('#06B6D4', 'Cyan Web', 'Standard');
+        // ============================================================
+        // 18. APP START
+        // ============================================================
+        loadAllDatabases().then(() => {
+            updateRecentStrip();
+            updateColor('#06B6D4', 'Cyan Web', 'Standard');
+        });
     </script>
 </body>
 </html>
