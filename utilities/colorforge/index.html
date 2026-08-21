@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ColorForge - Universal Hybrid Engine v10</title>
+    <title>ColorForge</title>
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -27,10 +27,10 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
             <div>
                 <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v10.0</span>
+                    ColorForge
                 </h1>
                 <p id="db-status" class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
-                    <i class="fa-solid fa-spinner fa-spin text-cyan-500"></i> Lade kombinierte Farbdatenbanken (RAL + DE + EN)...
+                    <i class="fa-solid fa-spinner fa-spin text-cyan-500"></i> Lade Farbdatenbanken...
                 </p>
             </div>
             
@@ -188,7 +188,7 @@
                     Abbrechen
                 </button>
                 <button onclick="captureCameraColor()" class="flex-1 py-3 rounded-xl bg-cyan-500 text-white font-bold text-xs hover:bg-cyan-600 transition shadow-lg shadow-cyan-500/20">
-                    <i class="fa-solid fa-check mr-1"></i> Farbe übernehmen
+                    <i class="fa-solid fa-check mr-1"></i> Fertig & Übernehmen
                 </button>
             </div>
         </div>
@@ -205,7 +205,7 @@
         let globalColorCatalog = [];
         let baseColorHex = '#06B6D4';
         let mediaStream = null;
-        let camInterval = null;
+        let animationFrameId = null;
         let currentCamHex = "#000000";
 
         const htmlRoot = document.documentElement;
@@ -276,7 +276,7 @@
             }
         }
 
-        // KAMERA SCANNER LOGIK
+        // KAMERA SCANNER LOGIK (OPTIMIERT)
         async function openCamera() {
             const modal = document.getElementById('camera-modal');
             const video = document.getElementById('webcam-video');
@@ -287,18 +287,25 @@
                     video: { facingMode: "environment" } 
                 });
                 video.srcObject = mediaStream;
-
-                camInterval = setInterval(scanCenterPixel, 100);
+                video.onloadedmetadata = () => {
+                    video.play();
+                    scanLoop();
+                };
             } catch (err) {
                 alert("Kamera-Zugriff nicht möglich oder verweigert.");
                 closeCamera();
             }
         }
 
+        function scanLoop() {
+            scanCenterPixel();
+            animationFrameId = requestAnimationFrame(scanLoop);
+        }
+
         function scanCenterPixel() {
             const video = document.getElementById('webcam-video');
             const canvas = document.getElementById('cam-canvas');
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
             if (video.videoWidth === 0 || video.videoHeight === 0) return;
 
@@ -318,7 +325,12 @@
         }
 
         function captureCameraColor() {
-            updateColor(currentCamHex, "Kamera-Scan", "Echtzeit Kamera Scan");
+            // Farbnamen aus der Datenbank ermitteln
+            const match = globalColorCatalog.find(c => c.hex.toUpperCase() === currentCamHex.toUpperCase());
+            const matchedName = match ? match.name : "";
+            const matchedCat = match ? match.cat : "Kamera Erfassung";
+
+            updateColor(currentCamHex, matchedName, matchedCat);
             closeCamera();
         }
 
@@ -326,7 +338,7 @@
             const modal = document.getElementById('camera-modal');
             modal.classList.add('hidden');
 
-            if (camInterval) clearInterval(camInterval);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
             if (mediaStream) {
                 mediaStream.getTracks().forEach(track => track.stop());
                 mediaStream = null;
@@ -551,17 +563,17 @@
 
         // History Management
         function saveHistory(hex) {
-            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v10') || '[]');
+            let hist = JSON.parse(localStorage.getItem('colorforge_hist') || '[]');
             if (!hist.includes(hex)) {
                 hist.unshift(hex);
-                localStorage.setItem('colorforge_hist_v10', JSON.stringify(hist.slice(0, 12)));
+                localStorage.setItem('colorforge_hist', JSON.stringify(hist.slice(0, 12)));
                 renderHistory();
             }
         }
 
         function renderHistory() {
             histContainer.innerHTML = '';
-            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v10') || '[]');
+            const hist = JSON.parse(localStorage.getItem('colorforge_hist') || '[]');
             hist.forEach(hex => {
                 const div = document.createElement('div');
                 div.className = "w-10 h-10 rounded-xl cursor-pointer hover:scale-110 transition shadow-sm border border-slate-300 dark:border-slate-700 flex-shrink-0";
@@ -573,7 +585,7 @@
         }
 
         function clearHistory() {
-            localStorage.removeItem('colorforge_hist_v10');
+            localStorage.removeItem('colorforge_hist');
             renderHistory();
         }
 
