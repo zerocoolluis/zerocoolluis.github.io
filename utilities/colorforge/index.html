@@ -1,116 +1,134 @@
 <!DOCTYPE html>
-<html lang="de" class="dark">
+<html lang="de" class="dark" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ColorForge - Professional Color Utility</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #030712; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #374151; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.4); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans min-h-screen flex flex-col p-4 sm:p-8 transition-colors duration-200">
 
-    <div class="max-w-2xl w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
-        
-        <!-- Header & Picker -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-6">
-            <div>
-                <h1 class="text-lg font-bold tracking-tight text-white">ColorForge <span class="text-xs font-normal text-slate-500 ml-2">Utility v2.0</span></h1>
-                <p class="text-slate-400 text-xs mt-0.5">Präzise Farbwert-Analyse und Code-Empfehlung</p>
-            </div>
-            <div class="flex items-center gap-3">
-                <button onclick="randomizeColor()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-xl text-xs font-medium transition">
-                    Zufallswert
-                </button>
-                <div class="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800">
-                    <input type="color" id="color-picker" value="#06b6d4" class="w-7 h-7 rounded cursor-pointer bg-transparent border-0">
-                    <span id="picker-hex-label" class="font-mono text-xs font-semibold text-slate-200">#06B6D4</span>
-                </div>
+    <!-- Top Navigation / Header -->
+    <header class="w-full max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <div>
+            <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+                ColorForge <span class="text-xs font-normal px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">Utility v2.2</span>
+            </h1>
+            <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Professionelle Farbwert-Analyse und Code-Generierung</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="toggleTheme()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-800 transition shadow-sm" title="Modus umschalten">
+                <i id="theme-icon" class="fa-solid fa-moon"></i>
+            </button>
+            <button onclick="randomizeColor()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-800 transition shadow-sm">
+                Zufallswert
+            </button>
+            <div class="flex items-center gap-2.5 bg-white dark:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <input type="color" id="color-picker" value="#06b6d4" class="w-6 h-6 rounded cursor-pointer bg-transparent border-0">
+                <span id="picker-hex-label" class="font-mono text-xs font-semibold text-slate-700 dark:text-slate-200">#06B6D4</span>
             </div>
         </div>
+    </header>
 
-        <!-- Haupt-Farbdisplay & Intelligente Empfehlung -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <!-- Main Content Area (Breiteres Layout) -->
+    <main class="w-full max-w-5xl mx-auto flex-1 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Linke Spalte: Farb-Anzeige & Empfehlung -->
+        <div class="md:col-span-1 space-y-6 flex flex-col">
             <!-- Farbvorschau -->
-            <div id="main-color-box" class="h-32 rounded-xl border border-slate-700 p-4 flex flex-col justify-between transition-colors duration-200">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-300 bg-black/40 w-fit px-2 py-0.5 rounded">Farbwert</span>
-                <span id="box-contrast-text" class="text-[11px] font-mono text-slate-200">Kontrast: --</span>
+            <div id="main-color-box" class="h-48 rounded-2xl border border-slate-300 dark:border-slate-800 p-5 flex flex-col justify-between shadow-lg transition-colors duration-200">
+                <span class="text-[10px] font-mono uppercase tracking-wider text-white bg-black/40 w-fit px-2.5 py-1 rounded-md backdrop-blur-sm">Farbwert</span>
+                <span id="box-contrast-text" class="text-[11px] font-mono text-white bg-black/40 w-fit px-2.5 py-1 rounded-md backdrop-blur-sm">Kontrast-Ratio: --</span>
             </div>
             
             <!-- Code-Typ Empfehlung -->
-            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-between">
-                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Empfohlener Code-Typ</div>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex-1 flex flex-col justify-between">
                 <div>
-                    <div id="recommendation-title" class="font-bold text-sm text-cyan-400">HEX Code</div>
-                    <div id="recommendation-desc" class="text-xs text-slate-400 mt-1 leading-relaxed">Optimal für statische Stylesheets und Standard-Webdesign.</div>
+                    <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Empfohlener Code-Typ</div>
+                    <div id="recommendation-title" class="font-bold text-sm text-cyan-600 dark:text-cyan-400">HEX Code</div>
+                    <div id="recommendation-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">Optimal für statische Stylesheets und Standard-Webdesign.</div>
                 </div>
             </div>
         </div>
 
-        <!-- Code-Formate Grid -->
-        <div class="space-y-3">
-            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Verfügbare Formate (Klick zum Kopieren)</div>
+        <!-- Rechte Spalte: Formate & Verlauf -->
+        <div class="md:col-span-2 space-y-6 flex flex-col justify-between">
             
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <!-- HEX -->
-                <div onclick="copyToClipboard('code-hex')" class="flex items-center justify-between bg-slate-950 px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer transition group">
-                    <div>
-                        <span class="text-[10px] text-slate-500 block uppercase">HEX</span>
-                        <span id="code-hex" class="font-mono font-semibold text-slate-200 text-xs">#06B6D4</span>
+            <!-- Code-Formate Grid -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Verfügbare Formate (Klick zum Kopieren)</div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <!-- HEX -->
+                    <div onclick="copyToClipboard('code-hex')" class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition group">
+                        <div>
+                            <span class="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">HEX</span>
+                            <span id="code-hex" class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-xs">#06B6D4</span>
+                        </div>
+                        <i class="fa-solid fa-copy text-slate-400 dark:text-slate-600 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition text-xs"></i>
                     </div>
-                    <i class="fa-solid fa-copy text-slate-600 group-hover:text-slate-300 transition text-xs"></i>
-                </div>
 
-                <!-- RGB -->
-                <div onclick="copyToClipboard('code-rgb')" class="flex items-center justify-between bg-slate-950 px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer transition group">
-                    <div>
-                        <span class="text-[10px] text-slate-500 block uppercase">RGB</span>
-                        <span id="code-rgb" class="font-mono font-semibold text-slate-200 text-xs">rgb(6, 182, 212)</span>
+                    <!-- RGB -->
+                    <div onclick="copyToClipboard('code-rgb')" class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition group">
+                        <div>
+                            <span class="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">RGB</span>
+                            <span id="code-rgb" class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-xs">rgb(6, 182, 212)</span>
+                        </div>
+                        <i class="fa-solid fa-copy text-slate-400 dark:text-slate-600 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition text-xs"></i>
                     </div>
-                    <i class="fa-solid fa-copy text-slate-600 group-hover:text-slate-300 transition text-xs"></i>
-                </div>
 
-                <!-- HSL -->
-                <div onclick="copyToClipboard('code-hsl')" class="flex items-center justify-between bg-slate-950 px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer transition group">
-                    <div>
-                        <span class="text-[10px] text-slate-500 block uppercase">HSL</span>
-                        <span id="code-hsl" class="font-mono font-semibold text-slate-200 text-xs">hsl(187, 94%, 43%)</span>
+                    <!-- HSL -->
+                    <div onclick="copyToClipboard('code-hsl')" class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition group">
+                        <div>
+                            <span class="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">HSL</span>
+                            <span id="code-hsl" class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-xs">hsl(187, 94%, 43%)</span>
+                        </div>
+                        <i class="fa-solid fa-copy text-slate-400 dark:text-slate-600 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition text-xs"></i>
                     </div>
-                    <i class="fa-solid fa-copy text-slate-600 group-hover:text-slate-300 transition text-xs"></i>
-                </div>
 
-                <!-- CSS Syntax -->
-                <div onclick="copyToClipboard('code-tw')" class="flex items-center justify-between bg-slate-950 px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 cursor-pointer transition group">
-                    <div>
-                        <span class="text-[10px] text-slate-500 block uppercase">Deklaration</span>
-                        <span id="code-tw" class="font-mono font-semibold text-slate-200 text-xs">background-color: #06B6D4;</span>
+                    <!-- Deklaration -->
+                    <div onclick="copyToClipboard('code-tw')" class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition group">
+                        <div>
+                            <span class="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">Deklaration</span>
+                            <span id="code-tw" class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-xs">background-color: #06B6D4;</span>
+                        </div>
+                        <i class="fa-solid fa-copy text-slate-400 dark:text-slate-600 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition text-xs"></i>
                     </div>
-                    <i class="fa-solid fa-copy text-slate-600 group-hover:text-slate-300 transition text-xs"></i>
                 </div>
             </div>
+
+            <!-- Verlauf -->
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Verlauf (Zuletzt verwendet)</div>
+                    <button onclick="clearHistory()" class="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition">Zurücksetzen</button>
+                </div>
+                <div id="history-container" class="flex gap-2.5 flex-wrap">
+                    <!-- Wird per JS befüllt -->
+                </div>
+            </div>
+
         </div>
 
-        <!-- Verlauf -->
-        <div class="space-y-3 border-t border-slate-800 pt-4">
-            <div class="flex items-center justify-between">
-                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Verlauf</div>
-                <button onclick="clearHistory()" class="text-[10px] text-slate-500 hover:text-slate-300 transition">Zurücksetzen</button>
-            </div>
-            <div id="history-container" class="flex gap-2 flex-wrap">
-                <!-- Wird per JS befüllt -->
-            </div>
-        </div>
-
-    </div>
+    </main>
 
     <!-- JavaScript Logik -->
     <script>
+        const htmlRoot = document.getElementById('html-root');
+        const themeIcon = document.getElementById('theme-icon');
         const colorPicker = document.getElementById('color-picker');
         const pickerHexLabel = document.getElementById('picker-hex-label');
         const mainColorBox = document.getElementById('main-color-box');
@@ -127,6 +145,16 @@
         const historyContainer = document.getElementById('history-container');
         let colorHistory = JSON.parse(localStorage.getItem('colorforge_history')) || ['#06B6D4', '#6366F1', '#10B981', '#F59E0B', '#EF4444'];
 
+        function toggleTheme() {
+            if (htmlRoot.classList.contains('dark')) {
+                htmlRoot.classList.remove('dark');
+                themeIcon.className = "fa-solid fa-sun";
+            } else {
+                htmlRoot.classList.add('dark');
+                themeIcon.className = "fa-solid fa-moon";
+            }
+        }
+
         function updateAll(hex, saveHistory = true) {
             hex = hex.toUpperCase();
             colorPicker.value = hex;
@@ -141,43 +169,36 @@
             const hslStr = `hsl(${Math.round(hsl[0])}, ${Math.round(hsl[1] * 100)}%, ${Math.round(hsl[2] * 100)}%)`;
 
             mainColorBox.style.backgroundColor = hex;
-            let brightness = (r * 299 + g * 587 + b * 114) / 1000;
-            mainColorBox.style.color = brightness > 128 ? '#000000' : '#FFFFFF';
 
             codeHex.innerText = hex;
             codeRgb.innerText = rgbStr;
             codeHsl.innerText = hslStr;
             codeTw.innerText = `background-color: ${hex};`;
 
+            let brightness = (r * 299 + g * 587 + b * 114) / 1000;
             let contrastRatio = ((brightness + 0.05) / 0.05).toFixed(1);
             boxContrastText.innerText = `Kontrast-Ratio: ${contrastRatio}:1`;
 
-            // Intelligente Code-Empfehlung basierend auf Farbeigenschaften
-            evaluateCodeRecommendation(hsl, hex);
+            evaluateCodeRecommendation(hsl);
 
             if (saveHistory) {
                 if (!colorHistory.includes(hex)) {
                     colorHistory.unshift(hex);
-                    if (colorHistory.length > 10) colorHistory.pop();
+                    if (colorHistory.length > 12) colorHistory.pop();
                     localStorage.setItem('colorforge_history', JSON.stringify(colorHistory));
                 }
                 renderHistory();
             }
         }
 
-        function evaluateCodeRecommendation(hsl, hex) {
-            // Wenn die Sättigung sehr niedrig ist (Grautöne/Neutral) oder es sich um Standardfarben handelt -> HEX
+        function evaluateCodeRecommendation(hsl) {
             if (hsl[1] < 0.15) {
                 recommendationTitle.innerText = "HEX Code";
                 recommendationDesc.innerText = "Empfohlen für neutrale Töne und Graustufen, da er extrem kompakt im Stylesheet ist.";
-            } 
-            // Wenn feine Helligkeitsabstufungen Sinn machen (z.B. für UI-Zustände) -> HSL
-            else if (hsl[2] > 0.2 && hsl[2] < 0.8) {
+            } else if (hsl[2] > 0.2 && hsl[2] < 0.8) {
                 recommendationTitle.innerText = "HSL Format";
-                recommendationDesc.innerText = "Empfohlen für diese aktive Farbe, da sich Helligkeit und Sättigung im Code programmatisch (z.B. für Hover-Effekte) anpassen lassen.";
-            } 
-            // Standardmäßig HEX
-            else {
+                recommendationDesc.innerText = "Empfohlen für diese aktive Farbe, da sich Helligkeit und Sättigung im Code programmatisch anpassen lassen.";
+            } else {
                 recommendationTitle.innerText = "HEX Code";
                 recommendationDesc.innerText = "Empfohlen für diesen Farbton als Standard-Referenz im Webdesign.";
             }
@@ -222,7 +243,7 @@
             historyContainer.innerHTML = '';
             colorHistory.forEach(hex => {
                 let circle = document.createElement('div');
-                circle.className = "w-7 h-7 rounded-lg cursor-pointer border border-slate-700 hover:scale-105 transition shadow-sm";
+                circle.className = "w-8 h-8 rounded-xl cursor-pointer border border-slate-300 dark:border-slate-700 hover:scale-105 transition shadow-sm";
                 circle.style.backgroundColor = hex;
                 circle.title = hex;
                 circle.onclick = () => updateAll(hex, false);
