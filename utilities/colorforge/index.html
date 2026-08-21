@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ColorForge - Universal Hybrid Engine</title>
+    <title>ColorForge - Universal Hybrid Engine v7</title>
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,9 +15,12 @@
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; border-radius: 4px; }
+        /* Toast Animation */
+        .toast-enter { transform: translateY(0); opacity: 1; }
+        .toast-leave { transform: translateY(150%); opacity: 0; }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen p-4 md:p-8 transition-colors duration-200 font-sans">
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen p-4 md:p-8 transition-colors duration-200 font-sans relative overflow-x-hidden">
 
     <main class="max-w-4xl mx-auto space-y-6">
         
@@ -25,14 +28,14 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
             <div>
                 <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v6.0</span>
+                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v7.0</span>
                 </h1>
                 <p id="db-status" class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
                     <i class="fa-solid fa-spinner fa-spin text-cyan-500"></i> Lade kombinierte Farbdatenbanken (RAL + DE + EN)...
                 </p>
             </div>
             
-            <!-- Funktionierender Theme Toggle -->
+            <!-- Theme Toggle -->
             <button onclick="toggleTheme()" id="theme-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs">
                 <i id="theme-icon" class="fa-solid fa-sun text-amber-500 text-base"></i>
                 <span id="theme-text">Heller Modus</span>
@@ -43,7 +46,7 @@
         <div class="relative">
             <div class="relative">
                 <input type="text" id="color-search" 
-                       placeholder="Farbe suchen (z.B. neongelb, RAL 1023, crimson, himmelblau, #06b6d4)..." 
+                       placeholder="Farbe suchen und Enter drücken (z.B. neongelb, RAL 1023)..." 
                        autocomplete="off"
                        class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-2 border-slate-300 dark:border-slate-800 focus:border-cyan-500 dark:focus:border-cyan-400 outline-none text-base shadow-lg transition placeholder-slate-400 dark:placeholder-slate-500 font-medium">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-5 text-slate-400 dark:text-slate-500 text-lg"></i>
@@ -58,7 +61,7 @@
         <div class="grid md:grid-cols-2 gap-6">
             
             <!-- Linke Karte: Farbauswahl & Name -->
-            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
+            <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col justify-between relative group">
                 <div>
                     <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">Interaktiver Color Picker</label>
                     <input type="color" id="picker" class="w-full h-32 rounded-2xl cursor-pointer border-0 bg-transparent">
@@ -66,28 +69,46 @@
                 <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                     <h2 id="color-name-display" class="text-2xl font-black text-cyan-600 dark:text-cyan-400 tracking-wide truncate">--</h2>
                     <p id="color-cat-display" class="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Kategorie / Quelle</p>
-                    <p id="hex-display" class="font-mono text-slate-900 dark:text-slate-100 font-bold text-base mt-2">#000000</p>
+                    
+                    <!-- HEX Code Copy Area -->
+                    <div class="mt-2 inline-flex items-center gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -ml-1.5 rounded-lg transition" onclick="copyText('hex-display', 'HEX Code')">
+                        <p id="hex-display" class="font-mono text-slate-900 dark:text-slate-100 font-bold text-base">#000000</p>
+                        <i class="fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                    </div>
                 </div>
             </div>
 
             <!-- Rechte Karte: Online API Metadaten -->
             <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col justify-between">
                 <div>
-                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 block">Live Online API Werte (TheColorAPI)</label>
+                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 block">Live Online API Werte (Klick zum Kopieren)</label>
                     <div class="space-y-3 text-xs font-medium">
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <!-- RGB -->
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('rgb-val', 'RGB Code')">
                             <span class="text-slate-500 dark:text-slate-400 font-bold">RGB:</span>
-                            <span id="rgb-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                            <div class="flex items-center gap-2">
+                                <span id="rgb-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                                <i class="fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <!-- CMYK -->
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('cmyk-val', 'CMYK Code')">
                             <span class="text-slate-500 dark:text-slate-400 font-bold">CMYK:</span>
-                            <span id="cmyk-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                            <div class="flex items-center gap-2">
+                                <span id="cmyk-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                                <i class="fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2">
+                        <!-- HSL -->
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('hsl-val', 'HSL Code')">
                             <span class="text-slate-500 dark:text-slate-400 font-bold">HSL:</span>
-                            <span id="hsl-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                            <div class="flex items-center gap-2">
+                                <span id="hsl-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
+                                <i class="fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center">
+                        <!-- Web Name -->
+                        <div class="flex justify-between items-center p-1">
                             <span class="text-slate-500 dark:text-slate-400 font-bold">Wissenschaftlicher Name:</span>
                             <span id="web-name-val" class="font-bold text-cyan-600 dark:text-cyan-400">--</span>
                         </div>
@@ -99,13 +120,11 @@
 
         <!-- Verlauf & Historie -->
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 space-y-5">
-            
             <!-- Farbverlauf DIREKT ÜBER den zuletzt verwendeten Farben -->
             <div>
                 <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">Dynamischer Farbverlauf der aktiven Farbe</label>
                 <div id="active-gradient" class="h-12 rounded-2xl shadow-inner border border-slate-300 dark:border-slate-700 transition-all duration-300"></div>
             </div>
-
             <!-- Historie (Zuletzt verwendet) -->
             <div>
                 <div class="flex justify-between items-center mb-3">
@@ -114,17 +133,20 @@
                 </div>
                 <div id="history-container" class="flex gap-3 flex-wrap"></div>
             </div>
-
         </div>
 
     </main>
 
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 toast-leave transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-50 font-semibold text-sm">
+        <i class="fa-solid fa-circle-check text-green-400 dark:text-green-500"></i>
+        <span id="toast-text">Kopiert!</span>
+    </div>
+
     <!-- JavaScript Logik -->
     <script>
-        // Globale Kombinierte Farbdatenbank
         let globalColorCatalog = [];
 
-        // DOM Elemente
         const htmlRoot = document.documentElement;
         const themeIcon = document.getElementById('theme-icon');
         const themeText = document.getElementById('theme-text');
@@ -137,8 +159,10 @@
         const activeGradient = document.getElementById('active-gradient');
         const histContainer = document.getElementById('history-container');
         const dbStatus = document.getElementById('db-status');
+        const toast = document.getElementById('toast');
+        const toastText = document.getElementById('toast-text');
 
-        // 1. Theme Switcher (Hell / Dunkel Modus Fix)
+        // 1. Theme Switcher
         function toggleTheme() {
             if (htmlRoot.classList.contains('dark')) {
                 htmlRoot.classList.remove('dark');
@@ -153,75 +177,54 @@
             }
         }
 
-        // Initialize Theme State
         if (localStorage.getItem('colorforge_theme') === 'light') {
             htmlRoot.classList.remove('dark');
             themeIcon.className = "fa-solid fa-moon text-indigo-600 text-base";
             themeText.innerText = "Dunkler Modus";
         }
 
-        // 2. Datenbanken Laden & Mergen (Deutsches Wörterbuch + RAL + 30.000+ EN)
+        // 2. Datenbanken Laden & Mergen
         async function loadAllDatabases() {
-            // A) Umfangreiches Deutsches Wörterbuch
             const germanDict = [
                 { name: "Neongelb", search: "neongelb", hex: "#EFFF00", cat: "Deutsch / Neon" },
                 { name: "Neongrün", search: "neongrün", hex: "#39FF14", cat: "Deutsch / Neon" },
                 { name: "Neonrot", search: "neonrot", hex: "#FF3131", cat: "Deutsch / Neon" },
                 { name: "Neonpink", search: "neonpink", hex: "#FF10F0", cat: "Deutsch / Neon" },
-                { name: "Neonblau", search: "neonblau", hex: "#1F51FF", cat: "Deutsch / Neon" },
                 { name: "Himmelblau", search: "himmelblau", hex: "#87CEEB", cat: "Deutsch" },
-                { name: "Königsblau", search: "königsblau", hex: "#4169E1", cat: "Deutsch" },
                 { name: "Feuerrot", search: "feuerrot", hex: "#AF2B1E", cat: "Deutsch / RAL" },
                 { name: "Smaragdgrün", search: "smaragdgrün", hex: "#50C878", cat: "Deutsch" },
                 { name: "Weinrot", search: "weinrot", hex: "#722F37", cat: "Deutsch" },
-                { name: "Mintgrün", search: "mintgrün", hex: "#98FF98", cat: "Deutsch" },
-                { name: "Sonnengelb", search: "sonnengelb", hex: "#FFDA03", cat: "Deutsch" },
-                { name: "Bordeaux", search: "bordeaux", hex: "#800000", cat: "Deutsch" },
-                { name: "Smaragd", search: "smaragd", hex: "#00A86B", cat: "Deutsch" },
-                { name: "Tiefschwarz", search: "tiefschwarz", hex: "#0A0A0A", cat: "Deutsch" }
+                { name: "Mintgrün", search: "mintgrün", hex: "#98FF98", cat: "Deutsch" }
             ];
 
             germanDict.forEach(item => globalColorCatalog.push(item));
 
-            // B) RAL Farbdatenbank laden
             try {
                 const ralRes = await fetch('https://raw.githubusercontent.com/Korchy/blender-color-matching/master/ral_c.json');
                 const ralData = await ralRes.json();
                 ralData.forEach(item => {
                     const info = item[1];
-                    globalColorCatalog.push({
-                        name: info[0],
-                        search: info[0].toLowerCase(),
-                        hex: info[3],
-                        cat: "RAL Classic"
-                    });
+                    globalColorCatalog.push({ name: info[0], search: info[0].toLowerCase(), hex: info[3], cat: "RAL Classic" });
                 });
-            } catch (e) { console.warn("RAL DB Fallback active"); }
+            } catch (e) {}
 
-            // C) Riesige Englische Farbdatenbank (30.000+ Farben)
             try {
                 const hugeRes = await fetch('https://unpkg.com/color-name-list/dist/colornames.json');
                 const hugeData = await hugeRes.json();
                 hugeData.forEach(item => {
-                    globalColorCatalog.push({
-                        name: item.name,
-                        search: item.name.toLowerCase(),
-                        hex: item.hex,
-                        cat: "Global English"
-                    });
+                    globalColorCatalog.push({ name: item.name, search: item.name.toLowerCase(), hex: item.hex, cat: "Global English" });
                 });
-            } catch (e) { console.warn("Huge DB Fallback active"); }
+            } catch (e) {}
 
-            dbStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> ${globalColorCatalog.length.toLocaleString()} Farben durchsuchbar (RAL, DE, EN)`;
+            dbStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> ${globalColorCatalog.length.toLocaleString()} Farben durchsuchbar`;
         }
 
-        // 3. Farbwert Update & Live API Abfrage
+        // 3. Farbwert Update & API
         async function updateColor(hex, customName = "", customCat = "", save = true) {
             hex = hex.toUpperCase();
             hexDisplay.innerText = hex;
             picker.value = hex;
 
-            // Farbverlauf DIREKT ÜBER ZULETZT VERWENDETEN FARBEN
             activeGradient.style.background = `linear-gradient(90deg, #FFFFFF 0%, ${hex} 50%, #000000 100%)`;
 
             if (customName) {
@@ -229,7 +232,6 @@
                 catDisplay.innerText = customCat || "Katalog Treffer";
             }
 
-            // Abfrage an TheColorAPI für wissenschaftliche Werte
             try {
                 const res = await fetch(`https://www.thecolorapi.com/id?hex=${hex.replace('#', '')}`);
                 const data = await res.json();
@@ -250,8 +252,37 @@
             if (save) saveHistory(hex);
         }
 
-        // 4. Live Suche
-        searchInput.addEventListener('input', (e) => {
+        // 4. Live Suche + ENTER FUNKTION
+        searchInput.addEventListener('input', handleSearch);
+        
+        // ENTER-TASTEN FUNKTION
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Verhindert Standard-Formular-Submit
+                const query = e.target.value.toLowerCase().trim();
+                
+                if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
+                    updateColor(query);
+                    searchResults.classList.add('hidden');
+                    return;
+                }
+
+                // Nimm den ersten Treffer aus dem Katalog
+                const matches = globalColorCatalog.filter(c => 
+                    c.search.includes(query) || c.hex.toLowerCase().includes(query)
+                );
+
+                if (matches.length > 0) {
+                    const topMatch = matches[0];
+                    updateColor(topMatch.hex, topMatch.name, topMatch.cat);
+                    searchResults.classList.add('hidden');
+                    searchInput.value = `${topMatch.name} (${topMatch.hex})`;
+                    searchInput.blur(); // Entfernt den Fokus vom Suchfeld
+                }
+            }
+        });
+
+        function handleSearch(e) {
             const query = e.target.value.toLowerCase().trim();
             searchResults.innerHTML = '';
 
@@ -260,10 +291,9 @@
                 return;
             }
 
-            // Filtere durch den gesamten Katalog
             const matches = globalColorCatalog.filter(c => 
                 c.search.includes(query) || c.hex.toLowerCase().includes(query)
-            ).slice(0, 20); // Maximal 20 Vorschläge
+            ).slice(0, 20);
 
             if (matches.length > 0) {
                 searchResults.classList.remove('hidden');
@@ -285,13 +315,10 @@
                     };
                     searchResults.appendChild(item);
                 });
-            } else {
-                if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
-                    updateColor(query);
-                    searchResults.classList.add('hidden');
-                }
+            } else if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
+                searchResults.classList.add('hidden');
             }
-        });
+        }
 
         document.addEventListener('click', (e) => {
             if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
@@ -301,19 +328,45 @@
 
         picker.addEventListener('input', (e) => updateColor(e.target.value));
 
-        // 5. History Management
+        // 5. COPY TO CLIPBOARD FUNKTION
+        function copyText(elementId, label) {
+            const textToCopy = document.getElementById(elementId).innerText;
+            
+            if(textToCopy === '--') return; // Nichts kopieren wenn kein Wert da ist
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast(`${label} kopiert: ${textToCopy}`);
+            }).catch(err => {
+                console.error("Fehler beim Kopieren: ", err);
+            });
+        }
+
+        let toastTimeout;
+        function showToast(message) {
+            toastText.innerText = message;
+            toast.classList.remove('toast-leave');
+            toast.classList.add('toast-enter');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-leave');
+            }, 2500); // Popup verschwindet nach 2.5 Sekunden
+        }
+
+        // 6. History Management
         function saveHistory(hex) {
-            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v6') || '[]');
+            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v7') || '[]');
             if (!hist.includes(hex)) {
                 hist.unshift(hex);
-                localStorage.setItem('colorforge_hist_v6', JSON.stringify(hist.slice(0, 12)));
+                localStorage.setItem('colorforge_hist_v7', JSON.stringify(hist.slice(0, 12)));
                 renderHistory();
             }
         }
 
         function renderHistory() {
             histContainer.innerHTML = '';
-            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v6') || '[]');
+            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v7') || '[]');
             hist.forEach(hex => {
                 const div = document.createElement('div');
                 div.className = "w-10 h-10 rounded-xl cursor-pointer hover:scale-110 transition shadow-sm border border-slate-300 dark:border-slate-700 flex-shrink-0";
@@ -325,7 +378,7 @@
         }
 
         function clearHistory() {
-            localStorage.removeItem('colorforge_hist_v6');
+            localStorage.removeItem('colorforge_hist_v7');
             renderHistory();
         }
 
