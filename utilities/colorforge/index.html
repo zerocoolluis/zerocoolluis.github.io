@@ -15,7 +15,7 @@
         .toast-enter { transform: translateY(0); opacity: 1; }
         .toast-leave { transform: translateY(150%); opacity: 0; }
 
-        /* ----- HOVER & TRANSITIONEN (neu) ----- */
+        /* ----- HOVER & TRANSITIONEN (einheitlich & dezent) ----- */
         .btn-hover {
             transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer;
@@ -66,13 +66,6 @@
             border-radius: 8px;
         }
 
-        .theme-toggle {
-            transition: all 0.3s ease;
-        }
-        .theme-toggle:hover {
-            transform: rotate(15deg);
-        }
-
         .recent-strip { display: flex; gap: 6px; flex-wrap: wrap; }
         .recent-strip .dot {
             width: 28px; height: 28px; border-radius: 50%;
@@ -116,6 +109,16 @@
             transform: scale(1.05);
         }
 
+        /* Theme-Button hat NUR das normale btn-hover, kein Sonder-Hover mehr */
+        .theme-btn {
+            transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+        .theme-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
+        }
+
         @media (max-width: 640px) { .main-title { font-size: 1.8rem; } }
     </style>
 </head>
@@ -135,7 +138,8 @@
                 <a href="https://zerocoolluis.github.io" title="Hauptseite" class="flex items-center justify-center p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm btn-hover">
                     <i class="fa-solid fa-house text-base"></i>
                 </a>
-                <button onclick="toggleTheme()" id="theme-btn" class="theme-toggle flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs btn-hover">
+                <!-- Theme-Button jetzt ohne Sonder-Hover, nur noch normales btn-hover -->
+                <button onclick="toggleTheme()" id="theme-btn" class="theme-btn flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs">
                     <i id="theme-icon" class="fa-solid fa-sun text-amber-500 text-base"></i>
                     <span id="theme-text" class="hidden sm:inline">Heller Modus</span>
                 </button>
@@ -208,7 +212,7 @@
                     </div>
                 </div>
 
-                <!-- Code-Empfehlung (ohne Emojis) -->
+                <!-- Code-Empfehlung -->
                 <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                     <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Best-Code-Empfehlung</label>
                     <div id="code-recommendation" class="recommendation-box">
@@ -302,7 +306,7 @@
         const recText = document.getElementById('rec-text');
 
         // ============================================================
-        // 2. THEME (Dark/Light/System)
+        // 2. THEME
         // ============================================================
         function setTheme(mode) {
             if (mode === 'system') {
@@ -342,7 +346,7 @@
         });
 
         // ============================================================
-        // 3. HILFSFUNKTIONEN (Farbberechnung)
+        // 3. HILFSFUNKTIONEN
         // ============================================================
         function hexToRgb(hex) {
             hex = hex.replace('#', '');
@@ -559,7 +563,7 @@
         });
 
         // ============================================================
-        // 6. FARBUPDATE + CODE-EMPFEHLUNG (fein abgestimmt)
+        // 6. FARBUPDATE + CODE-EMPFEHLUNG
         // ============================================================
         async function updateColor(hex, customName = "", customCat = "", save = true, isBaseUpdate = true) {
             hex = hex.toUpperCase();
@@ -593,7 +597,6 @@
                 document.getElementById('web-name-val').innerText = data.name.value;
                 const lab = rgbToLab(hexToRgb(hex));
                 document.getElementById('lab-val').innerText = `L:${Math.round(lab.L)} a:${Math.round(lab.a)} b:${Math.round(lab.b)}`;
-                // FEINE EMPFEHLUNG
                 updateFineRecommendation(hex);
             } catch (err) {
                 if (!customName) nameDisplay.innerText = "Farbe ausgewählt";
@@ -608,13 +611,12 @@
         }
 
         // ============================================================
-        // 7. INTELLIGENTE, FARBTON-GENAU CODE-EMPFEHLUNG
+        // 7. INTELLIGENTE CODE-EMPFEHLUNG (farbton-genau)
         // ============================================================
         function updateFineRecommendation(hex) {
             const hsl = hexToHsl(hex);
             const h = hsl.h, s = hsl.s, l = hsl.l;
 
-            // Bestimme Farbfamilie
             let family = '';
             if (h >= 0 && h < 20) family = 'Rot';
             else if (h >= 20 && h < 45) family = 'Orange';
@@ -627,7 +629,6 @@
 
             let rec = '';
 
-            // 1. Helligkeit & Sättigung bewerten
             if (l >= 80 && s < 25) {
                 rec = `Sehr heller Pastellton (${family}) – der <strong>HEX-Code</strong> ist universell. Für Bildschirme ist <strong>RGB</strong> optimal, da Pastellfarben im Druck oft anders wirken.`;
             } else if (l >= 70 && s >= 40 && s < 70) {
@@ -644,7 +645,6 @@
                 rec = `Ausgewogene Farbe (${family}) – der <strong>HEX-Code</strong> ist für die meisten Anwendungen die beste Wahl. Für spezielle Druckprojekte sind <strong>CMYK</strong> und <strong>LAB</strong> wertvoll.`;
             }
 
-            // 2. Farbton-spezifische Ergänzung
             if (family === 'Rot' || family === 'Orange') {
                 rec += ' Rottöne wirken in <strong>RGB</strong> besonders lebendig – für Print sind <strong>CMYK</strong>-Werte hilfreich.';
             } else if (family === 'Gelb') {
