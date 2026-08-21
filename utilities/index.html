@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Utilities // ZERO'S TOOL HUB</title>
-    <meta name="description" content="Übersicht der geplanten Utility-Tools – alle in Entwicklung." />
+    <meta name="description" content="Utilities-Bereich mit ColorForge und Platzhaltern für kommende Tools." />
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* ===== FARBSCHEMA ===== */
+        /* ===== FARBSCHEMA (wie Hauptseite) ===== */
         :root {
             --bg-color: #0a0e1a;
             --card-bg: rgba(18, 25, 45, 0.75);
@@ -187,22 +187,18 @@
         .subhead {
             color: var(--text-muted);
             font-size: 1.1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
         }
 
-        /* ===== TOOL-GRID ===== */
+        /* ===== TOOL-GRID (nur 3 Karten) ===== */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 25px;
             margin-top: 10px;
+            max-width: 900px; /* damit die 3 Karten nicht zu breit werden */
         }
 
-        /* ===== PLATZHALTER-KARTEN ===== */
+        /* ===== TOOL-KARTEN ===== */
         .tool-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -216,8 +212,12 @@
             text-decoration: none;
             position: relative;
             overflow: hidden;
-            cursor: default; /* keine Interaktion, da Platzhalter */
         }
+        /* Bei Platzhaltern kein Link – daher cursor:default */
+        .tool-card.placeholder {
+            cursor: default;
+        }
+
         .tool-card::before {
             content: '';
             position: absolute;
@@ -253,10 +253,21 @@
         .tool-card h3 i {
             font-size: 1.6rem;
             transition: transform 0.3s ease;
-            color: var(--text-muted);
         }
 
-        .tool-card:hover h3 i {
+        /* ColorForge – eigenes Icon (Pinsel) */
+        .tool-card.colorforge h3 i {
+            color: var(--accent-pink);
+        }
+        .tool-card.colorforge:hover h3 i {
+            transform: scale(1.15) rotate(-10deg);
+        }
+
+        /* Platzhalter-Icons neutral */
+        .tool-card.placeholder h3 i {
+            color: var(--text-muted);
+        }
+        .tool-card.placeholder:hover h3 i {
             transform: scale(1.1) rotate(-6deg);
             color: var(--primary);
         }
@@ -273,18 +284,22 @@
             font-size: 0.6rem;
             padding: 4px 12px;
             border-radius: 20px;
-            background: rgba(91, 154, 255, 0.12);
-            color: var(--primary);
             text-transform: uppercase;
             font-family: 'Orbitron', sans-serif;
-            border: 1px solid rgba(91, 154, 255, 0.25);
             letter-spacing: 0.5px;
             white-space: nowrap;
+            display: inline-block;
+            margin-top: 12px;
+        }
+        .badge.ready {
+            background: rgba(91, 154, 255, 0.15);
+            color: var(--primary);
+            border: 1px solid rgba(91, 154, 255, 0.3);
         }
         .badge.planning {
             background: rgba(240, 194, 127, 0.12);
             color: var(--accent-gold);
-            border-color: rgba(240, 194, 127, 0.25);
+            border: 1px solid rgba(240, 194, 127, 0.25);
         }
 
         /* ===== FOOTER ===== */
@@ -310,12 +325,9 @@
             h1 {
                 font-size: 2rem;
             }
-            .subhead {
-                flex-direction: column;
-                align-items: flex-start;
-            }
             .grid {
                 grid-template-columns: 1fr;
+                max-width: 100%;
             }
         }
     </style>
@@ -344,119 +356,40 @@
         <header>
             <h1>Utilities Bereich</h1>
             <div class="subhead">
-                <span>Hier entstehen in Zukunft nützliche Tools für den Alltag.</span>
+                <span>Hier findest du nützliche Tools – aktuell ist ColorForge verfügbar, weitere folgen.</span>
             </div>
         </header>
 
-        <!-- PLATZHALTER-GRID -->
+        <!-- GRID mit genau 3 Karten -->
         <div class="grid">
-            <!-- 12 Platzhalter-Karten – alle neutral -->
-            <div class="tool-card">
+            <!-- 1. ColorForge (fertig, verlinkt) -->
+            <a href="colorforge/" class="tool-card colorforge">
+                <h3>
+                    <span>ColorForge</span>
+                    <i class="fa-solid fa-paintbrush"></i>
+                </h3>
+                <p>Kreatives Farb-Tool zum Erstellen, Mischen und Verwalten von Paletten.</p>
+                <span class="badge ready">Jetzt nutzen</span>
+            </a>
+
+            <!-- 2. Platzhalter 1 -->
+            <div class="tool-card placeholder">
                 <h3>
                     <span>Platzhalter 01</span>
                     <i class="fa-solid fa-cube"></i>
                 </h3>
                 <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
+                <span class="badge planning">In Planung</span>
             </div>
 
-            <div class="tool-card">
+            <!-- 3. Platzhalter 2 -->
+            <div class="tool-card placeholder">
                 <h3>
                     <span>Platzhalter 02</span>
                     <i class="fa-solid fa-cube"></i>
                 </h3>
                 <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 03</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 04</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 05</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 06</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 07</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 08</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 09</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 10</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 11</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
-            </div>
-
-            <div class="tool-card">
-                <h3>
-                    <span>Platzhalter 12</span>
-                    <i class="fa-solid fa-cube"></i>
-                </h3>
-                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
-                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
+                <span class="badge planning">In Planung</span>
             </div>
         </div>
 
