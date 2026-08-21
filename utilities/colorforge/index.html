@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ColorForge - Universal Hybrid Engine v9</title>
+    <title>ColorForge - Universal Hybrid Engine v10</title>
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -27,7 +27,7 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
             <div>
                 <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v9.0</span>
+                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v10.0</span>
                 </h1>
                 <p id="db-status" class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
                     <i class="fa-solid fa-spinner fa-spin text-cyan-500"></i> Lade kombinierte Farbdatenbanken (RAL + DE + EN)...
@@ -59,12 +59,21 @@
         <!-- Hauptbereich Grid -->
         <div class="grid md:grid-cols-2 gap-6">
             
-            <!-- Linke Karte: Farbauswahl & Name -->
+            <!-- Linke Karte: Farbauswahl, Kamera & Name -->
             <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col justify-between relative group">
                 <div>
-                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">Interaktiver Color Picker</label>
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Interaktiver Picker & Kamera</label>
+                        
+                        <!-- Kamera Button -->
+                        <button onclick="openCamera()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 font-bold text-xs transition">
+                            <i class="fa-solid fa-camera"></i> Kamera Scanner
+                        </button>
+                    </div>
+
                     <input type="color" id="picker" class="w-full h-32 rounded-2xl cursor-pointer border-0 bg-transparent">
                 </div>
+                
                 <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                     <h2 id="color-name-display" class="text-2xl font-black text-cyan-600 dark:text-cyan-400 tracking-wide truncate">--</h2>
                     <p id="color-cat-display" class="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Kategorie / Quelle</p>
@@ -142,6 +151,49 @@
 
     </main>
 
+    <!-- KAMERA MODAL OVERLAY -->
+    <div id="camera-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl flex flex-col items-center space-y-4 relative">
+            <button onclick="closeCamera()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-lg font-black text-slate-900 dark:text-white">Kamera Farbscanner</h3>
+            <p class="text-xs text-slate-400 text-center">Richte das Fadenkreuz in der Mitte auf den Gegenstand.</p>
+
+            <!-- Live Video Container mit Visier -->
+            <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black border border-slate-700 flex items-center justify-center">
+                <video id="webcam-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                <canvas id="cam-canvas" class="hidden"></canvas>
+                
+                <!-- Fadenkreuz Visier -->
+                <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+                    <div class="w-10 h-10 border-2 border-white rounded-full flex items-center justify-center shadow-lg">
+                        <div class="w-2 h-2 bg-cyan-400 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Farb-Vorschau -->
+            <div class="flex items-center gap-3 w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl">
+                <div id="cam-preview-dot" class="w-8 h-8 rounded-lg border border-slate-300 dark:border-slate-600 shadow-sm" style="background-color: #000000;"></div>
+                <div class="flex-1">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase">Erfasster Wert</p>
+                    <p id="cam-preview-hex" class="font-mono font-bold text-sm text-slate-900 dark:text-white">#000000</p>
+                </div>
+            </div>
+
+            <!-- Steuerungs-Buttons -->
+            <div class="flex gap-3 w-full">
+                <button onclick="closeCamera()" class="flex-1 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs hover:bg-slate-300 transition">
+                    Abbrechen
+                </button>
+                <button onclick="captureCameraColor()" class="flex-1 py-3 rounded-xl bg-cyan-500 text-white font-bold text-xs hover:bg-cyan-600 transition shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-check mr-1"></i> Farbe übernehmen
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 toast-leave transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-50 font-semibold text-sm">
         <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-500"></i>
@@ -151,7 +203,10 @@
     <!-- JavaScript Logik -->
     <script>
         let globalColorCatalog = [];
-        let baseColorHex = '#06B6D4'; // Die Ausgangsfarbe für den Verlauf
+        let baseColorHex = '#06B6D4';
+        let mediaStream = null;
+        let camInterval = null;
+        let currentCamHex = "#000000";
 
         const htmlRoot = document.documentElement;
         const themeIcon = document.getElementById('theme-icon');
@@ -191,7 +246,7 @@
             themeText.innerText = "Dunkler Modus";
         }
 
-        // Hilfsfunktionen für Farbberechnung
+        // Hilfsfunktionen Farbberechnung
         function hexToRgb(hex) {
             hex = hex.replace('#', '');
             if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
@@ -218,6 +273,63 @@
                 return interpolateColor("#FFFFFF", baseColorHex, val / 50);
             } else {
                 return interpolateColor(baseColorHex, "#000000", (val - 50) / 50);
+            }
+        }
+
+        // KAMERA SCANNER LOGIK
+        async function openCamera() {
+            const modal = document.getElementById('camera-modal');
+            const video = document.getElementById('webcam-video');
+            modal.classList.remove('hidden');
+
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" } 
+                });
+                video.srcObject = mediaStream;
+
+                camInterval = setInterval(scanCenterPixel, 100);
+            } catch (err) {
+                alert("Kamera-Zugriff nicht möglich oder verweigert.");
+                closeCamera();
+            }
+        }
+
+        function scanCenterPixel() {
+            const video = document.getElementById('webcam-video');
+            const canvas = document.getElementById('cam-canvas');
+            const ctx = canvas.getContext('2d');
+
+            if (video.videoWidth === 0 || video.videoHeight === 0) return;
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const centerX = Math.floor(canvas.width / 2);
+            const centerY = Math.floor(canvas.height / 2);
+            const pixel = ctx.getImageData(centerX, centerY, 1, 1).data;
+
+            currentCamHex = rgbToHex(pixel[0], pixel[1], pixel[2]);
+
+            document.getElementById('cam-preview-dot').style.backgroundColor = currentCamHex;
+            document.getElementById('cam-preview-hex').innerText = currentCamHex;
+        }
+
+        function captureCameraColor() {
+            updateColor(currentCamHex, "Kamera-Scan", "Echtzeit Kamera Scan");
+            closeCamera();
+        }
+
+        function closeCamera() {
+            const modal = document.getElementById('camera-modal');
+            modal.classList.add('hidden');
+
+            if (camInterval) clearInterval(camInterval);
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
             }
         }
 
@@ -280,18 +392,16 @@
             });
         }
 
-        // Farbwert Update & API (isBaseUpdate bestimmt, ob die Hauptfarbe neu gesetzt wird)
+        // Farbwert Update & API
         async function updateColor(hex, customName = "", customCat = "", save = true, isBaseUpdate = true) {
             hex = hex.toUpperCase();
 
-            // Bei neuer Farbauswahl den Verlauf-Basiswert und Regler zurücksetzen
             if (isBaseUpdate) {
                 baseColorHex = hex;
                 if (gradientSlider) gradientSlider.value = 50;
                 if (sliderLabel) sliderLabel.innerText = "50% (Original)";
             }
 
-            // Alle früheren grünen Haken wieder in normale Kopier-Icons zurücksetzen
             document.querySelectorAll('.copy-icon').forEach(icon => {
                 icon.className = "copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition";
             });
@@ -299,7 +409,6 @@
             hexDisplay.innerText = hex;
             picker.value = hex;
 
-            // Farbverlauf basiert immer auf der Basis-Farbe
             activeGradient.style.background = `linear-gradient(90deg, #FFFFFF 0%, ${baseColorHex} 50%, #000000 100%)`;
 
             if (customName) {
@@ -411,7 +520,7 @@
 
         picker.addEventListener('input', (e) => updateColor(e.target.value));
 
-        // Copy to Clipboard (Der grüne Haken BLEIBT stehen bis zur Farbänderung)
+        // Copy to Clipboard
         function copyText(elementId, label, iconElement) {
             const textToCopy = document.getElementById(elementId).innerText;
             if(textToCopy === '--') return;
@@ -419,7 +528,6 @@
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast(`${label} kopiert: ${textToCopy}`);
                 
-                // Grünes Häkchen setzen (wird erst bei updateColor wieder gelöscht)
                 if (iconElement) {
                     iconElement.className = "copy-icon fa-solid fa-check text-emerald-500 font-bold transition scale-110";
                 }
@@ -443,17 +551,17 @@
 
         // History Management
         function saveHistory(hex) {
-            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v9') || '[]');
+            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v10') || '[]');
             if (!hist.includes(hex)) {
                 hist.unshift(hex);
-                localStorage.setItem('colorforge_hist_v9', JSON.stringify(hist.slice(0, 12)));
+                localStorage.setItem('colorforge_hist_v10', JSON.stringify(hist.slice(0, 12)));
                 renderHistory();
             }
         }
 
         function renderHistory() {
             histContainer.innerHTML = '';
-            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v9') || '[]');
+            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v10') || '[]');
             hist.forEach(hex => {
                 const div = document.createElement('div');
                 div.className = "w-10 h-10 rounded-xl cursor-pointer hover:scale-110 transition shadow-sm border border-slate-300 dark:border-slate-700 flex-shrink-0";
@@ -465,7 +573,7 @@
         }
 
         function clearHistory() {
-            localStorage.removeItem('colorforge_hist_v9');
+            localStorage.removeItem('colorforge_hist_v10');
             renderHistory();
         }
 
