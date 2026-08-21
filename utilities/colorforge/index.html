@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ColorForge - Universal Hybrid Engine v7</title>
+    <title>ColorForge - Universal Hybrid Engine v8</title>
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,7 +15,6 @@
     <style>
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; border-radius: 4px; }
-        /* Toast Animation */
         .toast-enter { transform: translateY(0); opacity: 1; }
         .toast-leave { transform: translateY(150%); opacity: 0; }
     </style>
@@ -28,7 +27,7 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
             <div>
                 <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v7.0</span>
+                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v8.0</span>
                 </h1>
                 <p id="db-status" class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
                     <i class="fa-solid fa-spinner fa-spin text-cyan-500"></i> Lade kombinierte Farbdatenbanken (RAL + DE + EN)...
@@ -46,7 +45,7 @@
         <div class="relative">
             <div class="relative">
                 <input type="text" id="color-search" 
-                       placeholder="Farbe suchen und Enter drücken (z.B. neongelb, RAL 1023)..." 
+                       placeholder="Farbe suchen und Enter drücken (z.B. emerald, neongelb, RAL 1023)..." 
                        autocomplete="off"
                        class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white border-2 border-slate-300 dark:border-slate-800 focus:border-cyan-500 dark:focus:border-cyan-400 outline-none text-base shadow-lg transition placeholder-slate-400 dark:placeholder-slate-500 font-medium">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-5 text-slate-400 dark:text-slate-500 text-lg"></i>
@@ -71,9 +70,9 @@
                     <p id="color-cat-display" class="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Kategorie / Quelle</p>
                     
                     <!-- HEX Code Copy Area -->
-                    <div class="mt-2 inline-flex items-center gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -ml-1.5 rounded-lg transition" onclick="copyText('hex-display', 'HEX Code')">
+                    <div class="mt-2 inline-flex items-center gap-2 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 -ml-1.5 rounded-lg transition" onclick="copyText('hex-display', 'HEX Code', this.querySelector('.copy-icon'))">
                         <p id="hex-display" class="font-mono text-slate-900 dark:text-slate-100 font-bold text-base">#000000</p>
-                        <i class="fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                        <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
                     </div>
                 </div>
             </div>
@@ -84,27 +83,27 @@
                     <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3 block">Live Online API Werte (Klick zum Kopieren)</label>
                     <div class="space-y-3 text-xs font-medium">
                         <!-- RGB -->
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('rgb-val', 'RGB Code')">
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('rgb-val', 'RGB Code', this.querySelector('.copy-icon'))">
                             <span class="text-slate-500 dark:text-slate-400 font-bold">RGB:</span>
                             <div class="flex items-center gap-2">
                                 <span id="rgb-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
-                                <i class="fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                                <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
                             </div>
                         </div>
                         <!-- CMYK -->
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('cmyk-val', 'CMYK Code')">
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('cmyk-val', 'CMYK Code', this.querySelector('.copy-icon'))">
                             <span class="text-slate-500 dark:text-slate-400 font-bold">CMYK:</span>
                             <div class="flex items-center gap-2">
                                 <span id="cmyk-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
-                                <i class="fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                                <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
                             </div>
                         </div>
                         <!-- HSL -->
-                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('hsl-val', 'HSL Code')">
+                        <div class="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-1 rounded transition group" onclick="copyText('hsl-val', 'HSL Code', this.querySelector('.copy-icon'))">
                             <span class="text-slate-500 dark:text-slate-400 font-bold">HSL:</span>
                             <div class="flex items-center gap-2">
                                 <span id="hsl-val" class="font-mono font-bold text-slate-900 dark:text-slate-100">--</span>
-                                <i class="fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
+                                <i class="copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition"></i>
                             </div>
                         </div>
                         <!-- Web Name -->
@@ -120,12 +119,10 @@
 
         <!-- Verlauf & Historie -->
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 space-y-5">
-            <!-- Farbverlauf DIREKT ÜBER den zuletzt verwendeten Farben -->
             <div>
                 <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">Dynamischer Farbverlauf der aktiven Farbe</label>
                 <div id="active-gradient" class="h-12 rounded-2xl shadow-inner border border-slate-300 dark:border-slate-700 transition-all duration-300"></div>
             </div>
-            <!-- Historie (Zuletzt verwendet) -->
             <div>
                 <div class="flex justify-between items-center mb-3">
                     <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Zuletzt verwendet</label>
@@ -139,7 +136,7 @@
 
     <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 toast-leave transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-50 font-semibold text-sm">
-        <i class="fa-solid fa-circle-check text-green-400 dark:text-green-500"></i>
+        <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-500"></i>
         <span id="toast-text">Kopiert!</span>
     </div>
 
@@ -162,7 +159,7 @@
         const toast = document.getElementById('toast');
         const toastText = document.getElementById('toast-text');
 
-        // 1. Theme Switcher
+        // Theme Switcher
         function toggleTheme() {
             if (htmlRoot.classList.contains('dark')) {
                 htmlRoot.classList.remove('dark');
@@ -183,9 +180,10 @@
             themeText.innerText = "Dunkler Modus";
         }
 
-        // 2. Datenbanken Laden & Mergen
+        // Datenbanken Laden & Mergen
         async function loadAllDatabases() {
             const germanDict = [
+                { name: "Emerald", search: "emerald", hex: "#50C878", cat: "Deutsch / International" },
                 { name: "Neongelb", search: "neongelb", hex: "#EFFF00", cat: "Deutsch / Neon" },
                 { name: "Neongrün", search: "neongrün", hex: "#39FF14", cat: "Deutsch / Neon" },
                 { name: "Neonrot", search: "neonrot", hex: "#FF3131", cat: "Deutsch / Neon" },
@@ -219,7 +217,32 @@
             dbStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> ${globalColorCatalog.length.toLocaleString()} Farben durchsuchbar`;
         }
 
-        // 3. Farbwert Update & API
+        // Smarte Sortierung für exakte Treffer
+        function getSortedMatches(query) {
+            const matches = globalColorCatalog.filter(c => 
+                c.search.includes(query) || c.hex.toLowerCase().includes(query)
+            );
+
+            return matches.sort((a, b) => {
+                const aSearch = a.search;
+                const bSearch = b.search;
+
+                // 1. Exakter Treffer kommt IMMER zuerst (z.B. "emerald" vor "black emerald")
+                if (aSearch === query && bSearch !== query) return -1;
+                if (bSearch === query && aSearch !== query) return 1;
+
+                // 2. Beginnt mit dem Suchbegriff
+                const aStarts = aSearch.startsWith(query);
+                const bStarts = bSearch.startsWith(query);
+                if (aStarts && !bStarts) return -1;
+                if (!aStarts && bStarts) return 1;
+
+                // 3. Kürzere Namen bevorzugen (weniger Zusatzwörter)
+                return aSearch.length - bSearch.length;
+            });
+        }
+
+        // Farbwert Update & API
         async function updateColor(hex, customName = "", customCat = "", save = true) {
             hex = hex.toUpperCase();
             hexDisplay.innerText = hex;
@@ -252,13 +275,12 @@
             if (save) saveHistory(hex);
         }
 
-        // 4. Live Suche + ENTER FUNKTION
+        // Live Suche + Smarte ENTER Funktion
         searchInput.addEventListener('input', handleSearch);
         
-        // ENTER-TASTEN FUNKTION
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                e.preventDefault(); // Verhindert Standard-Formular-Submit
+                e.preventDefault();
                 const query = e.target.value.toLowerCase().trim();
                 
                 if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
@@ -267,17 +289,14 @@
                     return;
                 }
 
-                // Nimm den ersten Treffer aus dem Katalog
-                const matches = globalColorCatalog.filter(c => 
-                    c.search.includes(query) || c.hex.toLowerCase().includes(query)
-                );
+                const sortedMatches = getSortedMatches(query);
 
-                if (matches.length > 0) {
-                    const topMatch = matches[0];
+                if (sortedMatches.length > 0) {
+                    const topMatch = sortedMatches[0];
                     updateColor(topMatch.hex, topMatch.name, topMatch.cat);
                     searchResults.classList.add('hidden');
                     searchInput.value = `${topMatch.name} (${topMatch.hex})`;
-                    searchInput.blur(); // Entfernt den Fokus vom Suchfeld
+                    searchInput.blur();
                 }
             }
         });
@@ -291,13 +310,11 @@
                 return;
             }
 
-            const matches = globalColorCatalog.filter(c => 
-                c.search.includes(query) || c.hex.toLowerCase().includes(query)
-            ).slice(0, 20);
+            const sortedMatches = getSortedMatches(query).slice(0, 20);
 
-            if (matches.length > 0) {
+            if (sortedMatches.length > 0) {
                 searchResults.classList.remove('hidden');
-                matches.forEach(color => {
+                sortedMatches.forEach(color => {
                     const item = document.createElement('div');
                     item.className = "flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition text-slate-900 dark:text-white";
                     item.innerHTML = `
@@ -328,14 +345,22 @@
 
         picker.addEventListener('input', (e) => updateColor(e.target.value));
 
-        // 5. COPY TO CLIPBOARD FUNKTION
-        function copyText(elementId, label) {
+        // Copy to Clipboard + Häkchen-Animation
+        function copyText(elementId, label, iconElement) {
             const textToCopy = document.getElementById(elementId).innerText;
-            
-            if(textToCopy === '--') return; // Nichts kopieren wenn kein Wert da ist
+            if(textToCopy === '--') return;
 
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast(`${label} kopiert: ${textToCopy}`);
+                
+                // Icon temporär zu einem grünen Häkchen ändern
+                if (iconElement) {
+                    const originalClass = iconElement.className;
+                    iconElement.className = "copy-icon fa-solid fa-check text-emerald-500 font-bold transition scale-110";
+                    setTimeout(() => {
+                        iconElement.className = originalClass;
+                    }, 1500);
+                }
             }).catch(err => {
                 console.error("Fehler beim Kopieren: ", err);
             });
@@ -351,22 +376,22 @@
             toastTimeout = setTimeout(() => {
                 toast.classList.remove('toast-enter');
                 toast.classList.add('toast-leave');
-            }, 2500); // Popup verschwindet nach 2.5 Sekunden
+            }, 2500);
         }
 
-        // 6. History Management
+        // History Management
         function saveHistory(hex) {
-            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v7') || '[]');
+            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v8') || '[]');
             if (!hist.includes(hex)) {
                 hist.unshift(hex);
-                localStorage.setItem('colorforge_hist_v7', JSON.stringify(hist.slice(0, 12)));
+                localStorage.setItem('colorforge_hist_v8', JSON.stringify(hist.slice(0, 12)));
                 renderHistory();
             }
         }
 
         function renderHistory() {
             histContainer.innerHTML = '';
-            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v7') || '[]');
+            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v8') || '[]');
             hist.forEach(hex => {
                 const div = document.createElement('div');
                 div.className = "w-10 h-10 rounded-xl cursor-pointer hover:scale-110 transition shadow-sm border border-slate-300 dark:border-slate-700 flex-shrink-0";
@@ -378,7 +403,7 @@
         }
 
         function clearHistory() {
-            localStorage.removeItem('colorforge_hist_v7');
+            localStorage.removeItem('colorforge_hist_v8');
             renderHistory();
         }
 
