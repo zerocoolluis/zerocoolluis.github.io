@@ -1,59 +1,86 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Utilities // ZEROS HUB</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Utilities // ZERO'S TOOL HUB</title>
+    <meta name="description" content="Alle nützlichen Utilities auf einen Blick – von Farbtools bis zu PDF‑Konvertern." />
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
+        /* ===== FARBSCHEMA (wie Hauptseite) ===== */
         :root {
-            --bg-color: #03050a;
-            --card-bg: rgba(15, 20, 30, 0.6);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --accent-color: #00f0ff;
-            --neon-pink: #ff007f;
-            --text-color: #f0f6fc;
-            --text-muted: #8b949e;
+            --bg-color: #0a0e1a;
+            --card-bg: rgba(18, 25, 45, 0.75);
+            --border-color: rgba(91, 154, 255, 0.2);
+            --primary: #5b9aff;
+            --primary-glow: rgba(91, 154, 255, 0.3);
+            --accent-gold: #f0c27f;
+            --accent-pink: #ff6b6b;
+            --text-color: #eef2f8;
+            --text-muted: #9aa8c7;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
             font-family: 'Inter', sans-serif;
-            padding: 40px 20px;
             min-height: 100vh;
+            padding: 30px 20px 60px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ===== HINTERGRUND-CANVAS (Partikel) ===== */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .container {
-            max-width: 1000px;
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
             margin: 0 auto;
-            animation: fadeIn 0.6s ease forwards;
+            animation: fadeIn 0.8s ease forwards;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Top Bar mit Zurück-Button & Dropdown */
+        /* ===== TOP-BAR ===== */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
             position: relative;
-            z-index: 100;
+            z-index: 10;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .back-btn {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: rgba(8, 12, 22, 0.85);
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
             padding: 10px 20px;
@@ -64,23 +91,20 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
-
         .back-btn:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
+            border-color: var(--primary);
+            color: var(--primary);
             transform: translateX(-4px);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
-        /* Dropdown Menü Styling */
         .menu-container {
             position: relative;
         }
-
         .menu-toggle {
-            background: rgba(8, 12, 22, 0.85);
+            background: var(--card-bg);
             border: 1px solid var(--border-color);
-            color: var(--accent-color);
+            color: var(--primary);
             width: 45px;
             height: 45px;
             border-radius: 12px;
@@ -92,18 +116,18 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
         }
-
         .menu-toggle:hover {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
             transform: scale(1.05) rotate(90deg);
         }
 
         .dropdown-menu {
             position: absolute;
-            top: 55px; right: 0;
+            top: 55px;
+            right: 0;
             width: 220px;
-            background: rgba(8, 12, 22, 0.95);
+            background: rgba(10, 14, 26, 0.95);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             backdrop-filter: blur(20px);
@@ -116,7 +140,6 @@
             pointer-events: none;
             transition: all 0.3s ease;
         }
-
         .dropdown-menu.active {
             opacity: 1;
             transform: translateY(0);
@@ -135,14 +158,14 @@
             align-items: center;
             gap: 10px;
         }
-
         .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover {
-            background: rgba(0, 240, 255, 0.15);
-            color: var(--accent-color);
+            background: rgba(91, 154, 255, 0.15);
+            color: var(--primary);
             padding-left: 22px;
         }
 
+        /* ===== HEADER ===== */
         header {
             margin-bottom: 40px;
             border-bottom: 1px solid var(--border-color);
@@ -151,133 +174,466 @@
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 20px rgba(91, 154, 255, 0.15));
         }
-        
-        p { color: var(--text-muted); }
 
+        .subhead {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* ===== SUCHLEISTE ===== */
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 6px 18px;
+            backdrop-filter: blur(10px);
+            transition: border 0.3s;
+            max-width: 300px;
+        }
+        .search-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .search-wrapper i {
+            color: var(--text-muted);
+            margin-right: 10px;
+        }
+        .search-wrapper input {
+            background: transparent;
+            border: none;
+            padding: 10px 0;
+            color: #fff;
+            font-size: 0.95rem;
+            width: 100%;
+            outline: none;
+        }
+        .search-wrapper input::placeholder {
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        /* ===== TOOL-GRID ===== */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 25px;
+            margin-top: 10px;
         }
 
+        /* ===== TOOL-KARTEN ===== */
         .tool-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 2.5rem 2rem;
+            padding: 2rem 1.8rem;
             transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             color: var(--text-color);
             display: block;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(91, 154, 255, 0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .tool-card:hover::before {
+            opacity: 1;
         }
 
         .tool-card:hover {
-            border-color: var(--accent-color);
-            background: rgba(20, 25, 40, 0.9);
+            border-color: var(--primary);
             transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0, 240, 255, 0.25);
+            box-shadow: 0 15px 40px var(--primary-glow);
         }
 
         .tool-card h3 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
         .tool-card h3 i {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             transition: transform 0.3s ease;
+            color: var(--primary);
         }
 
-        .tool-card:hover h3 i.fa-paintbrush {
-            transform: scale(1.2) rotate(-10deg);
+        .tool-card:hover h3 i {
+            transform: scale(1.15) rotate(-6deg);
+        }
+
+        .tool-card .icon-gold i {
+            color: var(--accent-gold) !important;
+        }
+        .tool-card .icon-pink i {
+            color: var(--accent-pink) !important;
         }
 
         .tool-card p {
             font-size: 0.95rem;
             color: var(--text-muted);
             line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
 
         .badge {
-            font-size: 0.65rem;
-            padding: 5px 10px;
-            border-radius: 6px;
-            background: rgba(0, 240, 255, 0.15);
-            color: var(--accent-color);
+            font-size: 0.6rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(91, 154, 255, 0.15);
+            color: var(--primary);
             text-transform: uppercase;
             font-family: 'Orbitron', sans-serif;
-            border: 1px solid rgba(0, 240, 255, 0.3);
+            border: 1px solid rgba(91, 154, 255, 0.3);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .badge.soon {
+            background: rgba(240, 194, 127, 0.15);
+            color: var(--accent-gold);
+            border-color: rgba(240, 194, 127, 0.3);
+        }
+        .badge.new {
+            background: rgba(255, 107, 107, 0.15);
+            color: var(--accent-pink);
+            border-color: rgba(255, 107, 107, 0.3);
+        }
+
+        /* ===== KEINE ERGEBNISSE ===== */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            display: none;
+        }
+        .no-results i {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .top-bar {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .back-btn {
+                font-size: 0.75rem;
+                padding: 8px 14px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .subhead {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .search-wrapper {
+                max-width: 100%;
+                width: 100%;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="container">
-    <div class="top-bar">
-        <a href="../" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Zurück zur Startseite</a>
-        
-        <div class="menu-container">
-            <div class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></div>
-            <div class="dropdown-menu" id="dropdownMenu">
-                <a href="../entertainment/" class="dropdown-item"><i class="fa-solid fa-clapperboard" style="color: var(--neon-pink);"></i> Entertainment</a>
-                <a href="../school/" class="dropdown-item"><i class="fa-solid fa-lightbulb" style="color: #FFD700;"></i> School</a>
-                <a href="../utilities/" class="dropdown-item"><i class="fa-solid fa-gears" style="color: var(--accent-color);"></i> Utilities</a>
+    <!-- HINTERGRUND-PARTIKEL -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="container">
+        <!-- TOP-BAR -->
+        <div class="top-bar">
+            <a href="../" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Zurück zur Startseite</a>
+            <div class="menu-container">
+                <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen"><i class="fa-solid fa-bars"></i></button>
+                <div class="dropdown-menu" id="dropdownMenu" role="menu">
+                    <a href="../entertainment/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-clapperboard" style="color: var(--accent-pink);"></i> Entertainment</a>
+                    <a href="../school/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-lightbulb" style="color: var(--accent-gold);"></i> School</a>
+                    <a href="../utilities/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-gears" style="color: var(--primary);"></i> Utilities</a>
+                </div>
             </div>
         </div>
+
+        <!-- HEADER MIT SUCHE -->
+        <header>
+            <h1>Utilities Bereich</h1>
+            <div class="subhead">
+                <span>Alle nützlichen Tools auf einen Blick.</span>
+                <div class="search-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="searchInput" placeholder="Tool suchen..." aria-label="Tools durchsuchen" />
+                </div>
+            </div>
+        </header>
+
+        <!-- TOOL-GRID -->
+        <div class="grid" id="toolGrid">
+            <!-- 1. ColorForge (bestehend) -->
+            <a href="colorforge/" class="tool-card">
+                <h3>
+                    <span>ColorForge</span>
+                    <i class="fa-solid fa-paintbrush icon-pink"></i>
+                </h3>
+                <p>Kreatives Farb-Tool zum Erstellen, Mischen und Verwalten von Paletten.</p>
+                <div style="margin-top: 12px;"><span class="badge new">Neu</span></div>
+            </a>
+
+            <!-- 2. PDF-Konverter -->
+            <div class="tool-card">
+                <h3>
+                    <span>PDF-Konverter</span>
+                    <i class="fa-solid fa-file-pdf"></i>
+                </h3>
+                <p>Konvertiere PDFs in Word, Excel, Bilder und mehr – einfach und schnell.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+
+            <!-- 3. QR-Code Generator -->
+            <div class="tool-card">
+                <h3>
+                    <span>QR-Code Generator</span>
+                    <i class="fa-solid fa-qrcode"></i>
+                </h3>
+                <p>Erstelle individuelle QR-Codes für Links, Texte oder Kontaktdaten.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+
+            <!-- 4. Text-Tools -->
+            <div class="tool-card">
+                <h3>
+                    <span>Text-Tools</span>
+                    <i class="fa-solid fa-font"></i>
+                </h3>
+                <p>Zeichen zählen, Text umkehren, Groß-/Kleinschreibung ändern und mehr.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+
+            <!-- 5. Einheitenrechner -->
+            <div class="tool-card">
+                <h3>
+                    <span>Einheitenrechner</span>
+                    <i class="fa-solid fa-weight-scale"></i>
+                </h3>
+                <p>Rechne Längen, Gewichte, Temperaturen und Flächen um.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+
+            <!-- 6. Timer & Stoppuhr -->
+            <div class="tool-card">
+                <h3>
+                    <span>Timer & Stoppuhr</span>
+                    <i class="fa-solid fa-clock"></i>
+                </h3>
+                <p>Praktischer Timer mit Countdown und Stoppuhr-Funktion.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+
+            <!-- 7. Passwort-Generator -->
+            <div class="tool-card">
+                <h3>
+                    <span>Passwort-Generator</span>
+                    <i class="fa-solid fa-key"></i>
+                </h3>
+                <p>Sichere Passwörter mit beliebiger Länge und Zeichenvielfalt generieren.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+
+            <!-- 8. JSON-Formatter -->
+            <div class="tool-card">
+                <h3>
+                    <span>JSON-Formatter</span>
+                    <i class="fa-solid fa-code"></i>
+                </h3>
+                <p>JSON-Daten validieren, formatieren und übersichtlich darstellen.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+
+            <!-- 9. Bildkomprimierer (extra) -->
+            <div class="tool-card">
+                <h3>
+                    <span>Bildkomprimierer</span>
+                    <i class="fa-solid fa-image"></i>
+                </h3>
+                <p>Reduziere die Dateigröße von JPG, PNG und WebP ohne Qualitätsverlust.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+
+            <!-- 10. Zeitzonen-Rechner -->
+            <div class="tool-card">
+                <h3>
+                    <span>Zeitzonen-Rechner</span>
+                    <i class="fa-solid fa-globe"></i>
+                </h3>
+                <p>Vergleiche Zeitzonen weltweit und berechne Differenzen.</p>
+                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+            </div>
+        </div>
+
+        <!-- KEINE ERGEBNISSE (wird bei leerer Suche eingeblendet) -->
+        <div class="no-results" id="noResults">
+            <i class="fa-solid fa-face-frown"></i>
+            <span>Kein Tool passt zu deiner Suche.</span>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            &copy; <span id="year"></span> Zero's Tool Hub // Entwickelt von Zerocoolluis
+        </footer>
     </div>
 
-    <header>
-        <h1>Utilities Bereich</h1>
-        <p>Übersicht der Utility-Rubriken.</p>
-    </header>
+    <script>
+        // ============================================================
+        // 1. HINTERGRUND-PARTIKEL (wie auf Hauptseite)
+        // ============================================================
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let animFrameId = null;
+        let isTabActive = true;
 
-    <div class="grid">
-        <!-- ColorForge als fertiges Tool an erster Stelle -->
-        <a href="colorforge/" class="tool-card">
-            <h3>
-                <span>ColorForge</span> 
-                <i class="fa-solid fa-paintbrush" style="color: var(--neon-pink);"></i>
-            </h3>
-            <p>Ein kreatives Farb-Tool zum Erstellen, Mischen und Verwalten deiner Farbpaletten.</p>
-        </a>
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-        <!-- Platzhalter für kommende Tools -->
-        <div class="tool-card">
-            <h3>Platzhalter 1 <span class="badge">In Programmierung</span></h3>
-            <p>Dieser Bereich wird aktuell entwickelt und aufgebaut.</p>
-        </div>
-        <div class="tool-card">
-            <h3>Platzhalter 2 <span class="badge">In Programmierung</span></h3>
-            <p>Dieser Bereich wird aktuell entwickelt und aufgebaut.</p>
-        </div>
-    </div>
-</div>
+        for (let i = 0; i < 50; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 1,
+                speedX: (Math.random() - 0.5) * 0.3,
+                speedY: (Math.random() - 0.5) * 0.3
+            });
+        }
 
-<script>
-    // Dropdown Menü Steuerung
-    const menuToggle = document.getElementById('menuToggle');
-    const dropdownMenu = document.getElementById('dropdownMenu');
+        function animateParticles() {
+            if (!isTabActive) {
+                animFrameId = requestAnimationFrame(animateParticles);
+                return;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(91, 154, 255, 0.1)';
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            animFrameId = requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
 
-    menuToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdownMenu.classList.toggle('active');
-    });
+        document.addEventListener('visibilitychange', () => {
+            isTabActive = !document.hidden;
+        });
 
-    window.addEventListener('click', () => {
-        dropdownMenu.classList.remove('active');
-    });
-</script>
+        // ============================================================
+        // 2. DROPDOWN MENÜ
+        // ============================================================
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
 
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        });
+
+        window.addEventListener('click', () => {
+            dropdownMenu.classList.remove('active');
+        });
+
+        // ============================================================
+        // 3. SUCHFILTER (Echtzeit)
+        // ============================================================
+        const searchInput = document.getElementById('searchInput');
+        const toolCards = document.querySelectorAll('.tool-card');
+        const noResults = document.getElementById('noResults');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            toolCards.forEach(card => {
+                const title = card.querySelector('h3 span')?.textContent.toLowerCase() || '';
+                const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
+                const match = title.includes(query) || desc.includes(query);
+
+                if (query === '' || match) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (visibleCount === 0 && query !== '') {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+        });
+
+        // ============================================================
+        // 4. DYNAMISCHES COPYRIGHT-JAHR
+        // ============================================================
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
