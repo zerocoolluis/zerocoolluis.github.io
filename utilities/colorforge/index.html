@@ -15,26 +15,35 @@
     <style>
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.2); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.4); }
+        ::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(150, 150, 150, 0.5); }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans min-h-screen flex flex-col p-4 sm:p-8 transition-colors duration-200">
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white font-sans min-h-screen flex flex-col p-4 sm:p-8 transition-colors duration-200">
 
     <!-- Top Navigation / Header -->
-    <header class="w-full max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
-        <div>
-            <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
-                ColorForge <span class="text-xs font-normal px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">Utility v2.5</span>
+    <header class="w-full max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 pb-6 border-b border-gray-200 dark:border-gray-800">
+        <div class="text-center md:text-left">
+            <h1 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center justify-center md:justify-start gap-2">
+                ColorForge <span class="text-xs font-normal px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-700 dark:text-cyan-400 border border-cyan-500/20">v3.0</span>
             </h1>
-            <p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">Live-API-Anbindung für unbegrenzte Farbnamen & Analysen</p>
+            <p class="text-gray-600 dark:text-gray-400 text-xs mt-1">Live-API & riesiges 30.000+ Farben Wörterbuch</p>
         </div>
-        <div class="flex items-center gap-3">
-            <button onclick="toggleTheme()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-800 transition shadow-sm" title="Modus umschalten">
-                <i id="theme-icon" class="fa-solid fa-moon"></i>
+        <div class="flex flex-wrap items-center justify-center gap-3">
+            
+            <!-- Die zurückgebrachte Suchfunktion -->
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500"></i>
+                <input type="text" id="color-search-input" placeholder="Farbe suchen (z.B. rot, crimson...)" class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-xs pl-8 pr-3 py-2 rounded-xl border border-gray-300 dark:border-gray-700 focus:outline-none focus:border-cyan-500 dark:focus:border-cyan-400 w-64 shadow-sm transition placeholder-gray-400 dark:placeholder-gray-500">
+            </div>
+
+            <!-- Modus umschalten (Sonne / Mond) -->
+            <button onclick="toggleTheme()" class="bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 px-3.5 py-2 rounded-xl text-xs font-medium border border-gray-300 dark:border-gray-700 transition shadow-sm flex items-center justify-center w-10 h-10" title="Modus umschalten">
+                <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
             </button>
-            <button onclick="randomizeColor()" class="bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-3.5 py-2 rounded-xl text-xs font-medium border border-slate-200 dark:border-slate-800 transition shadow-sm">
-                Zufallswert
+
+            <button onclick="randomizeColor()" class="bg-white dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-200 px-3.5 py-2 rounded-xl text-xs font-medium border border-gray-300 dark:border-gray-700 transition shadow-sm h-10">
+                <i class="fa-solid fa-dice mr-1"></i> Zufall
             </button>
         </div>
     </header>
@@ -45,31 +54,31 @@
         <!-- Linke Spalte: Zentrale Farbauswahl & Vorschau -->
         <div class="md:col-span-1 space-y-6 flex flex-col">
             <!-- Zentrale Farbauswahl Box -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Zentrale Farbauswahl</div>
-                <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <div class="flex items-center gap-3">
-                        <input type="color" id="color-picker" value="#06b6d4" class="w-12 h-12 rounded-lg cursor-pointer bg-transparent border-0">
-                        <div>
-                            <span id="picker-hex-label" class="font-mono text-sm font-bold text-slate-800 dark:text-slate-200 block">#06B6D4</span>
-                            <span id="api-color-name" class="text-[11px] text-cyan-600 dark:text-cyan-400 font-medium">Laden...</span>
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zentrale Farbauswahl</div>
+                <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-950 p-4 rounded-xl border border-gray-200 dark:border-gray-800">
+                    <div class="flex items-center gap-3 w-full">
+                        <input type="color" id="color-picker" value="#06b6d4" class="w-12 h-12 rounded-lg cursor-pointer bg-transparent border-0 shrink-0">
+                        <div class="overflow-hidden">
+                            <span id="picker-hex-label" class="font-mono text-sm font-black text-gray-900 dark:text-white block">#06B6D4</span>
+                            <span id="api-color-name" class="text-[11px] text-cyan-700 dark:text-cyan-400 font-semibold truncate block w-full">Laden...</span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Farbvorschau -->
-            <div id="main-color-box" class="h-32 rounded-2xl border border-slate-300 dark:border-slate-800 p-5 flex flex-col justify-between shadow-lg transition-colors duration-200">
-                <span class="text-[10px] font-mono uppercase tracking-wider text-white bg-black/40 w-fit px-2.5 py-1 rounded-md backdrop-blur-sm">Farbwert</span>
-                <span id="box-contrast-text" class="text-[11px] font-mono text-white bg-black/40 w-fit px-2.5 py-1 rounded-md backdrop-blur-sm">Kontrast-Ratio: --</span>
+            <div id="main-color-box" class="h-32 rounded-2xl border border-gray-300 dark:border-gray-700 p-5 flex flex-col justify-between shadow-lg transition-colors duration-200">
+                <span class="text-[10px] font-mono uppercase tracking-wider text-gray-900 bg-white/70 dark:text-white dark:bg-black/60 w-fit px-2.5 py-1 rounded-md backdrop-blur-sm font-bold border border-black/10 dark:border-white/10">Farbwert Vorschau</span>
+                <span id="box-contrast-text" class="text-[11px] font-mono text-gray-900 bg-white/70 dark:text-white dark:bg-black/60 w-fit px-2.5 py-1 rounded-md backdrop-blur-sm font-bold border border-black/10 dark:border-white/10">Kontrast-Ratio: --</span>
             </div>
             
             <!-- Code-Typ Empfehlung -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm flex-1 flex flex-col justify-between">
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 shadow-sm flex-1 flex flex-col justify-between">
                 <div>
-                    <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Empfohlener Code-Typ</div>
-                    <div id="recommendation-title" class="font-bold text-sm text-cyan-600 dark:text-cyan-400">HEX Code</div>
-                    <div id="recommendation-desc" class="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">Optimal für statische Stylesheets und Standard-Webdesign.</div>
+                    <div class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Empfohlener Typ</div>
+                    <div id="recommendation-title" class="font-black text-sm text-cyan-700 dark:text-cyan-400">HEX Code</div>
+                    <div id="recommendation-desc" class="text-xs text-gray-700 dark:text-gray-300 mt-1.5 leading-relaxed font-medium">Optimal für statische Stylesheets und Standard-Webdesign.</div>
                 </div>
             </div>
         </div>
@@ -78,53 +87,53 @@
         <div class="md:col-span-2 space-y-6 flex flex-col justify-between">
             
             <!-- Code-Formate Grid -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
-                <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Verfügbare Formate (Klick zum Kopieren)</div>
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm space-y-4">
+                <div class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Verfügbare Formate (Klick zum Kopieren)</div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <!-- HEX -->
-                    <div onclick="copyToClipboard('code-hex')" class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition group">
+                    <div onclick="copyToClipboard('code-hex')" class="flex items-center justify-between bg-gray-50 dark:bg-gray-950 px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600 cursor-pointer transition group">
                         <div>
-                            <span class="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">HEX</span>
-                            <span id="code-hex" class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-xs">#06B6D4</span>
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-bold block uppercase mb-0.5">HEX</span>
+                            <span id="code-hex" class="font-mono font-black text-gray-900 dark:text-white text-xs">#06B6D4</span>
                         </div>
-                        <i class="fa-solid fa-copy text-slate-400 dark:text-slate-600 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition text-xs"></i>
+                        <i class="fa-solid fa-copy text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition text-sm"></i>
                     </div>
 
                     <!-- RGB -->
-                    <div onclick="copyToClipboard('code-rgb')" class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition group">
+                    <div onclick="copyToClipboard('code-rgb')" class="flex items-center justify-between bg-gray-50 dark:bg-gray-950 px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600 cursor-pointer transition group">
                         <div>
-                            <span class="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">RGB</span>
-                            <span id="code-rgb" class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-xs">rgb(6, 182, 212)</span>
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-bold block uppercase mb-0.5">RGB</span>
+                            <span id="code-rgb" class="font-mono font-black text-gray-900 dark:text-white text-xs">rgb(6, 182, 212)</span>
                         </div>
-                        <i class="fa-solid fa-copy text-slate-400 dark:text-slate-600 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition text-xs"></i>
+                        <i class="fa-solid fa-copy text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition text-sm"></i>
                     </div>
 
                     <!-- HSL -->
-                    <div onclick="copyToClipboard('code-hsl')" class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition group">
+                    <div onclick="copyToClipboard('code-hsl')" class="flex items-center justify-between bg-gray-50 dark:bg-gray-950 px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600 cursor-pointer transition group">
                         <div>
-                            <span class="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">HSL</span>
-                            <span id="code-hsl" class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-xs">hsl(187, 94%, 43%)</span>
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-bold block uppercase mb-0.5">HSL</span>
+                            <span id="code-hsl" class="font-mono font-black text-gray-900 dark:text-white text-xs">hsl(187, 94%, 43%)</span>
                         </div>
-                        <i class="fa-solid fa-copy text-slate-400 dark:text-slate-600 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition text-xs"></i>
+                        <i class="fa-solid fa-copy text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition text-sm"></i>
                     </div>
 
                     <!-- Deklaration -->
-                    <div onclick="copyToClipboard('code-tw')" class="flex items-center justify-between bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition group">
+                    <div onclick="copyToClipboard('code-tw')" class="flex items-center justify-between bg-gray-50 dark:bg-gray-950 px-4 py-3.5 rounded-xl border border-gray-200 dark:border-gray-800 hover:border-gray-400 dark:hover:border-gray-600 cursor-pointer transition group">
                         <div>
-                            <span class="text-[10px] text-slate-400 dark:text-slate-500 block uppercase">Deklaration</span>
-                            <span id="code-tw" class="font-mono font-semibold text-slate-800 dark:text-slate-200 text-xs">background-color: #06B6D4;</span>
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400 font-bold block uppercase mb-0.5">Deklaration</span>
+                            <span id="code-tw" class="font-mono font-black text-gray-900 dark:text-white text-xs">background-color: #06B6D4;</span>
                         </div>
-                        <i class="fa-solid fa-copy text-slate-400 dark:text-slate-600 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition text-xs"></i>
+                        <i class="fa-solid fa-copy text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition text-sm"></i>
                     </div>
                 </div>
             </div>
 
             <!-- Verlauf -->
-            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-3">
+            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm space-y-3">
                 <div class="flex items-center justify-between">
-                    <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Verlauf (Zuletzt verwendet)</div>
-                    <button onclick="clearHistory()" class="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition">Zurücksetzen</button>
+                    <div class="text-[11px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Verlauf (Zuletzt verwendet)</div>
+                    <button onclick="clearHistory()" class="text-[10px] font-bold text-gray-400 hover:text-gray-800 dark:hover:text-white transition">Zurücksetzen</button>
                 </div>
                 <div id="history-container" class="flex gap-2.5 flex-wrap">
                     <!-- Wird per JS befüllt -->
@@ -135,10 +144,34 @@
 
     </main>
 
-    <!-- JavaScript Logik mit API-Anbindung -->
+    <!-- JavaScript Logik mit API-Anbindung und riesigem Wörterbuch -->
     <script>
+        // 1. Lokales deutsches Basis-Wörterbuch (als Backup)
+        const localGermanDict = {
+            "schwarz": "#000000", "weiß": "#FFFFFF", "grau": "#808080", "rot": "#FF0000",
+            "blau": "#0000FF", "grün": "#008000", "gelb": "#FFFF00", "orange": "#FFA500",
+            "lila": "#800080", "rosa": "#FFC0CB", "türkis": "#40E0D0", "braun": "#A52A2A"
+        };
+
+        // 2. Hier speichern wir das riesige Wörterbuch (30.000+ Farben), sobald es geladen ist
+        let massiveColorDictionary = {};
+
+        // 3. API für riesiges Wörterbuch laden (Color Name List API)
+        fetch('https://unpkg.com/color-name-list/dist/colornames.json')
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(color => {
+                    // Speichert Namen (kleingeschrieben) und zugehörigen HEX
+                    massiveColorDictionary[color.name.toLowerCase()] = color.hex;
+                });
+                console.log("Riesiges Farb-Wörterbuch geladen (" + data.length + " Farben)");
+            })
+            .catch(err => console.log("Fehler beim Laden des Wörterbuchs", err));
+
+        // DOM Elemente
         const htmlRoot = document.getElementById('html-root');
         const themeIcon = document.getElementById('theme-icon');
+        const colorSearchInput = document.getElementById('color-search-input');
         const colorPicker = document.getElementById('color-picker');
         const pickerHexLabel = document.getElementById('picker-hex-label');
         const apiColorName = document.getElementById('api-color-name');
@@ -156,15 +189,43 @@
         const historyContainer = document.getElementById('history-container');
         let colorHistory = JSON.parse(localStorage.getItem('colorforge_history')) || ['#06B6D4', '#6366F1', '#10B981', '#F59E0B', '#EF4444'];
 
+        // Theme Toggle (Sonne/Mond Logik)
         function toggleTheme() {
             if (htmlRoot.classList.contains('dark')) {
+                // Wechsel zu Hellmodus -> Icon wird zum Mond (um wieder dunkel zu machen)
                 htmlRoot.classList.remove('dark');
-                themeIcon.className = "fa-solid fa-sun";
+                themeIcon.className = "fa-solid fa-moon text-lg";
             } else {
+                // Wechsel zu Dunkelmodus -> Icon wird zur Sonne (um wieder hell zu machen)
                 htmlRoot.classList.add('dark');
-                themeIcon.className = "fa-solid fa-moon";
+                themeIcon.className = "fa-solid fa-sun text-lg";
             }
         }
+
+        // Initiale Icon-Setzung basierend auf aktuellem Zustand
+        if (htmlRoot.classList.contains('dark')) {
+            themeIcon.className = "fa-solid fa-sun text-lg";
+        } else {
+            themeIcon.className = "fa-solid fa-moon text-lg";
+        }
+
+        // Suchfunktion auswerten (Sucht in riesiger Liste & lokalem Wörterbuch)
+        colorSearchInput.addEventListener('input', (e) => {
+            let query = e.target.value.trim().toLowerCase();
+            
+            // 1. Prüfen ob deutsches Basis-Wort
+            if (localGermanDict[query]) {
+                updateAll(localGermanDict[query], true);
+            } 
+            // 2. Prüfen ob im riesigen 30.000+ Wörterbuch gefunden
+            else if (massiveColorDictionary[query]) {
+                updateAll(massiveColorDictionary[query], true);
+            } 
+            // 3. Prüfen ob Hex-Code direkt eingegeben wurde
+            else if (query.startsWith('#') && (query.length === 4 || query.length === 7)) {
+                updateAll(query, true);
+            }
+        });
 
         async function updateAll(hex, saveHistory = true) {
             hex = hex.toUpperCase();
@@ -192,7 +253,7 @@
 
             evaluateCodeRecommendation(hsl);
 
-            // API Abfrage für den exakten Farbnamen aus der weltweiten Datenbank
+            // API Abfrage für den exakten Farbnamen im Picker UI
             fetchColorName(hex);
 
             if (saveHistory) {
@@ -273,7 +334,7 @@
             historyContainer.innerHTML = '';
             colorHistory.forEach(hex => {
                 let circle = document.createElement('div');
-                circle.className = "w-8 h-8 rounded-xl cursor-pointer border border-slate-300 dark:border-slate-700 hover:scale-105 transition shadow-sm";
+                circle.className = "w-8 h-8 rounded-xl cursor-pointer border border-gray-300 dark:border-gray-700 hover:scale-110 transition-transform shadow-sm";
                 circle.style.backgroundColor = hex;
                 circle.title = hex;
                 circle.onclick = () => updateAll(hex, false);
