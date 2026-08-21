@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ColorForge – Premium Color Tool</title>
+    <title>ColorForge – mit Code-Empfehlung</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = { darkMode: 'class' }
@@ -28,20 +28,15 @@
             transition: transform 0.2s, border-color 0.2s;
         }
         .recent-strip .dot:hover { transform: scale(1.2); border-color: #5b9aff; }
-        .rating-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 14px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
+        .recommendation-box {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 4px solid #38bdf8;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
-        .rating-warm { background: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b40; }
-        .rating-cool { background: #3b82f620; color: #3b82f6; border: 1px solid #3b82f640; }
-        .rating-neutral { background: #6b728020; color: #6b7280; border: 1px solid #6b728040; }
-        .rating-vibrant { background: #8b5cf620; color: #8b5cf6; border: 1px solid #8b5cf640; }
+        .recommendation-box strong { color: #38bdf8; }
         @media (max-width: 640px) { .main-title { font-size: 1.8rem; } }
     </style>
 </head>
@@ -92,7 +87,7 @@
                 <div class="flex-1">
                     <div class="flex justify-between items-center mb-2">
                         <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Interaktiver Picker</label>
-                        <button onclick="openCamera()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 font-bold text-xs transition tooltip" title="Kamera-Scanner">
+                        <button onclick="openCamera()" class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-500/20 font-bold text-xs transition" title="Kamera-Scanner">
                             <i class="fa-solid fa-camera"></i> Scanner
                         </button>
                     </div>
@@ -110,7 +105,7 @@
                 </div>
             </div>
 
-            <!-- Rechte Karte: API-Werte + Farbbewertung -->
+            <!-- Rechte Karte: API-Werte + Code-Empfehlung (neu) -->
             <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col">
                 <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Live API Werte (Klick zum Kopieren)</label>
                 <div class="space-y-2 text-xs font-medium flex-1">
@@ -136,16 +131,12 @@
                     </div>
                 </div>
 
-                <!-- NEU: Farbbewertung (ersetzt verwandte Farben) -->
+                <!-- NEU: Code-Empfehlung (ersetzt die Bewertung) -->
                 <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Farbbewertung</label>
-                    <div id="color-rating" class="space-y-1.5 text-sm">
-                        <div class="flex items-center gap-3 flex-wrap">
-                            <span id="rating-temp" class="rating-badge rating-neutral"><i class="fa-regular fa-circle"></i> Temperatur</span>
-                            <span id="rating-sat" class="rating-badge rating-neutral"><i class="fa-regular fa-circle"></i> Sättigung</span>
-                            <span id="rating-light" class="rating-badge rating-neutral"><i class="fa-regular fa-circle"></i> Helligkeit</span>
-                        </div>
-                        <p id="rating-recommendation" class="text-xs text-slate-600 dark:text-slate-400 font-medium italic mt-1">Wähle eine Farbe, um eine Empfehlung zu erhalten.</p>
+                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Best-Code-Empfehlung</label>
+                    <div id="code-recommendation" class="recommendation-box">
+                        <i class="fa-regular fa-lightbulb text-cyan-400 mr-2"></i>
+                        <span id="rec-text">Wähle eine Farbe, um eine Empfehlung zu erhalten.</span>
                     </div>
                 </div>
             </div>
@@ -232,11 +223,8 @@
         const toast = document.getElementById('toast');
         const toastText = document.getElementById('toast-text');
 
-        // Bewertungs-Elemente
-        const ratingTemp = document.getElementById('rating-temp');
-        const ratingSat = document.getElementById('rating-sat');
-        const ratingLight = document.getElementById('rating-light');
-        const ratingRecommendation = document.getElementById('rating-recommendation');
+        // Code-Empfehlung
+        const recText = document.getElementById('rec-text');
 
         // ============================================================
         // 2. THEME
@@ -496,7 +484,7 @@
         });
 
         // ============================================================
-        // 6. FARBUPDATE + BEWERTUNG
+        // 6. FARBUPDATE + CODE-EMPFEHLUNG
         // ============================================================
         async function updateColor(hex, customName = "", customCat = "", save = true, isBaseUpdate = true) {
             hex = hex.toUpperCase();
@@ -517,7 +505,6 @@
                 catDisplay.innerText = customCat || "Katalog Treffer";
             }
 
-            // API-Daten + Bewertung
             try {
                 const res = await fetch(`https://www.thecolorapi.com/id?hex=${hex.replace('#', '')}`);
                 const data = await res.json();
@@ -531,8 +518,8 @@
                 document.getElementById('web-name-val').innerText = data.name.value;
                 const lab = rgbToLab(hexToRgb(hex));
                 document.getElementById('lab-val').innerText = `L:${Math.round(lab.L)} a:${Math.round(lab.a)} b:${Math.round(lab.b)}`;
-                // Bewertung
-                updateRating(hex);
+                // Code-Empfehlung
+                updateRecommendation(hex);
             } catch (err) {
                 if (!customName) nameDisplay.innerText = "Farbe ausgewählt";
                 document.getElementById('rgb-val').innerText = '--';
@@ -546,48 +533,40 @@
         }
 
         // ============================================================
-        // 7. FARBBEWERTUNG (die neue Hauptfunktion)
+        // 7. NEUE CODE-EMPFEHLUNG (intelligent)
         // ============================================================
-        function updateRating(hex) {
+        function updateRecommendation(hex) {
             const hsl = hexToHsl(hex);
             const h = hsl.h, s = hsl.s, l = hsl.l;
 
-            // Temperatur
-            let tempText, tempClass, tempIcon;
-            if (h >= 0 && h < 30 || h >= 330) { tempText = 'Warm'; tempClass = 'rating-warm'; tempIcon = 'fa-regular fa-fire'; }
-            else if (h >= 30 && h < 60) { tempText = 'Warm (gelblich)'; tempClass = 'rating-warm'; tempIcon = 'fa-regular fa-sun'; }
-            else if (h >= 60 && h < 150) { tempText = 'Kühl (grünlich)'; tempClass = 'rating-cool'; tempIcon = 'fa-regular fa-leaf'; }
-            else if (h >= 150 && h < 270) { tempText = 'Kühl (bläulich)'; tempClass = 'rating-cool'; tempIcon = 'fa-regular fa-snowflake'; }
-            else { tempText = 'Neutral'; tempClass = 'rating-neutral'; tempIcon = 'fa-regular fa-circle'; }
-            ratingTemp.className = `rating-badge ${tempClass}`;
-            ratingTemp.innerHTML = `<i class="${tempIcon}"></i> ${tempText}`;
-
-            // Sättigung
-            let satText, satClass, satIcon;
-            if (s >= 70) { satText = 'Kräftig'; satClass = 'rating-vibrant'; satIcon = 'fa-regular fa-star'; }
-            else if (s >= 40) { satText = 'Gedämpft'; satClass = 'rating-neutral'; satIcon = 'fa-regular fa-circle'; }
-            else { satText = 'Blass'; satClass = 'rating-neutral'; satIcon = 'fa-regular fa-circle'; }
-            ratingSat.className = `rating-badge ${satClass}`;
-            ratingSat.innerHTML = `<i class="${satIcon}"></i> ${satText}`;
-
-            // Helligkeit
-            let lightText, lightClass, lightIcon;
-            if (l >= 70) { lightText = 'Hell'; lightClass = 'rating-warm'; lightIcon = 'fa-regular fa-circle'; }
-            else if (l >= 40) { lightText = 'Mittel'; lightClass = 'rating-neutral'; lightIcon = 'fa-regular fa-circle'; }
-            else { lightText = 'Dunkel'; lightClass = 'rating-cool'; lightIcon = 'fa-regular fa-circle'; }
-            ratingLight.className = `rating-badge ${lightClass}`;
-            ratingLight.innerHTML = `<i class="${lightIcon}"></i> ${lightText}`;
-
-            // Empfehlung (intelligent)
+            // Basis-Empfehlung
             let recommendation = '';
-            if (s >= 70 && l >= 50 && l <= 80) recommendation = '💎 Perfekte Akzentfarbe – gut lesbar und auffällig.';
-            else if (s >= 70 && l < 50) recommendation = '🎨 Kräftige, dunkle Farbe – ideal für Überschriften oder Logos.';
-            else if (s < 40 && l >= 70) recommendation = '🌿 Sanfte Pastellfarbe – perfekt für große Flächen oder Hintergründe.';
-            else if (s < 40 && l < 50) recommendation = '🌑 Gedeckte, dunkle Farbe – gut für elegante Designs oder Texturen.';
-            else if (l >= 80 && s >= 50) recommendation = '☀️ Leuchtende, helle Farbe – ideal für Call‑to‑Action‑Buttons.';
-            else if (l <= 30 && s >= 50) recommendation = '🌙 Tiefe, satte Farbe – hervorragend für hochwertige Prints.';
-            else recommendation = '✨ Vielseitige Farbe – gut für viele Anwendungen.';
-            ratingRecommendation.textContent = recommendation;
+
+            // 1. Helligkeit und Sättigung analysieren
+            if (l >= 80 && s < 30) {
+                recommendation = '☀️ Sehr helle, blasse Farbe – der <strong>RGB-Code</strong> ist ideal für Bildschirme. Der <strong>HEX-Code</strong> ist universell einsetzbar.';
+            } else if (l >= 70 && s >= 50) {
+                recommendation = '💡 Leuchtende, helle Farbe – <strong>HEX</strong> ist perfekt für Webdesign. <strong>HSL</strong> ermöglicht einfache Anpassungen.';
+            } else if (l >= 40 && l < 70 && s >= 60) {
+                recommendation = '🎨 Kräftige, gesättigte Farbe – <strong>HEX</strong> ist am vielseitigsten. Für den Druck empfehle ich die <strong>CMYK</strong>-Werte.';
+            } else if (l >= 30 && l < 40 && s >= 40) {
+                recommendation = '🌙 Dunkle, satte Farbe – <strong>RGB</strong> eignet sich gut für digitale Anwendungen. Für präzises Arbeiten ist <strong>LAB</strong> hilfreich.';
+            } else if (l < 30) {
+                recommendation = '🌑 Sehr dunkle Farbe – verwende <strong>HEX</strong> oder <strong>RGB</strong> für gute Darstellung auf Bildschirmen. Für Druck ist <strong>CMYK</strong> wichtig.';
+            } else {
+                recommendation = '✨ Ausgewogene Farbe – der <strong>HEX-Code</strong> ist für fast alle Zwecke die beste Wahl.';
+            }
+
+            // Zusätzliche Tipps je nach Farbton
+            if (h >= 0 && h < 30) {
+                recommendation += ' Rote und orange Töne wirken in <strong>RGB</strong> besonders lebendig.';
+            } else if (h >= 30 && h < 60) {
+                recommendation += ' Gelbtöne sind in <strong>CMYK</strong> oft schwer zu drucken – hier lieber <strong>HEX</strong> oder <strong>RGB</strong> verwenden.';
+            } else if (h >= 180 && h < 240) {
+                recommendation += ' Blautöne werden in <strong>CMYK</strong> meist gut wiedergegeben.';
+            }
+
+            recText.innerHTML = recommendation;
         }
 
         // ============================================================
