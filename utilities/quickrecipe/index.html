@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* === Gleicher Stil wie Hauptseite === */
+        /* === Original-Stile (unverändert) === */
         :root {
             --bg-color: #0a0e1a;
             --card-bg: rgba(18, 25, 45, 0.75);
@@ -235,10 +235,10 @@
             box-shadow: 0 0 30px var(--primary-glow);
         }
 
-        /* === Favoriten-Filter === */
+        /* === Filter-Bar === */
         .filter-bar {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
             margin-bottom: 20px;
             flex-wrap: wrap;
@@ -257,8 +257,17 @@
             height: 18px;
             cursor: pointer;
         }
+        .filter-bar .db-tag {
+            background: rgba(91, 154, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: inline-block;
+        }
 
-        /* === Ergebnisliste (Karten) === */
+        /* === Ergebnisliste === */
         .results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -343,7 +352,7 @@
             color: var(--primary);
         }
 
-        /* === Detailansicht (Rezept) === */
+        /* === Detailansicht === */
         .recipe-detail {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -561,20 +570,21 @@
 
         <header>
             <h1>QuickRecipe</h1>
-            <div class="subhead">Gib eine Zutat oder ein Gericht ein – ich suche dir passende Rezepte heraus.</div>
+            <div class="subhead">Gib eine Zutat oder ein Gericht ein – ich suche aus über 300 Rezepten das Passende.</div>
         </header>
 
         <!-- Suche -->
         <div class="search-section">
-            <input type="text" id="searchInput" placeholder="z.B. Reis, Hähnchen, Pasta …" />
+            <input type="text" id="searchInput" placeholder="z.B. Hähnchen, Pasta, Kartoffeln …" />
             <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
         </div>
 
-        <!-- Filter: Favoriten -->
+        <!-- Filter + Datenbank-Info -->
         <div class="filter-bar">
             <label>
                 <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
             </label>
+            <span class="db-tag"><i class="fa-solid fa-database"></i> API: TheMealDB – 300+ Rezepte</span>
         </div>
 
         <!-- Ergebnisse -->
@@ -619,139 +629,23 @@
     </div>
 
     <script>
-        // ========== REZEPT-DATENBANK (mit Mengenangaben) ==========
-        const recipes = [{
-            id: 1,
-            title: "Gebratener Reis mit Gemüse",
-            category: "Reis",
-            ingredients: [
-                { amount: "200", unit: "g", name: "Reis (gekocht)" },
-                { amount: "1", unit: "", name: "Karotte" },
-                { amount: "100", unit: "g", name: "Erbsen (TK)" },
-                { amount: "2", unit: "", name: "Frühlingszwiebeln" },
-                { amount: "2", unit: "EL", name: "Sojasauce" },
-                { amount: "2", unit: "", name: "Eier" }
-            ],
-            steps: [
-                "Reis nach Packungsanweisung kochen und abkühlen lassen.",
-                "Karotte schälen und würfeln, Frühlingszwiebeln in Ringe schneiden.",
-                "Öl in einer Pfanne erhitzen, Karotte und Erbsen kurz anbraten.",
-                "Reis hinzufügen und unter Rühren erhitzen.",
-                "Sojasauce und verquirlte Eier unterrühren, kurz mitbraten – mit Frühlingszwiebeln garnieren."
-            ],
-            time: "20 min",
-            servings: 2,
-            image: "https://picsum.photos/seed/reis/400/300"
-        }, {
-            id: 2,
-            title: "Hähnchenbrust mit Reis und Brokkoli",
-            category: "Hähnchen",
-            ingredients: [
-                { amount: "2", unit: "", name: "Hähnchenbrustfilets (je 150 g)" },
-                { amount: "200", unit: "g", name: "Reis" },
-                { amount: "1", unit: "", name: "Brokkoli" },
-                { amount: "2", unit: "", name: "Knoblauchzehen" },
-                { amount: "3", unit: "EL", name: "Sojasauce" },
-                { amount: "2", unit: "EL", name: "Öl" }
-            ],
-            steps: [
-                "Reis nach Packungsanweisung kochen.",
-                "Brokkoli in Röschen teilen und in Salzwasser blanchieren (ca. 3 min).",
-                "Hähnchenbrust in Streifen schneiden, mit Salz und Pfeffer würzen.",
-                "Öl in einer Pfanne erhitzen, Hähnchen goldbraun braten, Knoblauch pressen und kurz mitbraten.",
-                "Brokkoli und Sojasauce zugeben, kurz schwenken – mit Reis servieren."
-            ],
-            time: "30 min",
-            servings: 2,
-            image: "https://picsum.photos/seed/hähnchen/400/300"
-        }, {
-            id: 3,
-            title: "Pasta mit Tomaten-Basilikum-Sauce",
-            category: "Pasta",
-            ingredients: [
-                { amount: "250", unit: "g", name: "Pasta (z.B. Spaghetti)" },
-                { amount: "400", unit: "g", name: "Tomaten (Dose, geschält)" },
-                { amount: "1", unit: "Bund", name: "Basilikum" },
-                { amount: "2", unit: "", name: "Knoblauchzehen" },
-                { amount: "3", unit: "EL", name: "Olivenöl" },
-                { amount: "50", unit: "g", name: "Parmesan, gerieben" }
-            ],
-            steps: [
-                "Pasta nach Packungsangabe in reichlich Salzwasser kochen.",
-                "Knoblauch fein hacken, Tomaten aus der Dose leicht zerdrücken.",
-                "Olivenöl in einer Pfanne erhitzen, Knoblauch anbraten, Tomaten zugeben und 10 Minuten köcheln lassen.",
-                "Sauce mit Salz, Pfeffer und einem Teil des Basilikums abschmecken.",
-                "Pasta abgießen, mit der Sauce vermengen, mit Parmesan und restlichem Basilikum bestreuen."
-            ],
-            time: "25 min",
-            servings: 2,
-            image: "https://picsum.photos/seed/pasta/400/300"
-        }, {
-            id: 4,
-            title: "Linsensuppe",
-            category: "Suppe",
-            ingredients: [
-                { amount: "200", unit: "g", name: "Rote Linsen" },
-                { amount: "1", unit: "", name: "Karotte" },
-                { amount: "1", unit: "Stange", name: "Sellerie" },
-                { amount: "1", unit: "", name: "Zwiebel" },
-                { amount: "1", unit: "l", name: "Gemüsebrühe" },
-                { amount: "1", unit: "TL", name: "Majoran (getrocknet)" }
-            ],
-            steps: [
-                "Zwiebel, Karotte und Sellerie fein würfeln.",
-                "In einem Topf mit etwas Öl anschwitzen, bis sie glasig sind.",
-                "Linsen und Brühe hinzufügen, aufkochen und bei schwacher Hitze 20 Minuten köcheln lassen.",
-                "Mit Majoran, Salz und Pfeffer abschmecken.",
-                "Bei Bedarf pürieren – mit etwas Crème fraîche servieren."
-            ],
-            time: "35 min",
-            servings: 4,
-            image: "https://picsum.photos/seed/linsensuppe/400/300"
-        }, {
-            id: 5,
-            title: "Kartoffelgratin",
-            category: "Kartoffeln",
-            ingredients: [
-                { amount: "800", unit: "g", name: "Kartoffeln (festkochend)" },
-                { amount: "200", unit: "ml", name: "Sahne" },
-                { amount: "2", unit: "", name: "Knoblauchzehen" },
-                { amount: "1", unit: "Prise", name: "Muskatnuss" },
-                { amount: "100", unit: "g", name: "Käse (z.B. Gruyère), gerieben" }
-            ],
-            steps: [
-                "Kartoffeln schälen und in dünne Scheiben (ca. 3 mm) schneiden.",
-                "Knoblauch pressen, mit Sahne und Muskat verrühren.",
-                "Kartoffelscheiben in eine gefettete Auflaufform schichten, jede Lage mit der Sahne-Mischung beträufeln.",
-                "Käse darüberstreuen.",
-                "Bei 180 °C Umluft ca. 40–45 Minuten goldbraun backen."
-            ],
-            time: "50 min",
-            servings: 4,
-            image: "https://picsum.photos/seed/kartoffelgratin/400/300"
-        }, {
-            id: 6,
-            title: "Falafel mit Joghurtsauce",
-            category: "Vegan",
-            ingredients: [
-                { amount: "1", unit: "Dose (400 g)", name: "Kichererbsen (Abtropfgewicht)" },
-                { amount: "1", unit: "", name: "Zwiebel" },
-                { amount: "2", unit: "", name: "Knoblauchzehen" },
-                { amount: "1", unit: "Bund", name: "Petersilie" },
-                { amount: "1", unit: "TL", name: "Kreuzkümmel" },
-                { amount: "200", unit: "g", name: "Joghurt (für die Sauce)" }
-            ],
-            steps: [
-                "Kichererbsen abtropfen lassen, mit Zwiebel, Knoblauch und Petersilie im Mixer pürieren.",
-                "Kreuzkümmel, Salz und etwas Mehl unterkneten, bis eine formbare Masse entsteht.",
-                "Kleine Bällchen formen und in heißem Öl goldbraun ausbacken (oder im Ofen backen).",
-                "Joghurt mit einer gepressten Knoblauchzehe, Salz und Minze verrühren.",
-                "Falafel mit Joghurtsauce, Fladenbrot und Salat servieren."
-            ],
-            time: "30 min",
-            servings: 3,
-            image: "https://picsum.photos/seed/falafel/400/300"
-        }];
+        // ========== API-Konfiguration ==========
+        const API_BASE = 'https://www.themealdb.com/api/json/v1/1/';
+
+        // ========== Favoriten (lokal) ==========
+        let favorites = JSON.parse(localStorage.getItem('quickrecipe_favorites')) || [];
+
+        function toggleFavorite(id) {
+            const idx = favorites.indexOf(id);
+            if (idx > -1) favorites.splice(idx, 1);
+            else favorites.push(id);
+            localStorage.setItem('quickrecipe_favorites', JSON.stringify(favorites));
+            renderCurrentView();
+        }
+
+        function isFavorite(id) {
+            return favorites.includes(id);
+        }
 
         // ========== DOM-Referenzen ==========
         const searchInput = document.getElementById('searchInput');
@@ -761,7 +655,6 @@
         const detailContainer = document.getElementById('detailContainer');
         const detailImg = document.getElementById('detailImg');
         const detailTitle = document.getElementById('detailTitle');
-        const detailMeta = document.getElementById('detailMeta');
         const detailTime = document.getElementById('detailTime');
         const detailServings = document.getElementById('detailServings');
         const detailCategory = document.getElementById('detailCategory');
@@ -774,25 +667,212 @@
         const backToResults = document.getElementById('backToResults');
         const detailFavBtn = document.getElementById('detailFavBtn');
 
-        let currentRecipe = null;
+        let currentRecipe = null;      // das aktuell geöffnete Rezept (Objekt)
         let currentStepIndex = 0;
-        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        let currentRecipeList = [];    // aktuell angezeigte Liste (für Filter)
 
-        // ========== Favoriten-Hilfsfunktionen ==========
-        function toggleFavorite(id) {
-            const idx = favorites.indexOf(id);
-            if (idx > -1) favorites.splice(idx, 1);
-            else favorites.push(id);
-            localStorage.setItem('favorites', JSON.stringify(favorites));
-            // Aktuelle Ansicht aktualisieren
-            renderCurrentView();
-            if (currentRecipe && currentRecipe.id === id) {
-                updateFavButton(detailFavBtn, id);
+        // ========== API-Funktionen ==========
+
+        // Zufällige Rezepte abrufen (count Stück)
+        async function fetchRandomRecipes(count = 8) {
+            const promises = [];
+            for (let i = 0; i < count; i++) {
+                promises.push(fetch(API_BASE + 'random.php').then(res => res.json()));
             }
+            const results = await Promise.all(promises);
+            // Jedes Ergebnis hat { meals: [...] } – wir extrahieren die meals
+            const meals = results.map(r => r.meals ? r.meals[0] : null).filter(m => m !== null);
+            return meals;
         }
 
-        function isFavorite(id) {
-            return favorites.includes(id);
+        // Suche nach Name (s) oder Zutat (i)
+        async function searchRecipes(query) {
+            // Zuerst nach Name suchen
+            let url = API_BASE + 'search.php?s=' + encodeURIComponent(query);
+            let response = await fetch(url);
+            let data = await response.json();
+            let meals = data.meals || [];
+
+            // Wenn nichts gefunden, nach Zutat suchen
+            if (meals.length === 0) {
+                url = API_BASE + 'filter.php?i=' + encodeURIComponent(query);
+                response = await fetch(url);
+                data = await response.json();
+                // filter liefert nur ID, Bild, Name – wir müssen die Details für jede ID holen
+                const ids = (data.meals || []).map(m => m.idMeal);
+                if (ids.length > 0) {
+                    const detailPromises = ids.map(id =>
+                        fetch(API_BASE + 'lookup.php?i=' + id).then(res => res.json())
+                    );
+                    const details = await Promise.all(detailPromises);
+                    meals = details.map(d => d.meals ? d.meals[0] : null).filter(m => m !== null);
+                } else {
+                    meals = [];
+                }
+            }
+
+            // Bei leerer Suche (oder keine Ergebnisse) – zufällige Vorschläge
+            if (meals.length === 0 && query.trim() === '') {
+                meals = await fetchRandomRecipes(8);
+            }
+
+            return meals;
+        }
+
+        // Rezept nach ID abrufen (für Detail, falls nötig)
+        async function fetchRecipeById(id) {
+            const res = await fetch(API_BASE + 'lookup.php?i=' + id);
+            const data = await res.json();
+            return data.meals ? data.meals[0] : null;
+        }
+
+        // ========== Hilfsfunktionen für Rezeptdaten ==========
+
+        // Extrahiere Zutatenliste aus API-Objekt (strIngredient1..20 + strMeasure1..20)
+        function extractIngredients(meal) {
+            const ingredients = [];
+            for (let i = 1; i <= 20; i++) {
+                const ing = meal['strIngredient' + i];
+                const measure = meal['strMeasure' + i];
+                if (ing && ing.trim() !== '') {
+                    ingredients.push({
+                        name: ing.trim(),
+                        amount: measure ? measure.trim() : ''
+                    });
+                }
+            }
+            return ingredients;
+        }
+
+        // Zerlege Anleitung in einzelne Schritte (anhand von Satzzeichen, Nummerierung, Punkten)
+        function splitInstructions(instructions) {
+            if (!instructions) return ['Keine Anleitung vorhanden.'];
+            // Versuche anhand von "Step 1", "1." oder Punkten zu trennen
+            let steps = [];
+            // Wenn es nummerierte Schritte gibt (z.B. "1. ... 2. ...")
+            const numbered = instructions.match(/(\d+\.\s*[^.]*\.)/g);
+            if (numbered && numbered.length > 1) {
+                steps = numbered.map(s => s.trim());
+            } else {
+                // Trenne bei Punkten und neuen Zeilen
+                const parts = instructions.split(/(?<=\.\s)|(?<=\n)/).filter(p => p.trim().length > 0);
+                if (parts.length > 1) {
+                    steps = parts.map(p => p.trim());
+                } else {
+                    // Fallback: gesamten Text als einen Schritt
+                    steps = [instructions.trim()];
+                }
+            }
+            // Leere Schritte entfernen
+            return steps.filter(s => s.length > 0);
+        }
+
+        // ========== Rendering ==========
+
+        function renderRecipeCards(meals) {
+            resultsContainer.innerHTML = '';
+            if (!meals || meals.length === 0) {
+                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte gefunden. Versuche es mit einem anderen Begriff.</p>`;
+                return;
+            }
+
+            // Bei aktivem Favoriten-Filter filtern
+            let filtered = meals;
+            if (favFilter.checked) {
+                filtered = meals.filter(m => isFavorite(m.idMeal));
+            }
+
+            if (filtered.length === 0) {
+                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Favoriten gefunden.</p>`;
+                return;
+            }
+
+            currentRecipeList = filtered;
+
+            filtered.forEach(meal => {
+                const card = document.createElement('div');
+                card.className = 'recipe-card';
+                const fav = isFavorite(meal.idMeal);
+                card.innerHTML = `
+                    <img class="card-img" src="${meal.strMealThumb}" alt="${meal.strMeal}" loading="lazy" />
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3>${meal.strMeal}</h3>
+                            <button class="fav-btn ${fav ? 'active' : ''}" data-id="${meal.idMeal}">
+                                <i class="${fav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="category">${meal.strCategory || 'Verschiedenes'}</div>
+                        <div class="meta">
+                            <span><i class="fa-regular fa-flag"></i> ${meal.strArea || 'International'}</span>
+                        </div>
+                    </div>
+                `;
+                card.addEventListener('click', (e) => {
+                    if (e.target.closest('.fav-btn')) return;
+                    showDetail(meal);
+                });
+                const favBtn = card.querySelector('.fav-btn');
+                favBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = favBtn.dataset.id;
+                    toggleFavorite(id);
+                    renderCurrentView();
+                });
+                resultsContainer.appendChild(card);
+            });
+        }
+
+        // ========== Detailansicht ==========
+
+        function showDetail(meal) {
+            currentRecipe = meal;
+            currentStepIndex = 0;
+
+            detailContainer.classList.add('active');
+            resultsContainer.style.display = 'none';
+
+            detailImg.src = meal.strMealThumb;
+            detailImg.alt = meal.strMeal;
+            detailTitle.textContent = meal.strMeal;
+            detailTime.textContent = meal.strTime || 'keine Angabe';
+            // Portionen: API hat manchmal strYoutube, aber keine Portionsangabe – wir schätzen 2-4
+            const servings = meal.strServings || '2-4';
+            detailServings.textContent = servings;
+            detailCategory.textContent = meal.strCategory || 'Verschiedenes';
+
+            // Zutaten
+            const ingredients = extractIngredients(meal);
+            detailIngredients.innerHTML = ingredients.map(ing =>
+                `<li>${ing.amount ? ing.amount + ' ' : ''}${ing.name}</li>`
+            ).join('');
+
+            // Schritte
+            const steps = splitInstructions(meal.strInstructions);
+            // Speichere Schritte im Rezept-Objekt für Navigation
+            meal._steps = steps;
+            currentRecipe._steps = steps;
+
+            updateStepDisplay();
+
+            // Favoriten-Button aktualisieren
+            updateFavButton(detailFavBtn, meal.idMeal);
+
+            // Navigation zurücksetzen
+            prevStep.disabled = (steps.length <= 1);
+            nextStep.disabled = (steps.length <= 1);
+        }
+
+        function updateStepDisplay() {
+            if (!currentRecipe || !currentRecipe._steps) return;
+            const steps = currentRecipe._steps;
+            const total = steps.length;
+            const current = currentStepIndex + 1;
+            stepNumber.textContent = `Schritt ${current} von ${total}`;
+            stepIndicator.textContent = `${current} / ${total}`;
+            stepText.textContent = steps[currentStepIndex];
+            prevStep.disabled = (currentStepIndex === 0);
+            nextStep.disabled = (currentStepIndex === total - 1);
         }
 
         function updateFavButton(btn, id) {
@@ -805,113 +885,52 @@
             }
         }
 
-        // ========== Such- und Filterfunktion ==========
-        function getFilteredRecipes() {
-            const query = searchInput.value.toLowerCase().trim();
-            let filtered = recipes;
-            if (query !== '') {
-                filtered = filtered.filter(r =>
-                    r.title.toLowerCase().includes(query) ||
-                    r.category.toLowerCase().includes(query) ||
-                    r.ingredients.some(ing => ing.name.toLowerCase().includes(query))
-                );
+        // ========== Steuerung ==========
+
+        function renderCurrentView() {
+            if (detailContainer.classList.contains('active')) {
+                // Hintergrundliste aktualisieren, aber Detail bleibt offen
+                // Wir rendern die Liste neu (ohne sie anzuzeigen) – für den Fall, dass Favoriten gefiltert werden
+                // Aber wir haben currentRecipeList, die wir neu filtern können
+                if (currentRecipeList.length > 0) {
+                    // Wir müssen die Karten nicht neu zeichnen, aber die Fav-Buttons in der Liste aktualisieren
+                    // Einfach: gesamte Liste neu rendern, aber versteckt lassen? 
+                    // Besser: nur die Fav-Status in den Karten aktualisieren, aber das ist aufwändig.
+                    // Wir rufen einfach renderRecipeCards mit der aktuellen Liste auf – das überschreibt das Grid, 
+                    // aber es bleibt unsichtbar (display:none) – trotzdem wird es im Hintergrund neu aufgebaut.
+                    // Das ist okay.
+                    renderRecipeCards(currentRecipeList);
+                }
+                // Favoriten-Button im Detail aktualisieren
+                if (currentRecipe) {
+                    updateFavButton(detailFavBtn, currentRecipe.idMeal);
+                }
+            } else {
+                // Normale Ansicht: neu laden mit aktueller Suche
+                performSearch();
             }
-            if (favFilter.checked) {
-                filtered = filtered.filter(r => isFavorite(r.id));
-            }
-            return filtered;
         }
 
-        function renderResults() {
-            const results = getFilteredRecipes();
-            resultsContainer.innerHTML = '';
-            if (results.length === 0) {
-                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte gefunden. Versuche es mit einem anderen Begriff.</p>`;
-                return;
+        async function performSearch() {
+            const query = searchInput.value.trim();
+            let meals = [];
+            if (query === '') {
+                // Vorschläge: zufällige Rezepte
+                meals = await fetchRandomRecipes(8);
+            } else {
+                meals = await searchRecipes(query);
+                // Wenn keine Ergebnisse, zeige zufällige
+                if (meals.length === 0) {
+                    meals = await fetchRandomRecipes(8);
+                }
             }
-            results.forEach(recipe => {
-                const card = document.createElement('div');
-                card.className = 'recipe-card';
-                card.innerHTML = `
-                    <img class="card-img" src="${recipe.image}" alt="${recipe.title}" loading="lazy" />
-                    <div class="card-body">
-                        <div class="card-header">
-                            <h3>${recipe.title}</h3>
-                            <button class="fav-btn ${isFavorite(recipe.id) ? 'active' : ''}" data-id="${recipe.id}">
-                                <i class="${isFavorite(recipe.id) ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="category">${recipe.category}</div>
-                        <div class="meta">
-                            <span><i class="fa-regular fa-clock"></i> ${recipe.time}</span>
-                            <span><i class="fa-regular fa-user"></i> ${recipe.servings} Port.</span>
-                        </div>
-                    </div>
-                `;
-                // Klick auf Karte öffnet Detail
-                card.addEventListener('click', (e) => {
-                    // Verhindern, dass Klick auf Fav-Button Detail öffnet
-                    if (e.target.closest('.fav-btn')) return;
-                    showDetail(recipe);
-                });
-                // Fav-Button in der Karte
-                const favBtn = card.querySelector('.fav-btn');
-                favBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const id = parseInt(favBtn.dataset.id);
-                    toggleFavorite(id);
-                    // Button aktualisieren (wird durch renderCurrentView neu gezeichnet)
-                    // Aber wir rufen renderResults auf, das aktualisiert alles.
-                    // Damit die Ansicht nicht flackert, können wir nur diesen Button togglen.
-                    // Besser: gesamte Liste neu rendern.
-                    renderCurrentView();
-                });
-                resultsContainer.appendChild(card);
-            });
-        }
-
-        // ========== Detailansicht ==========
-        function showDetail(recipe) {
-            currentRecipe = recipe;
-            currentStepIndex = 0;
-            detailContainer.classList.add('active');
-            resultsContainer.style.display = 'none';
-
-            detailImg.src = recipe.image;
-            detailImg.alt = recipe.title;
-            detailTitle.textContent = recipe.title;
-            detailTime.textContent = recipe.time;
-            detailServings.textContent = recipe.servings;
-            detailCategory.textContent = recipe.category;
-
-            // Zutaten
-            detailIngredients.innerHTML = recipe.ingredients.map(ing =>
-                `<li>${ing.amount} ${ing.unit} ${ing.name}</li>`
-            ).join('');
-
-            // Favoriten-Button im Detail
-            updateFavButton(detailFavBtn, recipe.id);
-
-            // Schritt anzeigen
-            updateStepDisplay();
-
-            // Navigation zurücksetzen
-            prevStep.disabled = true;
-            nextStep.disabled = (recipe.steps.length <= 1);
-        }
-
-        function updateStepDisplay() {
-            if (!currentRecipe) return;
-            const total = currentRecipe.steps.length;
-            const current = currentStepIndex + 1;
-            stepNumber.textContent = `Schritt ${current} von ${total}`;
-            stepIndicator.textContent = `${current} / ${total}`;
-            stepText.textContent = currentRecipe.steps[currentStepIndex];
-            prevStep.disabled = (currentStepIndex === 0);
-            nextStep.disabled = (currentStepIndex === total - 1);
+            // Aktuelle Liste speichern
+            currentRecipeList = meals;
+            renderRecipeCards(meals);
         }
 
         // ========== Event-Listener ==========
+
         prevStep.addEventListener('click', () => {
             if (currentStepIndex > 0) {
                 currentStepIndex--;
@@ -920,7 +939,7 @@
         });
 
         nextStep.addEventListener('click', () => {
-            if (currentRecipe && currentStepIndex < currentRecipe.steps.length - 1) {
+            if (currentRecipe && currentRecipe._steps && currentStepIndex < currentRecipe._steps.length - 1) {
                 currentStepIndex++;
                 updateStepDisplay();
             }
@@ -929,63 +948,37 @@
         backToResults.addEventListener('click', () => {
             detailContainer.classList.remove('active');
             resultsContainer.style.display = 'grid';
-            renderCurrentView();
+            // Aktuelle Liste neu rendern (sichtbar)
+            renderRecipeCards(currentRecipeList);
         });
 
-        // Fav-Button im Detail
         detailFavBtn.addEventListener('click', () => {
             if (currentRecipe) {
-                toggleFavorite(currentRecipe.id);
-                updateFavButton(detailFavBtn, currentRecipe.id);
-                // Auch in der Übersicht aktualisieren
+                toggleFavorite(currentRecipe.idMeal);
+                updateFavButton(detailFavBtn, currentRecipe.idMeal);
+                // Auch die Kartenliste aktualisieren (Fav-Status)
                 renderCurrentView();
             }
         });
-
-        // Suche
-        function performSearch() {
-            renderCurrentView();
-        }
 
         searchBtn.addEventListener('click', performSearch);
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') performSearch();
         });
 
-        // Favoriten-Filter
-        favFilter.addEventListener('change', renderCurrentView);
-
-        // Hilfsfunktion: Aktuelle Ansicht neu rendern (Ergebnisse oder Detail)
-        function renderCurrentView() {
-            if (detailContainer.classList.contains('active')) {
-                // Wenn Detail offen, nur die Favoriten-Buttons in der Kartenliste aktualisieren wir nicht,
-                // aber wir können die Liste im Hintergrund neu rendern? Besser: Detail bleibt, aber wir merken uns den aktuellen Recipe.
-                // Bei Filteränderung schließen wir das Detail nicht.
-                // Aber wir können die Ergebnisliste neu rendern, ohne das Detail zu stören.
-                // Wir rendern die Ergebnisse neu, aber zeigen sie nicht an (display:none).
-                // Also einfach renderResults aufrufen, aber sie bleiben versteckt.
-                renderResults();
-                // Aber wenn wir das Detail offen haben, soll die Ergebnisliste aktualisiert werden,
-                // damit beim Zurückgehen die aktuelle Filterung sichtbar ist.
-                // Dazu speichern wir die Ergebnisse im Hintergrund.
-                // Das machen wir, indem wir renderResults aufrufen – die Liste wird neu aufgebaut, aber sie ist versteckt.
-                // Das ist okay.
-                renderResults();
-                // Zusätzlich den Favoriten-Status im Detail aktualisieren, falls das aktuelle Rezept betroffen ist.
-                if (currentRecipe) {
-                    updateFavButton(detailFavBtn, currentRecipe.id);
-                }
-            } else {
-                renderResults();
-            }
-        }
-
-        // Initial alle Rezepte anzeigen
-        window.addEventListener('load', () => {
-            renderResults();
+        favFilter.addEventListener('change', () => {
+            // Filter anwenden auf aktuelle Liste
+            renderCurrentView();
         });
 
-        // ========== Hintergrund-Partikel ==========
+        // Initial: beim Laden zufällige Rezepte anzeigen
+        window.addEventListener('load', async () => {
+            const meals = await fetchRandomRecipes(8);
+            currentRecipeList = meals;
+            renderRecipeCards(meals);
+        });
+
+        // ========== Hintergrund-Partikel (wie gehabt) ==========
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
