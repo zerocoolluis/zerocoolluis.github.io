@@ -257,6 +257,30 @@
             color: #fff;
         }
 
+        /* === Eingabemarkierungen (Zutaten-Tags) === */
+        .ingredient-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding: 8px 0;
+        }
+        .ingredient-tag {
+            background: rgba(91, 154, 255, 0.15);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ingredient-tag i {
+            color: var(--primary);
+            font-size: 0.7rem;
+        }
+
         /* === Filter-Bar === */
         .filter-bar {
             display: flex;
@@ -287,6 +311,11 @@
             font-size: 0.8rem;
             color: var(--text-muted);
             display: inline-block;
+        }
+        .filter-bar .match-info {
+            color: var(--accent-gold);
+            font-size: 0.85rem;
+            margin-left: auto;
         }
 
         /* === Ergebnisliste === */
@@ -372,6 +401,16 @@
         .recipe-card .meta i {
             margin-right: 4px;
             color: var(--primary);
+        }
+        .recipe-card .match-badge {
+            background: rgba(91, 154, 255, 0.2);
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 0.7rem;
+            color: var(--primary);
+            display: inline-block;
+            margin-top: 6px;
+            align-self: flex-start;
         }
 
         /* === "Mehr laden" Button === */
@@ -621,12 +660,12 @@
 
         <header>
             <h1>QuickRecipe</h1>
-            <div class="subhead">Durchstöbere tausende Rezepte – nach Kategorie, Zutat oder Gericht.</div>
+            <div class="subhead">Durchstöbere tausende Rezepte – nach Kategorie, Gericht oder mehreren Zutaten.</div>
         </header>
 
         <!-- Suche & Filter -->
         <div class="search-section">
-            <input type="text" id="searchInput" placeholder="z.B. Hähnchen, Pasta, Kartoffeln …" />
+            <input type="text" id="searchInput" placeholder="z.B. Hähnchen, Reis, Paprika  (Zutaten mit Komma trennen)" />
             <div class="search-actions">
                 <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
                 <select id="categorySelect">
@@ -636,13 +675,17 @@
             </div>
         </div>
 
+        <!-- Eingabemarkierungen (Zutaten-Tags) -->
+        <div id="ingredientTags" class="ingredient-tags"></div>
+
         <!-- Filter-Bar -->
         <div class="filter-bar">
             <label>
                 <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
             </label>
-            <span class="db-tag"><i class="fa-solid fa-database"></i> API: TheMealDB – 300+ Rezepte pro Kategorie</span>
+            <span class="db-tag"><i class="fa-solid fa-database"></i> API: TheMealDB</span>
             <span id="resultCount" style="color: var(--text-muted); font-size: 0.9rem;"></span>
+            <span id="matchInfo" class="match-info"></span>
         </div>
 
         <!-- Ergebnisse -->
@@ -719,6 +762,8 @@
         const resultsContainer = document.getElementById('resultsContainer');
         const loadMoreBtn = document.getElementById('loadMoreBtn');
         const resultCount = document.getElementById('resultCount');
+        const matchInfo = document.getElementById('matchInfo');
+        const ingredientTags = document.getElementById('ingredientTags');
 
         const detailContainer = document.getElementById('detailContainer');
         const detailImg = document.getElementById('detailImg');
@@ -738,9 +783,11 @@
         let currentRecipe = null;
         let currentStepIndex = 0;
         let currentMeals = [];           // aktuell angezeigte Rezepte (volle Objekte)
-        let allMeals = [];              // alle geladenen Rezepte (für "Mehr laden")
-        let currentMode = 'random';      // 'random', 'search', 'category'
+        let allMeals = [];              // alle geladenen Rezepte
+        let currentMode = 'random';      // 'random', 'search', 'category', 'ingredients'
         let currentQuery = '';
+        let currentIngredients = [];     // für Zutaten-Suche
+        let currentMatchType = '';       // 'all' oder 'any'
 
         // ========== API-Funktionen ==========
 
@@ -765,24 +812,18 @@
             return data.meals ? data.meals[0] : null;
         }
 
-        // Suche nach Name oder Zutat
-        async function searchRecipes(query) {
-            // Zuerst nach Name
-            let res = await fetch(API_BASE + 'search.php?s=' + encodeURIComponent(query));
-            let data = await res.json();
-            let meals = data.meals || [];
-            if (meals.length === 0) {
-                // Dann nach Zutat
-                res = await fetch(API_BASE + 'filter.php?i=' + encodeURIComponent(query));
-                data = await res.json();
-                const ids = (data.meals || []).map(m => m.idMeal);
-                if (ids.length > 0) {
-                    const detailPromises = ids.map(id => fetchRecipeById(id));
-                    meals = await Promise.all(detailPromises);
-                    meals = meals.filter(m => m !== null);
-                }
-            }
-            return meals;
+        // Suche nach Name
+        async function searchByName(query) {
+            const res = await fetch(API_BASE + 'search.php?s=' + encodeURIComponent(query));
+            const data = await res.json();
+            return data.meals || [];
+        }
+
+        // Rezepte für eine Zutat (filter.php?i=...)
+        async function fetchRecipesByIngredient(ingredient) {
+            const res = await fetch(API_BASE + 'filter.php?i=' + encodeURIComponent(ingredient));
+            const data = await res.json();
+            return data.meals || [];
         }
 
         // Zufällige Rezepte (count Stück)
@@ -793,6 +834,49 @@
             }
             const results = await Promise.all(promises);
             const meals = results.map(r => r.meals ? r.meals[0] : null).filter(m => m !== null);
+            return meals;
+        }
+
+        // ========== Zutaten-basierte Suche (mehrere Zutaten) ==========
+        async function searchByIngredients(ingredientList) {
+            if (!ingredientList || ingredientList.length === 0) return [];
+
+            // Für jede Zutat die Rezepte holen (parallel)
+            const promises = ingredientList.map(ing => fetchRecipesByIngredient(ing.trim()));
+            const results = await Promise.all(promises);
+
+            // Ergebnisse: Array von Arrays (je Zutat eine Liste von {idMeal, strMeal, strMealThumb})
+            // Wir wollen die Schnittmenge der IDs (alle Zutaten enthalten)
+            const idSets = results.map(list => new Set(list.map(m => m.idMeal)));
+            // Schnittmenge bilden
+            let commonIds = new Set();
+            if (idSets.length > 0) {
+                commonIds = new Set(idSets[0]);
+                for (let i = 1; i < idSets.length; i++) {
+                    commonIds = new Set([...commonIds].filter(id => idSets[i].has(id)));
+                }
+            }
+
+            let meals = [];
+            if (commonIds.size > 0) {
+                // Details für alle gefundenen IDs laden
+                const detailPromises = [...commonIds].map(id => fetchRecipeById(id));
+                meals = await Promise.all(detailPromises);
+                meals = meals.filter(m => m !== null);
+                currentMatchType = 'all';
+            } else {
+                // Keine Schnittmenge -> zeige Vereinigungsmenge (mindestens eine Zutat)
+                const allIds = new Set();
+                idSets.forEach(set => set.forEach(id => allIds.add(id)));
+                if (allIds.size > 0) {
+                    const detailPromises = [...allIds].map(id => fetchRecipeById(id));
+                    meals = await Promise.all(detailPromises);
+                    meals = meals.filter(m => m !== null);
+                    currentMatchType = 'any';
+                } else {
+                    meals = [];
+                }
+            }
             return meals;
         }
 
@@ -815,17 +899,20 @@
 
         function splitInstructions(instructions) {
             if (!instructions) return ['Keine Anleitung vorhanden.'];
-            // Versuche nummerierte Schritte
             const numbered = instructions.match(/(\d+\.\s*[^.]*\.)/g);
             if (numbered && numbered.length > 1) {
                 return numbered.map(s => s.trim());
             }
-            // Trenne bei Punkten und Zeilenumbrüchen
             const parts = instructions.split(/(?<=\.\s)|(?<=\n)/).filter(p => p.trim().length > 0);
             if (parts.length > 1) {
                 return parts.map(p => p.trim());
             }
             return [instructions.trim()];
+        }
+
+        function getIngredientNamesFromQuery(query) {
+            // Trenne bei Kommas, bereinige Leerzeichen
+            return query.split(',').map(s => s.trim()).filter(s => s.length > 0);
         }
 
         // ========== Rendering ==========
@@ -853,6 +940,13 @@
                 const card = document.createElement('div');
                 card.className = 'recipe-card';
                 const fav = isFavorite(meal.idMeal);
+                // Prüfe, ob alle Zutaten enthalten sind (nur bei 'all'-Match)
+                let matchBadge = '';
+                if (currentMode === 'ingredients' && currentMatchType === 'all') {
+                    matchBadge = `<span class="match-badge"><i class="fa-solid fa-check"></i> Alle Zutaten</span>`;
+                } else if (currentMode === 'ingredients' && currentMatchType === 'any') {
+                    matchBadge = `<span class="match-badge"><i class="fa-solid fa-arrow-right"></i> Enthält mind. eine Zutat</span>`;
+                }
                 card.innerHTML = `
                     <img class="card-img" src="${meal.strMealThumb}" alt="${meal.strMeal}" loading="lazy" />
                     <div class="card-body">
@@ -866,11 +960,11 @@
                         <div class="meta">
                             <span><i class="fa-regular fa-flag"></i> ${meal.strArea || 'International'}</span>
                         </div>
+                        ${matchBadge}
                     </div>
                 `;
                 card.addEventListener('click', (e) => {
                     if (e.target.closest('.fav-btn')) return;
-                    // Wenn das Rezept noch nicht vollständig ist (nur ID, Name, Bild), lade Details nach
                     if (!meal.strInstructions) {
                         fetchRecipeById(meal.idMeal).then(detail => {
                             if (detail) showDetail(detail);
@@ -892,6 +986,15 @@
 
             // Zähler aktualisieren
             resultCount.textContent = `${currentMeals.length} Rezepte`;
+            if (currentMode === 'ingredients') {
+                if (currentMatchType === 'all') {
+                    matchInfo.textContent = `✅ Alle ${currentIngredients.length} Zutaten enthalten`;
+                } else {
+                    matchInfo.textContent = `⚠️ Mindestens eine der ${currentIngredients.length} Zutaten enthalten`;
+                }
+            } else {
+                matchInfo.textContent = '';
+            }
             loadMoreBtn.style.display = (currentMode === 'random' || currentMode === 'search') ? 'inline-block' : 'none';
         }
 
@@ -953,14 +1056,11 @@
 
         function renderCurrentView() {
             if (detailContainer.classList.contains('active')) {
-                // Detailansicht aktualisieren (Fav-Status)
                 if (currentRecipe) {
                     updateFavButton(detailFavBtn, currentRecipe.idMeal);
                 }
-                // Hintergrundliste neu rendern (für Fav-Filter)
                 renderMeals(allMeals, false);
             } else {
-                // Normale Ansicht: aktuelle Liste neu rendern
                 renderMeals(allMeals, false);
             }
         }
@@ -971,22 +1071,44 @@
             currentQuery = query;
             let meals = [];
 
+            // Tags zurücksetzen
+            ingredientTags.innerHTML = '';
+
             if (mode === 'random') {
                 meals = await fetchRandomRecipes(20);
+                currentIngredients = [];
             } else if (mode === 'search') {
-                meals = await searchRecipes(query);
+                meals = await searchByName(query);
+                if (meals.length === 0) {
+                    meals = await fetchRandomRecipes(20);
+                    mode = 'random';
+                }
+                currentIngredients = [];
+            } else if (mode === 'category') {
+                const category = query;
+                const list = await fetchCategoryRecipes(category);
+                const detailPromises = list.map(item => fetchRecipeById(item.idMeal));
+                meals = await Promise.all(detailPromises);
+                meals = meals.filter(m => m !== null);
+                currentIngredients = [];
+            } else if (mode === 'ingredients') {
+                const ingredients = getIngredientNamesFromQuery(query);
+                currentIngredients = ingredients;
+                // Tags anzeigen
+                ingredients.forEach(ing => {
+                    const tag = document.createElement('span');
+                    tag.className = 'ingredient-tag';
+                    tag.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${ing}`;
+                    ingredientTags.appendChild(tag);
+                });
+                meals = await searchByIngredients(ingredients);
                 if (meals.length === 0) {
                     // Fallback: zufällige Vorschläge
                     meals = await fetchRandomRecipes(20);
                     mode = 'random';
+                    currentIngredients = [];
+                    ingredientTags.innerHTML = '';
                 }
-            } else if (mode === 'category') {
-                const category = query;
-                const list = await fetchCategoryRecipes(category);
-                // Für jedes Rezept die Details laden (für vollständige Anzeige)
-                const detailPromises = list.map(item => fetchRecipeById(item.idMeal));
-                meals = await Promise.all(detailPromises);
-                meals = meals.filter(m => m !== null);
             }
 
             allMeals = meals;
@@ -997,7 +1119,6 @@
         async function loadMore() {
             if (currentMode === 'random' || currentMode === 'search') {
                 const newMeals = await fetchRandomRecipes(10);
-                // Nur neue, die nicht schon in allMeals sind (vergleiche ID)
                 const existingIds = new Set(allMeals.map(m => m.idMeal));
                 const uniqueNew = newMeals.filter(m => !existingIds.has(m.idMeal));
                 if (uniqueNew.length === 0) {
@@ -1013,11 +1134,14 @@
 
         // ========== Event-Listener ==========
 
-        // Suche
+        // Suche (unterscheidet zwischen Komma-getrennten Zutaten und normaler Suche)
         searchBtn.addEventListener('click', () => {
             const query = searchInput.value.trim();
             if (query === '') {
                 loadRecipes('random');
+            } else if (query.includes(',')) {
+                // Zutaten-basierte Suche
+                loadRecipes('ingredients', query);
             } else {
                 loadRecipes('search', query);
             }
