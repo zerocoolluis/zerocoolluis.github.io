@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Utilities // ZERO'S TOOL HUB</title>
-    <meta name="description" content="Alle nützlichen Utilities auf einen Blick – von Farbtools bis zu PDF‑Konvertern." />
+    <meta name="description" content="Übersicht der geplanten Utility-Tools – alle in Entwicklung." />
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* ===== FARBSCHEMA (wie Hauptseite) ===== */
+        /* ===== FARBSCHEMA ===== */
         :root {
             --bg-color: #0a0e1a;
             --card-bg: rgba(18, 25, 45, 0.75);
@@ -40,7 +40,7 @@
             overflow-x: hidden;
         }
 
-        /* ===== HINTERGRUND-CANVAS (Partikel) ===== */
+        /* ===== HINTERGRUND-CANVAS ===== */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -194,40 +194,6 @@
             gap: 15px;
         }
 
-        /* ===== SUCHLEISTE ===== */
-        .search-wrapper {
-            display: flex;
-            align-items: center;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            padding: 6px 18px;
-            backdrop-filter: blur(10px);
-            transition: border 0.3s;
-            max-width: 300px;
-        }
-        .search-wrapper:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow);
-        }
-        .search-wrapper i {
-            color: var(--text-muted);
-            margin-right: 10px;
-        }
-        .search-wrapper input {
-            background: transparent;
-            border: none;
-            padding: 10px 0;
-            color: #fff;
-            font-size: 0.95rem;
-            width: 100%;
-            outline: none;
-        }
-        .search-wrapper input::placeholder {
-            color: var(--text-muted);
-            font-weight: 300;
-        }
-
         /* ===== TOOL-GRID ===== */
         .grid {
             display: grid;
@@ -236,7 +202,7 @@
             margin-top: 10px;
         }
 
-        /* ===== TOOL-KARTEN ===== */
+        /* ===== PLATZHALTER-KARTEN ===== */
         .tool-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -250,6 +216,7 @@
             text-decoration: none;
             position: relative;
             overflow: hidden;
+            cursor: default; /* keine Interaktion, da Platzhalter */
         }
         .tool-card::before {
             content: '';
@@ -286,18 +253,12 @@
         .tool-card h3 i {
             font-size: 1.6rem;
             transition: transform 0.3s ease;
-            color: var(--primary);
+            color: var(--text-muted);
         }
 
         .tool-card:hover h3 i {
-            transform: scale(1.15) rotate(-6deg);
-        }
-
-        .tool-card .icon-gold i {
-            color: var(--accent-gold) !important;
-        }
-        .tool-card .icon-pink i {
-            color: var(--accent-pink) !important;
+            transform: scale(1.1) rotate(-6deg);
+            color: var(--primary);
         }
 
         .tool-card p {
@@ -310,41 +271,20 @@
 
         .badge {
             font-size: 0.6rem;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
-            background: rgba(91, 154, 255, 0.15);
+            background: rgba(91, 154, 255, 0.12);
             color: var(--primary);
             text-transform: uppercase;
             font-family: 'Orbitron', sans-serif;
-            border: 1px solid rgba(91, 154, 255, 0.3);
+            border: 1px solid rgba(91, 154, 255, 0.25);
             letter-spacing: 0.5px;
             white-space: nowrap;
         }
-        .badge.soon {
-            background: rgba(240, 194, 127, 0.15);
+        .badge.planning {
+            background: rgba(240, 194, 127, 0.12);
             color: var(--accent-gold);
-            border-color: rgba(240, 194, 127, 0.3);
-        }
-        .badge.new {
-            background: rgba(255, 107, 107, 0.15);
-            color: var(--accent-pink);
-            border-color: rgba(255, 107, 107, 0.3);
-        }
-
-        /* ===== KEINE ERGEBNISSE ===== */
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            display: none;
-        }
-        .no-results i {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 15px;
-            color: var(--primary);
+            border-color: rgba(240, 194, 127, 0.25);
         }
 
         /* ===== FOOTER ===== */
@@ -374,10 +314,6 @@
                 flex-direction: column;
                 align-items: flex-start;
             }
-            .search-wrapper {
-                max-width: 100%;
-                width: 100%;
-            }
             .grid {
                 grid-template-columns: 1fr;
             }
@@ -404,125 +340,124 @@
             </div>
         </div>
 
-        <!-- HEADER MIT SUCHE -->
+        <!-- HEADER -->
         <header>
             <h1>Utilities Bereich</h1>
             <div class="subhead">
-                <span>Alle nützlichen Tools auf einen Blick.</span>
-                <div class="search-wrapper">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="searchInput" placeholder="Tool suchen..." aria-label="Tools durchsuchen" />
-                </div>
+                <span>Hier entstehen in Zukunft nützliche Tools für den Alltag.</span>
             </div>
         </header>
 
-        <!-- TOOL-GRID -->
-        <div class="grid" id="toolGrid">
-            <!-- 1. ColorForge (bestehend) -->
-            <a href="colorforge/" class="tool-card">
-                <h3>
-                    <span>ColorForge</span>
-                    <i class="fa-solid fa-paintbrush icon-pink"></i>
-                </h3>
-                <p>Kreatives Farb-Tool zum Erstellen, Mischen und Verwalten von Paletten.</p>
-                <div style="margin-top: 12px;"><span class="badge new">Neu</span></div>
-            </a>
-
-            <!-- 2. PDF-Konverter -->
+        <!-- PLATZHALTER-GRID -->
+        <div class="grid">
+            <!-- 12 Platzhalter-Karten – alle neutral -->
             <div class="tool-card">
                 <h3>
-                    <span>PDF-Konverter</span>
-                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>Platzhalter 01</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>Konvertiere PDFs in Word, Excel, Bilder und mehr – einfach und schnell.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
 
-            <!-- 3. QR-Code Generator -->
             <div class="tool-card">
                 <h3>
-                    <span>QR-Code Generator</span>
-                    <i class="fa-solid fa-qrcode"></i>
+                    <span>Platzhalter 02</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>Erstelle individuelle QR-Codes für Links, Texte oder Kontaktdaten.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
 
-            <!-- 4. Text-Tools -->
             <div class="tool-card">
                 <h3>
-                    <span>Text-Tools</span>
-                    <i class="fa-solid fa-font"></i>
+                    <span>Platzhalter 03</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>Zeichen zählen, Text umkehren, Groß-/Kleinschreibung ändern und mehr.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
 
-            <!-- 5. Einheitenrechner -->
             <div class="tool-card">
                 <h3>
-                    <span>Einheitenrechner</span>
-                    <i class="fa-solid fa-weight-scale"></i>
+                    <span>Platzhalter 04</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>Rechne Längen, Gewichte, Temperaturen und Flächen um.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
 
-            <!-- 6. Timer & Stoppuhr -->
             <div class="tool-card">
                 <h3>
-                    <span>Timer & Stoppuhr</span>
-                    <i class="fa-solid fa-clock"></i>
+                    <span>Platzhalter 05</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>Praktischer Timer mit Countdown und Stoppuhr-Funktion.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
 
-            <!-- 7. Passwort-Generator -->
             <div class="tool-card">
                 <h3>
-                    <span>Passwort-Generator</span>
-                    <i class="fa-solid fa-key"></i>
+                    <span>Platzhalter 06</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>Sichere Passwörter mit beliebiger Länge und Zeichenvielfalt generieren.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
 
-            <!-- 8. JSON-Formatter -->
             <div class="tool-card">
                 <h3>
-                    <span>JSON-Formatter</span>
-                    <i class="fa-solid fa-code"></i>
+                    <span>Platzhalter 07</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>JSON-Daten validieren, formatieren und übersichtlich darstellen.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
 
-            <!-- 9. Bildkomprimierer (extra) -->
             <div class="tool-card">
                 <h3>
-                    <span>Bildkomprimierer</span>
-                    <i class="fa-solid fa-image"></i>
+                    <span>Platzhalter 08</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>Reduziere die Dateigröße von JPG, PNG und WebP ohne Qualitätsverlust.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
 
-            <!-- 10. Zeitzonen-Rechner -->
             <div class="tool-card">
                 <h3>
-                    <span>Zeitzonen-Rechner</span>
-                    <i class="fa-solid fa-globe"></i>
+                    <span>Platzhalter 09</span>
+                    <i class="fa-solid fa-cube"></i>
                 </h3>
-                <p>Vergleiche Zeitzonen weltweit und berechne Differenzen.</p>
-                <div style="margin-top: 12px;"><span class="badge soon">In Kürze</span></div>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
             </div>
-        </div>
 
-        <!-- KEINE ERGEBNISSE (wird bei leerer Suche eingeblendet) -->
-        <div class="no-results" id="noResults">
-            <i class="fa-solid fa-face-frown"></i>
-            <span>Kein Tool passt zu deiner Suche.</span>
+            <div class="tool-card">
+                <h3>
+                    <span>Platzhalter 10</span>
+                    <i class="fa-solid fa-cube"></i>
+                </h3>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
+            </div>
+
+            <div class="tool-card">
+                <h3>
+                    <span>Platzhalter 11</span>
+                    <i class="fa-solid fa-cube"></i>
+                </h3>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
+            </div>
+
+            <div class="tool-card">
+                <h3>
+                    <span>Platzhalter 12</span>
+                    <i class="fa-solid fa-cube"></i>
+                </h3>
+                <p>Hier entsteht ein neues Utility-Tool. Weitere Informationen folgen in Kürze.</p>
+                <div style="margin-top: 12px;"><span class="badge planning">In Planung</span></div>
+            </div>
         </div>
 
         <!-- FOOTER -->
@@ -533,7 +468,7 @@
 
     <script>
         // ============================================================
-        // 1. HINTERGRUND-PARTIKEL (wie auf Hauptseite)
+        // 1. HINTERGRUND-PARTIKEL
         // ============================================================
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
@@ -600,38 +535,7 @@
         });
 
         // ============================================================
-        // 3. SUCHFILTER (Echtzeit)
-        // ============================================================
-        const searchInput = document.getElementById('searchInput');
-        const toolCards = document.querySelectorAll('.tool-card');
-        const noResults = document.getElementById('noResults');
-
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase().trim();
-            let visibleCount = 0;
-
-            toolCards.forEach(card => {
-                const title = card.querySelector('h3 span')?.textContent.toLowerCase() || '';
-                const desc = card.querySelector('p')?.textContent.toLowerCase() || '';
-                const match = title.includes(query) || desc.includes(query);
-
-                if (query === '' || match) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            if (visibleCount === 0 && query !== '') {
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-            }
-        });
-
-        // ============================================================
-        // 4. DYNAMISCHES COPYRIGHT-JAHR
+        // 3. DYNAMISCHES COPYRIGHT-JAHR
         // ============================================================
         document.getElementById('year').textContent = new Date().getFullYear();
     </script>
