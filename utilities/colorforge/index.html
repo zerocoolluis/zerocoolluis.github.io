@@ -105,7 +105,7 @@
                 </div>
             </div>
 
-            <!-- Rechte Karte: API-Werte + Code-Empfehlung (neu) -->
+            <!-- Rechte Karte: API-Werte + Code-Empfehlung -->
             <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 flex flex-col">
                 <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Live API Werte (Klick zum Kopieren)</label>
                 <div class="space-y-2 text-xs font-medium flex-1">
@@ -131,7 +131,7 @@
                     </div>
                 </div>
 
-                <!-- NEU: Code-Empfehlung (ersetzt die Bewertung) -->
+                <!-- Code-Empfehlung (ohne Emojis) -->
                 <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
                     <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-2">Best-Code-Empfehlung</label>
                     <div id="code-recommendation" class="recommendation-box">
@@ -222,8 +222,6 @@
         const dbStatus = document.getElementById('db-status');
         const toast = document.getElementById('toast');
         const toastText = document.getElementById('toast-text');
-
-        // Code-Empfehlung
         const recText = document.getElementById('rec-text');
 
         // ============================================================
@@ -518,7 +516,6 @@
                 document.getElementById('web-name-val').innerText = data.name.value;
                 const lab = rgbToLab(hexToRgb(hex));
                 document.getElementById('lab-val').innerText = `L:${Math.round(lab.L)} a:${Math.round(lab.a)} b:${Math.round(lab.b)}`;
-                // Code-Empfehlung
                 updateRecommendation(hex);
             } catch (err) {
                 if (!customName) nameDisplay.innerText = "Farbe ausgewählt";
@@ -533,31 +530,28 @@
         }
 
         // ============================================================
-        // 7. NEUE CODE-EMPFEHLUNG (intelligent)
+        // 7. CODE-EMPFEHLUNG (ohne Emojis)
         // ============================================================
         function updateRecommendation(hex) {
             const hsl = hexToHsl(hex);
             const h = hsl.h, s = hsl.s, l = hsl.l;
 
-            // Basis-Empfehlung
             let recommendation = '';
 
-            // 1. Helligkeit und Sättigung analysieren
             if (l >= 80 && s < 30) {
-                recommendation = '☀️ Sehr helle, blasse Farbe – der <strong>RGB-Code</strong> ist ideal für Bildschirme. Der <strong>HEX-Code</strong> ist universell einsetzbar.';
+                recommendation = 'Sehr helle, blasse Farbe – der <strong>RGB-Code</strong> ist ideal für Bildschirme. Der <strong>HEX-Code</strong> ist universell einsetzbar.';
             } else if (l >= 70 && s >= 50) {
-                recommendation = '💡 Leuchtende, helle Farbe – <strong>HEX</strong> ist perfekt für Webdesign. <strong>HSL</strong> ermöglicht einfache Anpassungen.';
+                recommendation = 'Leuchtende, helle Farbe – <strong>HEX</strong> ist perfekt für Webdesign. <strong>HSL</strong> ermöglicht einfache Anpassungen.';
             } else if (l >= 40 && l < 70 && s >= 60) {
-                recommendation = '🎨 Kräftige, gesättigte Farbe – <strong>HEX</strong> ist am vielseitigsten. Für den Druck empfehle ich die <strong>CMYK</strong>-Werte.';
+                recommendation = 'Kräftige, gesättigte Farbe – <strong>HEX</strong> ist am vielseitigsten. Für den Druck empfehle ich die <strong>CMYK</strong>-Werte.';
             } else if (l >= 30 && l < 40 && s >= 40) {
-                recommendation = '🌙 Dunkle, satte Farbe – <strong>RGB</strong> eignet sich gut für digitale Anwendungen. Für präzises Arbeiten ist <strong>LAB</strong> hilfreich.';
+                recommendation = 'Dunkle, satte Farbe – <strong>RGB</strong> eignet sich gut für digitale Anwendungen. Für präzises Arbeiten ist <strong>LAB</strong> hilfreich.';
             } else if (l < 30) {
-                recommendation = '🌑 Sehr dunkle Farbe – verwende <strong>HEX</strong> oder <strong>RGB</strong> für gute Darstellung auf Bildschirmen. Für Druck ist <strong>CMYK</strong> wichtig.';
+                recommendation = 'Sehr dunkle Farbe – verwende <strong>HEX</strong> oder <strong>RGB</strong> für gute Darstellung auf Bildschirmen. Für Druck ist <strong>CMYK</strong> wichtig.';
             } else {
-                recommendation = '✨ Ausgewogene Farbe – der <strong>HEX-Code</strong> ist für fast alle Zwecke die beste Wahl.';
+                recommendation = 'Ausgewogene Farbe – der <strong>HEX-Code</strong> ist für fast alle Zwecke die beste Wahl.';
             }
 
-            // Zusätzliche Tipps je nach Farbton
             if (h >= 0 && h < 30) {
                 recommendation += ' Rote und orange Töne wirken in <strong>RGB</strong> besonders lebendig.';
             } else if (h >= 30 && h < 60) {
@@ -570,7 +564,35 @@
         }
 
         // ============================================================
-        // 8. REGLER
+        // 8. ZUFALLSFARBE mit intelligentem Namen (ohne Klammern/HSL)
+        // ============================================================
+        function getColorNameFromHue(h) {
+            if (h >= 0 && h < 15) return 'Rot';
+            if (h >= 15 && h < 45) return 'Orange';
+            if (h >= 45 && h < 75) return 'Gelb';
+            if (h >= 75 && h < 165) return 'Grün';
+            if (h >= 165 && h < 195) return 'Cyan';
+            if (h >= 195 && h < 255) return 'Blau';
+            if (h >= 255 && h < 315) return 'Violett';
+            return 'Pink';
+        }
+
+        function randomColor() {
+            const h = Math.floor(Math.random() * 360);
+            const s = 60 + Math.floor(Math.random() * 40);
+            const l = 40 + Math.floor(Math.random() * 40);
+            const hex = hslToHex(h, s, l);
+            const match = globalColorCatalog.find(c => c.hex.toUpperCase() === hex.toUpperCase());
+            if (match) {
+                updateColor(hex, match.name, match.cat);
+            } else {
+                const colorName = getColorNameFromHue(h);
+                updateColor(hex, `Zufallsfarbe (${colorName})`, 'Zufall');
+            }
+        }
+
+        // ============================================================
+        // 9. REGLER
         // ============================================================
         gradientSlider.addEventListener('input', (e) => {
             const val = parseInt(e.target.value);
@@ -581,19 +603,6 @@
         });
 
         picker.addEventListener('input', (e) => updateColor(e.target.value));
-
-        // ============================================================
-        // 9. ZUFALLSFARBE
-        // ============================================================
-        function randomColor() {
-            const h = Math.floor(Math.random() * 360);
-            const s = 60 + Math.floor(Math.random() * 40);
-            const l = 40 + Math.floor(Math.random() * 40);
-            const hex = hslToHex(h, s, l);
-            const match = globalColorCatalog.find(c => c.hex.toUpperCase() === hex.toUpperCase());
-            if (match) updateColor(hex, match.name, match.cat);
-            else updateColor(hex, `Zufall (HSL ${h}°,${s}%,${l}%)`, "Zufall");
-        }
 
         // ============================================================
         // 10. HISTORIE
