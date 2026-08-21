@@ -18,10 +18,10 @@
             --bg-color: #0a0e1a;
             --card-bg: rgba(18, 25, 45, 0.8);
             --border-color: rgba(91, 154, 255, 0.2);
-            --primary: #5b9aff;       /* helles Blau */
+            --primary: #5b9aff;
             --primary-glow: rgba(91, 154, 255, 0.3);
-            --accent-gold: #f0c27f;   /* warmer Goldton */
-            --accent-pink: #ff6b6b;   /* dezent rot für Kontraste */
+            --accent-gold: #f0c27f;
+            --accent-pink: #ff6b6b;
             --text-color: #eef2f8;
             --text-muted: #9aa8c7;
         }
@@ -42,7 +42,6 @@
             min-height: 100vh;
         }
 
-        /* ===== FOKUS ===== */
         a:focus-visible,
         button:focus-visible,
         .menu-toggle:focus-visible {
@@ -162,17 +161,11 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .glitch-wrapper {
-            display: inline-block;
-            position: relative;
-            cursor: pointer;
-        }
-
+        /* ===== SANFTER FARBWECHSEL (ERSATZ FÜR GLITCH) ===== */
         .main-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 4rem;
             font-weight: 900;
-            color: var(--text-color);
             letter-spacing: 2px;
             margin-bottom: 15px;
             white-space: nowrap;
@@ -180,59 +173,25 @@
             border-right: 3px solid var(--primary);
             display: inline-block;
             padding-right: 5px;
-            /* Sanftes Pulsieren – deutlich reduziert */
-            animation: softPulse 4s ease-in-out infinite alternate;
+            /* Sanfter Farbwechsel + weiches Leuchten */
+            background: linear-gradient(135deg, #5b9aff 0%, #f0c27f 50%, #5b9aff 100%);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: smoothGradient 6s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 20px rgba(91, 154, 255, 0.15));
         }
 
-        @keyframes softPulse {
-            0% { text-shadow: 0 0 15px rgba(91, 154, 255, 0.1), 0 0 30px rgba(240, 194, 127, 0.05); }
-            100% { text-shadow: 0 0 25px rgba(91, 154, 255, 0.25), 0 0 50px rgba(240, 194, 127, 0.1); }
+        @keyframes smoothGradient {
+            0% { background-position: 0% 50%; filter: drop-shadow(0 0 15px rgba(91, 154, 255, 0.1)); }
+            50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px rgba(240, 194, 127, 0.15)); }
+            100% { background-position: 0% 50%; filter: drop-shadow(0 0 15px rgba(91, 154, 255, 0.1)); }
         }
 
-        /* Glitch – angepasst auf neue Farben */
-        .glitch-wrapper.glitch .main-title {
-            animation: glitch-skew 1s infinite linear alternate-reverse;
-        }
-
-        .glitch-wrapper.glitch .main-title::before,
-        .glitch-wrapper.glitch .main-title::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-color);
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .glitch-wrapper.glitch .main-title::before {
-            color: var(--accent-pink);
-            z-index: -1;
-            animation: glitch-effect 0.3s infinite reverse;
-        }
-        .glitch-wrapper.glitch .main-title::after {
-            color: var(--primary);
-            z-index: -2;
-            animation: glitch-effect 0.3s infinite;
-        }
-
-        @keyframes glitch-effect {
-            0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
-        }
-
-        @keyframes glitch-skew {
-            0% { transform: skew(0deg); }
-            10% { transform: skew(1.5deg); }
-            20% { transform: skew(0deg); }
-            90% { transform: skew(-1.5deg); }
-            100% { transform: skew(0deg); }
+        /* Cursor beim Typing – verschwindet nach Fertigstellung */
+        .main-title.typing-done {
+            border-right: none;
         }
 
         .creator-tag {
@@ -348,7 +307,7 @@
             margin-bottom: 60px;
         }
 
-        /* ===== KARTEN mit 3D ===== */
+        /* ===== KARTEN ===== */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -385,7 +344,6 @@
             align-items: center;
         }
 
-        /* Icons – neue Farben */
         .card .fa-clapperboard { color: var(--accent-gold) !important; }
         .card .fa-lightbulb { color: #f0c27f !important; transition: all 0.3s ease; }
         .card .fa-gears { color: var(--primary) !important; }
@@ -419,7 +377,7 @@
             line-height: 1.6;
         }
 
-        /* ===== BACK-TO-TOP (ohne Tooltip) ===== */
+        /* ===== BACK-TO-TOP ===== */
         .back-to-top {
             position: fixed;
             bottom: 30px;
@@ -560,15 +518,12 @@
                 font-size: 2.3rem;
                 white-space: normal;
                 border-right: none;
+                background-size: 200% 200%;
             }
             .info-bar {
                 flex-direction: column;
                 gap: 8px;
                 text-align: center;
-            }
-            .glitch-wrapper.glitch .main-title::before,
-            .glitch-wrapper.glitch .main-title::after {
-                display: none;
             }
         }
     </style>
@@ -608,9 +563,7 @@
         </nav>
 
         <header>
-            <div class="glitch-wrapper" id="glitchWrapper" data-glitch-active="false">
-                <h1 class="main-title" id="mainTitle" data-text="ZERO'S TOOL HUB">ZERO'S TOOL HUB</h1>
-            </div>
+            <h1 class="main-title" id="mainTitle">ZERO'S TOOL HUB</h1>
             <div class="creator-tag">by Zerocoolluis</div>
         </header>
 
@@ -658,7 +611,7 @@
             <ul class="changelog-list">
                 <li class="changelog-item">
                     <span class="changelog-date">HEUTE</span>
-                    <span class="changelog-text">Komplettes Redesign – edles Dunkelblau mit Goldakzenten, weniger grelles Leuchten.</span>
+                    <span class="changelog-text">Glitch entfernt – stattdessen sanfter Farbverlauf für die Überschrift.</span>
                 </li>
                 <li class="changelog-item">
                     <span class="changelog-date">UPDATE</span>
@@ -681,7 +634,7 @@
 
     <script>
         // ============================================================
-        // 1. PARTIKEL (mit Performance-Optimierung)
+        // 1. PARTIKEL
         // ============================================================
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
@@ -712,7 +665,7 @@
                 return;
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(91, 154, 255, 0.12)'; // dezenter
+            ctx.fillStyle = 'rgba(91, 154, 255, 0.12)';
             particles.forEach(p => {
                 p.x += p.speedX;
                 p.y += p.speedY;
@@ -751,10 +704,9 @@
         });
 
         // ============================================================
-        // 3. TYPING + GLITCH
+        // 3. TYPING-EFFEKT (ohne Glitch)
         // ============================================================
         const titleElement = document.getElementById('mainTitle');
-        const glitchWrapper = document.getElementById('glitchWrapper');
         const fullText = "ZERO'S TOOL HUB";
         let charIndex = 0;
 
@@ -765,22 +717,13 @@
                 setTimeout(typeTitle, 80);
             } else {
                 titleElement.textContent = fullText;
-                titleElement.style.borderRight = 'none';
-                setTimeout(() => {
-                    glitchWrapper.classList.add('glitch');
-                    glitchWrapper.dataset.glitchActive = 'true';
-                }, 1000);
+                titleElement.classList.add('typing-done');
+                // Nach dem Tippen startet der sanfte Farbverlauf automatisch (via CSS)
             }
         }
 
         window.addEventListener('load', () => {
             typeTitle();
-        });
-
-        glitchWrapper.addEventListener('click', () => {
-            glitchWrapper.classList.toggle('glitch');
-            const isActive = glitchWrapper.dataset.glitchActive === 'true' ? false : true;
-            glitchWrapper.dataset.glitchActive = isActive;
         });
 
         // ============================================================
@@ -842,7 +785,8 @@
         const terminalInput = document.getElementById('terminalInput');
         const terminalClose = document.getElementById('terminalClose');
 
-        glitchWrapper.addEventListener('click', () => {
+        // Klick auf die Überschrift zählt für Easter Egg
+        titleElement.addEventListener('click', () => {
             clearTimeout(clickTimer);
             clickCount++;
             if (clickCount >= 5) {
