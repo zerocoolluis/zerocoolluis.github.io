@@ -13,17 +13,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* ===== VARIABLEN ===== */
+        /* ===== NEUES FARBSCHEMA – edel & gedämpft ===== */
         :root {
-            --bg-color: #03050a;
-            --card-bg: rgba(8, 12, 22, 0.85);
-            --border-color: rgba(0, 240, 255, 0.25);
-            --neon-cyan: #00f0ff;
-            --neon-pink: #ff007f;
-            --text-color: #f0f6fc;
-            --text-muted: #b0b8c4; /* verbesserter Kontrast */
-            --glitch-color1: #ff007f;
-            --glitch-color2: #00f0ff;
+            --bg-color: #0a0e1a;
+            --card-bg: rgba(18, 25, 45, 0.8);
+            --border-color: rgba(91, 154, 255, 0.2);
+            --primary: #5b9aff;       /* helles Blau */
+            --primary-glow: rgba(91, 154, 255, 0.3);
+            --accent-gold: #f0c27f;   /* warmer Goldton */
+            --accent-pink: #ff6b6b;   /* dezent rot für Kontraste */
+            --text-color: #eef2f8;
+            --text-muted: #9aa8c7;
         }
 
         * {
@@ -42,16 +42,16 @@
             min-height: 100vh;
         }
 
-        /* ===== FOKUS-STILE für Tastatur ===== */
+        /* ===== FOKUS ===== */
         a:focus-visible,
         button:focus-visible,
         .menu-toggle:focus-visible {
-            outline: 3px solid var(--neon-cyan);
+            outline: 3px solid var(--primary);
             outline-offset: 4px;
             border-radius: 8px;
         }
 
-        /* ===== HINTERGRUND-CANVAS ===== */
+        /* ===== CANVAS ===== */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -75,13 +75,10 @@
         }
 
         @keyframes pageEntrance {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== TOP-BAR (Menü) ===== */
+        /* ===== TOP-BAR ===== */
         .top-bar {
             display: flex;
             justify-content: flex-end;
@@ -93,7 +90,7 @@
         .menu-toggle {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            color: var(--neon-cyan);
+            color: var(--primary);
             width: 50px;
             height: 50px;
             border-radius: 12px;
@@ -107,8 +104,8 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
         }
         .menu-toggle:hover {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+            border-color: var(--primary);
+            box-shadow: 0 0 25px var(--primary-glow);
             transform: scale(1.1) rotate(90deg);
         }
 
@@ -117,7 +114,7 @@
             top: 65px;
             right: 0;
             width: 240px;
-            background: rgba(8, 12, 22, 0.95);
+            background: rgba(10, 14, 26, 0.95);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             backdrop-filter: blur(20px);
@@ -148,18 +145,16 @@
             align-items: center;
             gap: 12px;
         }
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
+        .dropdown-item:last-child { border-bottom: none; }
         .dropdown-item:hover,
         .dropdown-item:focus-visible {
-            background: rgba(0, 240, 255, 0.15);
-            color: var(--neon-cyan);
+            background: rgba(91, 154, 255, 0.15);
+            color: var(--primary);
             padding-left: 25px;
-            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+            text-shadow: 0 0 10px var(--primary-glow);
         }
 
-        /* ===== HEADER mit Glitch & Typing ===== */
+        /* ===== HEADER ===== */
         header {
             text-align: center;
             margin: 40px 0 50px 0;
@@ -167,11 +162,10 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        /* Glitch-Container */
         .glitch-wrapper {
             display: inline-block;
             position: relative;
-            cursor: pointer; /* für Terminal-Easter-Egg */
+            cursor: pointer;
         }
 
         .main-title {
@@ -181,25 +175,21 @@
             color: var(--text-color);
             letter-spacing: 2px;
             margin-bottom: 15px;
-            /* Typing-Effekt wird per JS gesteuert – hier nur Grundstil */
             white-space: nowrap;
             overflow: hidden;
-            border-right: 3px solid var(--neon-cyan);
+            border-right: 3px solid var(--primary);
             display: inline-block;
             padding-right: 5px;
-            animation: pulseGlow 3s ease-in-out infinite alternate;
+            /* Sanftes Pulsieren – deutlich reduziert */
+            animation: softPulse 4s ease-in-out infinite alternate;
         }
 
-        @keyframes pulseGlow {
-            0% {
-                text-shadow: 0 0 20px rgba(0, 240, 255, 0.3), 0 0 40px rgba(0, 240, 255, 0.1);
-            }
-            100% {
-                text-shadow: 0 0 35px rgba(0, 240, 255, 0.7), 0 0 70px rgba(255, 0, 127, 0.3);
-            }
+        @keyframes softPulse {
+            0% { text-shadow: 0 0 15px rgba(91, 154, 255, 0.1), 0 0 30px rgba(240, 194, 127, 0.05); }
+            100% { text-shadow: 0 0 25px rgba(91, 154, 255, 0.25), 0 0 50px rgba(240, 194, 127, 0.1); }
         }
 
-        /* Glitch-Effekt (Pseudoelemente) – nur aktiv, wenn Klasse .glitch aktiv */
+        /* Glitch – angepasst auf neue Farben */
         .glitch-wrapper.glitch .main-title {
             animation: glitch-skew 1s infinite linear alternate-reverse;
         }
@@ -218,62 +208,40 @@
         }
 
         .glitch-wrapper.glitch .main-title::before {
-            color: var(--glitch-color1);
+            color: var(--accent-pink);
             z-index: -1;
             animation: glitch-effect 0.3s infinite reverse;
         }
         .glitch-wrapper.glitch .main-title::after {
-            color: var(--glitch-color2);
+            color: var(--primary);
             z-index: -2;
             animation: glitch-effect 0.3s infinite;
         }
 
         @keyframes glitch-effect {
-            0% {
-                transform: translate(0);
-            }
-            20% {
-                transform: translate(-3px, 3px);
-            }
-            40% {
-                transform: translate(-3px, -3px);
-            }
-            60% {
-                transform: translate(3px, 3px);
-            }
-            80% {
-                transform: translate(3px, -3px);
-            }
-            100% {
-                transform: translate(0);
-            }
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
         }
 
         @keyframes glitch-skew {
-            0% {
-                transform: skew(0deg);
-            }
-            10% {
-                transform: skew(2deg);
-            }
-            20% {
-                transform: skew(0deg);
-            }
-            90% {
-                transform: skew(-2deg);
-            }
-            100% {
-                transform: skew(0deg);
-            }
+            0% { transform: skew(0deg); }
+            10% { transform: skew(1.5deg); }
+            20% { transform: skew(0deg); }
+            90% { transform: skew(-1.5deg); }
+            100% { transform: skew(0deg); }
         }
 
         .creator-tag {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.2rem;
-            color: var(--neon-cyan);
+            color: var(--accent-gold);
             letter-spacing: 5px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+            text-shadow: 0 0 15px rgba(240, 194, 127, 0.3);
         }
 
         /* ===== INFO-BAR ===== */
@@ -308,13 +276,13 @@
             transition: all 0.3s ease;
         }
         .section-box:hover {
-            border-color: rgba(0, 240, 255, 0.5);
-            box-shadow: 0 15px 40px rgba(0, 240, 255, 0.15);
+            border-color: rgba(91, 154, 255, 0.4);
+            box-shadow: 0 15px 40px var(--primary-glow);
         }
         .section-box h2 {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.8rem;
-            color: var(--neon-cyan);
+            color: var(--primary);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -328,9 +296,7 @@
         }
 
         /* ===== CHANGELOG ===== */
-        .changelog-list {
-            list-style: none;
-        }
+        .changelog-list { list-style: none; }
         .changelog-item {
             display: flex;
             align-items: flex-start;
@@ -347,11 +313,11 @@
         .changelog-date {
             font-family: 'Orbitron', sans-serif;
             font-size: 0.8rem;
-            color: var(--neon-pink);
-            background: rgba(255, 0, 127, 0.1);
+            color: var(--accent-pink);
+            background: rgba(255, 107, 107, 0.1);
             padding: 4px 8px;
             border-radius: 6px;
-            border: 1px solid rgba(255, 0, 127, 0.3);
+            border: 1px solid rgba(255, 107, 107, 0.3);
             white-space: nowrap;
         }
         .changelog-text {
@@ -359,7 +325,7 @@
             font-size: 0.95rem;
         }
 
-        /* ===== TOOL MENU TITEL ===== */
+        /* ===== TOOL MENU ===== */
         .tool-menu-section {
             text-align: center;
             margin: 50px 0 30px 0;
@@ -367,14 +333,14 @@
         .tool-menu-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.5rem;
-            color: var(--neon-cyan);
+            color: var(--primary);
             letter-spacing: 3px;
             text-transform: uppercase;
             transition: font-size 0.2s ease;
             display: inline-block;
         }
 
-        /* ===== GRID (Karten) ===== */
+        /* ===== GRID ===== */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -382,7 +348,7 @@
             margin-bottom: 60px;
         }
 
-        /* ===== 3D-PARALLAX-KARTEN ===== */
+        /* ===== KARTEN mit 3D ===== */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -402,11 +368,10 @@
             will-change: transform;
         }
         .card:hover {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 20px 40px rgba(0, 240, 255, 0.2);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px var(--primary-glow);
         }
 
-        /* 3D-Effekt – die Karten-Inhalte werden in der JS-Bewegung transformiert */
         .card-inner {
             transform-style: preserve-3d;
             transition: transform 0.1s ease-out;
@@ -420,30 +385,26 @@
             align-items: center;
         }
 
-        /* Icon-Animationen (wie gehabt) */
+        /* Icons – neue Farben */
+        .card .fa-clapperboard { color: var(--accent-gold) !important; }
+        .card .fa-lightbulb { color: #f0c27f !important; transition: all 0.3s ease; }
+        .card .fa-gears { color: var(--primary) !important; }
+
         .card:hover .fa-clapperboard {
             transform: rotate(-10deg) scale(1.1);
             transition: transform 0.3s ease;
         }
-        .card .fa-lightbulb {
-            color: #444444 !important;
-            transition: all 0.3s ease;
-        }
         .card:hover .fa-lightbulb {
-            color: #FFD700 !important;
-            filter: drop-shadow(0 0 15px #FFD700);
+            color: #ffd93d !important;
+            filter: drop-shadow(0 0 15px #ffd93d);
             transform: scale(1.15);
         }
         .card:hover .fa-gears {
             animation: spinGears 1.5s linear infinite;
         }
         @keyframes spinGears {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .card-title {
@@ -458,7 +419,7 @@
             line-height: 1.6;
         }
 
-        /* ===== BACK-TO-TOP ===== */
+        /* ===== BACK-TO-TOP (ohne Tooltip) ===== */
         .back-to-top {
             position: fixed;
             bottom: 30px;
@@ -467,7 +428,7 @@
             height: 50px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            color: var(--neon-cyan);
+            color: var(--primary);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -489,32 +450,14 @@
             pointer-events: auto;
         }
         .back-to-top:hover {
-            background: var(--neon-cyan);
+            background: var(--primary);
             color: var(--bg-color);
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
             transform: translateY(-5px);
         }
-        /* Tooltip */
-        .back-to-top::after {
-            content: "Nach oben";
-            position: absolute;
-            right: 60px;
-            background: var(--card-bg);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            border: 1px solid var(--border-color);
-        }
-        .back-to-top:hover::after {
-            opacity: 1;
-        }
 
-        /* ===== TERMINAL-OVERLAY (Easter Egg) ===== */
+        /* ===== TERMINAL ===== */
         .terminal-overlay {
             position: fixed;
             top: 0;
@@ -529,28 +472,26 @@
             z-index: 9999;
             padding: 20px;
         }
-        .terminal-overlay.open {
-            display: flex;
-        }
+        .terminal-overlay.open { display: flex; }
         .terminal-box {
-            background: #0a0e1a;
-            border: 2px solid var(--neon-cyan);
+            background: #0e1324;
+            border: 2px solid var(--primary);
             border-radius: 16px;
             width: 100%;
             max-width: 700px;
             padding: 30px;
-            box-shadow: 0 0 60px rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 60px var(--primary-glow);
             font-family: 'Courier New', monospace;
-            color: var(--neon-cyan);
+            color: var(--primary);
         }
         .terminal-box h3 {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.2rem;
             margin-bottom: 15px;
-            color: var(--neon-pink);
+            color: var(--accent-gold);
         }
         .terminal-output {
-            background: #03050a;
+            background: #080c18;
             border-radius: 8px;
             padding: 15px;
             min-height: 100px;
@@ -560,18 +501,16 @@
             line-height: 1.6;
             margin-bottom: 15px;
             white-space: pre-wrap;
-            color: #b0b8c4;
+            color: var(--text-muted);
         }
-        .terminal-output .prompt {
-            color: var(--neon-cyan);
-        }
+        .terminal-output .prompt { color: var(--primary); }
         .terminal-input-line {
             display: flex;
             gap: 10px;
             align-items: center;
         }
         .terminal-input-line span {
-            color: var(--neon-cyan);
+            color: var(--primary);
             font-weight: bold;
         }
         .terminal-input-line input {
@@ -586,7 +525,7 @@
             outline: none;
         }
         .terminal-input-line input:focus {
-            border-bottom-color: var(--neon-cyan);
+            border-bottom-color: var(--primary);
         }
         .terminal-close {
             margin-top: 20px;
@@ -600,9 +539,9 @@
             transition: all 0.2s;
         }
         .terminal-close:hover {
-            background: var(--neon-pink);
+            background: var(--accent-pink);
             color: #fff;
-            border-color: var(--neon-pink);
+            border-color: var(--accent-pink);
         }
 
         /* ===== FOOTER ===== */
@@ -619,7 +558,7 @@
         @media (max-width: 768px) {
             .main-title {
                 font-size: 2.3rem;
-                white-space: normal; /* Typing nur für Desktop sinnvoll, für Mobile besser normal */
+                white-space: normal;
                 border-right: none;
             }
             .info-bar {
@@ -629,23 +568,23 @@
             }
             .glitch-wrapper.glitch .main-title::before,
             .glitch-wrapper.glitch .main-title::after {
-                display: none; /* Glitch auf Mobil deaktivieren (Performance) */
+                display: none;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- HINTERGRUND-CANVAS -->
+    <!-- CANVAS -->
     <canvas id="bg-canvas"></canvas>
 
-    <!-- TERMINAL-OVERLAY (Easter Egg) -->
+    <!-- TERMINAL -->
     <div class="terminal-overlay" id="terminalOverlay">
         <div class="terminal-box">
             <h3>⬢ ZERO TERMINAL v1.0</h3>
             <div class="terminal-output" id="terminalOutput">
                 <span class="prompt">></span> Willkommen im Zero-Terminal.<br />
-                <span class="prompt">></span> Verfügbare Befehle: <span style="color:var(--neon-cyan);">help, ls, open [entertainment|school|utilities], clear, exit</span><br />
+                <span class="prompt">></span> Verfügbare Befehle: <span style="color:var(--primary);">help, ls, open [entertainment|school|utilities], clear, exit</span><br />
             </div>
             <div class="terminal-input-line">
                 <span>$</span>
@@ -655,21 +594,19 @@
         </div>
     </div>
 
-    <!-- HAUPT-CONTAINER -->
+    <!-- CONTAINER -->
     <div class="container">
-        <!-- TOP-BAR (Menü) -->
         <nav class="top-bar" aria-label="Hauptnavigation">
             <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen" aria-expanded="false">
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="dropdown-menu" id="dropdownMenu" role="menu">
-                <a href="entertainment/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-clapperboard" style="color: var(--neon-pink);"></i> Entertainment</a>
-                <a href="school/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-lightbulb" style="color: #FFD700;"></i> School</a>
-                <a href="utilities/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-gears" style="color: var(--neon-cyan);"></i> Utilities</a>
+                <a href="entertainment/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-clapperboard" style="color: var(--accent-gold);"></i> Entertainment</a>
+                <a href="school/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-lightbulb" style="color: #f0c27f;"></i> School</a>
+                <a href="utilities/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-gears" style="color: var(--primary);"></i> Utilities</a>
             </div>
         </nav>
 
-        <!-- HEADER mit GLITCH & TYPING -->
         <header>
             <div class="glitch-wrapper" id="glitchWrapper" data-glitch-active="false">
                 <h1 class="main-title" id="mainTitle" data-text="ZERO'S TOOL HUB">ZERO'S TOOL HUB</h1>
@@ -677,29 +614,25 @@
             <div class="creator-tag">by Zerocoolluis</div>
         </header>
 
-        <!-- INFO-BAR -->
         <div class="info-bar">
             <span>Zentrale Anlaufstelle für Tools und Medien.</span>
             <span>Wähle eine Kategorie, um fortzufahren.</span>
         </div>
 
-        <!-- ÜBER MICH -->
         <section class="section-box">
-            <h2><i class="fa-solid fa-terminal" style="color: var(--neon-cyan);">// Über das Projekt</i></h2>
+            <h2><i class="fa-solid fa-terminal" style="color: var(--primary);">// Über das Projekt</i></h2>
             <p>Willkommen auf der offiziellen Zentrale von Zero's Tool Hub! Diese Plattform wurde entwickelt, um nützliche Tools, Medien und coole Features an einem zentralen, schnellen Ort zu bündeln. Alles ist sauber programmiert und modern gestaltet.</p>
             <p>Nutze das Menü oben rechts oder die Kacheln weiter unten, um direkt in die Bereiche einzutauchen.</p>
         </section>
 
-        <!-- TOOL MENU TITEL -->
         <div class="tool-menu-section">
             <h2 class="tool-menu-title" id="toolMenuTitle">TOOL MENU</h2>
         </div>
 
-        <!-- KARTEN-GRID mit 3D-Effekt -->
         <main class="grid" role="main">
             <a href="entertainment/" class="card" id="card1">
                 <div class="card-inner">
-                    <div class="card-icon-container"><i class="fa-solid fa-clapperboard" style="color: var(--neon-pink);"></i></div>
+                    <div class="card-icon-container"><i class="fa-solid fa-clapperboard"></i></div>
                     <div class="card-title">Entertainment</div>
                     <div class="card-desc">Öffnet den Entertainment-Bereich mit unterhaltsamen Tools und Medien.</div>
                 </div>
@@ -713,24 +646,23 @@
             </a>
             <a href="utilities/" class="card" id="card3">
                 <div class="card-inner">
-                    <div class="card-icon-container"><i class="fa-solid fa-gears" style="color: var(--neon-cyan);"></i></div>
+                    <div class="card-icon-container"><i class="fa-solid fa-gears"></i></div>
                     <div class="card-title">Utilities Bereich</div>
                     <div class="card-desc">Öffnet den Utilities-Hauptbereich mit allen Unterkategorien.</div>
                 </div>
             </a>
         </main>
 
-        <!-- CHANGELOG -->
         <section class="section-box">
-            <h2><i class="fa-solid fa-code-branch" style="color: var(--neon-pink);">// Changelog & Updates</i></h2>
+            <h2><i class="fa-solid fa-code-branch" style="color: var(--accent-gold);">// Changelog & Updates</i></h2>
             <ul class="changelog-list">
                 <li class="changelog-item">
                     <span class="changelog-date">HEUTE</span>
-                    <span class="changelog-text">Glitch-Effekt, Typing-Animation, 3D-Parallax-Karten & Terminal-Easter-Egg integriert.</span>
+                    <span class="changelog-text">Komplettes Redesign – edles Dunkelblau mit Goldakzenten, weniger grelles Leuchten.</span>
                 </li>
                 <li class="changelog-item">
                     <span class="changelog-date">UPDATE</span>
-                    <span class="changelog-text">Barrierefreiheit verbessert, semantisches HTML, Performance-Optimierung.</span>
+                    <span class="changelog-text">Back‑to‑Top ohne Tooltip, dafür leuchtender Hover.</span>
                 </li>
                 <li class="changelog-item">
                     <span class="changelog-date">START</span>
@@ -749,7 +681,7 @@
 
     <script>
         // ============================================================
-        // 1. HINTERGRUND-PARTIKEL (mit Performance-Optimierung)
+        // 1. PARTIKEL (mit Performance-Optimierung)
         // ============================================================
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
@@ -764,7 +696,6 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Partikel initialisieren
         for (let i = 0; i < 45; i++) {
             particles.push({
                 x: Math.random() * canvas.width,
@@ -778,10 +709,10 @@
         function animateParticles() {
             if (!isTabActive) {
                 animFrameId = requestAnimationFrame(animateParticles);
-                return; // Pausiert die Zeichnung, aber behält den Frame bei
+                return;
             }
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(0, 240, 255, 0.15)';
+            ctx.fillStyle = 'rgba(91, 154, 255, 0.12)'; // dezenter
             particles.forEach(p => {
                 p.x += p.speedX;
                 p.y += p.speedY;
@@ -797,13 +728,12 @@
         }
         animateParticles();
 
-        // Tab Sichtbarkeit – pausieren bei Inaktivität
         document.addEventListener('visibilitychange', () => {
             isTabActive = !document.hidden;
         });
 
         // ============================================================
-        // 2. DROPDOWN MENÜ
+        // 2. DROPDOWN
         // ============================================================
         const menuToggle = document.getElementById('menuToggle');
         const dropdownMenu = document.getElementById('dropdownMenu');
@@ -821,13 +751,12 @@
         });
 
         // ============================================================
-        // 3. TYPING-EFFEKT + GLITCH (beim Laden)
+        // 3. TYPING + GLITCH
         // ============================================================
         const titleElement = document.getElementById('mainTitle');
         const glitchWrapper = document.getElementById('glitchWrapper');
         const fullText = "ZERO'S TOOL HUB";
         let charIndex = 0;
-        let typingDone = false;
 
         function typeTitle() {
             if (charIndex < fullText.length) {
@@ -836,10 +765,7 @@
                 setTimeout(typeTitle, 80);
             } else {
                 titleElement.textContent = fullText;
-                typingDone = true;
-                // Nach dem Tippen den Cursor verschwinden lassen
                 titleElement.style.borderRight = 'none';
-                // Glitch-Effekt nach 1 Sekunde aktivieren
                 setTimeout(() => {
                     glitchWrapper.classList.add('glitch');
                     glitchWrapper.dataset.glitchActive = 'true';
@@ -847,12 +773,10 @@
             }
         }
 
-        // Starte Typing beim Laden
         window.addEventListener('load', () => {
             typeTitle();
         });
 
-        // Beim Klick auf den Titel Glitch toggeln (für Spaß)
         glitchWrapper.addEventListener('click', () => {
             glitchWrapper.classList.toggle('glitch');
             const isActive = glitchWrapper.dataset.glitchActive === 'true' ? false : true;
@@ -860,7 +784,7 @@
         });
 
         // ============================================================
-        // 4. 3D-PARALLAX-KARTEN
+        // 4. 3D-KARTEN
         // ============================================================
         const cards = document.querySelectorAll('.card');
 
@@ -871,7 +795,7 @@
                 const y = e.clientY - rect.top;
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -10; // max ±10 Grad
+                const rotateX = ((y - centerY) / centerY) * -10;
                 const rotateY = ((x - centerX) / centerX) * 10;
                 const inner = card.querySelector('.card-inner');
                 inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
@@ -884,21 +808,18 @@
         });
 
         // ============================================================
-        // 5. SCROLL-EFFEKTE (Tool Menu Größe + Back-to-Top)
+        // 5. SCROLL (Tool Menu + Back-to-Top)
         // ============================================================
         const backToTopBtn = document.getElementById('backToTop');
         const toolTitle = document.getElementById('toolMenuTitle');
 
         window.addEventListener('scroll', () => {
             const scrollY = window.scrollY;
-
-            // Tool Menu Schriftgröße
             let newSize = 1.5 + (scrollY * 0.015);
             if (newSize > 2.8) newSize = 2.8;
             if (newSize < 1.5) newSize = 1.5;
             toolTitle.style.fontSize = newSize + 'rem';
 
-            // Back-to-Top Sichtbarkeit
             if (scrollY > 400) {
                 backToTopBtn.classList.add('visible');
             } else {
@@ -906,14 +827,13 @@
             }
         });
 
-        // Back-to-Top glatter Scroll
         backToTopBtn.addEventListener('click', (e) => {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         // ============================================================
-        // 6. TERMINAL-EASTER-EGG (5x auf Titel klicken)
+        // 6. TERMINAL EASTER EGG
         // ============================================================
         let clickCount = 0;
         let clickTimer = null;
@@ -922,16 +842,13 @@
         const terminalInput = document.getElementById('terminalInput');
         const terminalClose = document.getElementById('terminalClose');
 
-        // Zähle Klicks auf den Titel
         glitchWrapper.addEventListener('click', () => {
             clearTimeout(clickTimer);
             clickCount++;
             if (clickCount >= 5) {
-                // Terminal öffnen
                 terminalOverlay.classList.add('open');
                 terminalInput.focus();
                 clickCount = 0;
-                // Einen Willkommens-Output hinzufügen (falls noch nicht)
                 if (terminalOutput.children.length === 0) {
                     appendTerminalLine('> Willkommen im Zero-Terminal.', '');
                     appendTerminalLine('> Verfügbare Befehle: help, ls, open [entertainment|school|utilities], clear, exit', '');
@@ -941,7 +858,6 @@
             }
         });
 
-        // Terminal-Funktionen
         function appendTerminalLine(text, type = '') {
             const line = document.createElement('div');
             if (type === 'input') {
@@ -957,11 +873,9 @@
             const trimmed = cmd.trim().toLowerCase();
             if (trimmed === '') return;
 
-            // Benutzereingabe anzeigen
             appendTerminalLine(trimmed, 'input');
 
             let response = '';
-
             switch (trimmed) {
                 case 'help':
                     response = 'Verfügbare Befehle: help, ls, open [entertainment|school|utilities], clear, exit';
@@ -970,8 +884,7 @@
                     response = 'Verzeichnisse: entertainment/  school/  utilities/';
                     break;
                 case 'open entertainment':
-                    response = 'Öffne Entertainment-Bereich... (Link folgt)';
-                    // Hier könnte man tatsächlich weiterleiten: window.location.href = 'entertainment/';
+                    response = 'Öffne Entertainment-Bereich...';
                     break;
                 case 'open school':
                     response = 'Öffne School-Bereich...';
@@ -1011,7 +924,6 @@
             terminalInput.value = '';
         });
 
-        // Terminal schließen bei Klick außerhalb der Box
         terminalOverlay.addEventListener('click', (e) => {
             if (e.target === terminalOverlay) {
                 terminalOverlay.classList.remove('open');
@@ -1020,7 +932,7 @@
         });
 
         // ============================================================
-        // 7. DYNAMISCHES COPYRIGHT-JAHR
+        // 7. COPYRIGHT
         // ============================================================
         document.getElementById('year').textContent = new Date().getFullYear();
     </script>
