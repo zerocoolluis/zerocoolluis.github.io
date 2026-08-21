@@ -1,1 +1,449 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming-Hub & Session-Companion</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        gaming: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            accent: '#06b6d4',
+                            accentHover: '#0891b2',
+                            glow: 'rgba(6, 182, 212, 0.3)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .neon-border {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+        }
+        .neon-border:hover {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+    </style>
+</head>
+<body class="bg-gaming-bg text-slate-100 font-sans min-h-screen flex flex-col selection:bg-cyan-500 selection:text-white">
+
+    <!-- Top Navigation / Header -->
+    <header class="bg-gaming-card border-b border-slate-800 h-16 flex items-center justify-between px-6 sticky top-0 z-50">
+        <div class="flex items-center space-x-4">
+            <button id="sidebar-toggle" class="text-slate-400 hover:text-cyan-400 focus:outline-none text-xl md:hidden">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-gamepad text-cyan-400 text-2xl animate-pulse"></i>
+                <span class="font-bold text-lg tracking-wider bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">NEXUS-HUB</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-6 text-sm">
+            <!-- Session Timer -->
+            <div class="hidden sm:flex items-center space-x-2 bg-slate-900/60 px-3 py-1.5 rounded-lg border border-slate-800">
+                <i class="fa-solid fa-clock text-cyan-400"></i>
+                <span class="text-slate-400">Session:</span>
+                <span id="session-timer" class="font-mono font-bold text-cyan-400">00:00:00</span>
+            </div>
+            <!-- Fullscreen Toggle -->
+            <button onclick="toggleFullscreen()" class="text-slate-400 hover:text-cyan-400 transition" title="Vollbild umschalten">
+                <i class="fa-solid fa-expand text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 relative">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="bg-gaming-card border-r border-slate-800 w-64 fixed inset-y-0 left-0 z-40 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out flex flex-col pt-16 md:pt-0">
+            <div class="p-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Menü</div>
+            <nav class="flex-1 px-4 space-y-1">
+                <button onclick="switchTab('notes')" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-cyan-400 bg-cyan-500/10 border border-cyan-500/20" data-target="notes">
+                    <i class="fa-solid fa-note-sticky w-5"></i>
+                    <span class="font-medium">Quick-Notes</span>
+                </button>
+                <button onclick="switchTab('reaction')" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-target="reaction">
+                    <i class="fa-solid fa-bolt w-5"></i>
+                    <span class="font-medium">Reaktions-Trainer</span>
+                </button>
+                <button onclick="switchTab('timers')" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-target="timers">
+                    <i class="fa-solid fa-stopwatch w-5"></i>
+                    <span class="font-medium">Multi-Timer</span>
+                </button>
+                <button onclick="switchTab('wheel')" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-target="wheel">
+                    <i class="fa-solid fa-dice w-5"></i>
+                    <span class="font-medium">Entscheidungs-Helfer</span>
+                </button>
+                <button onclick="switchTab('mic')" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-400 hover:bg-slate-800 hover:text-slate-200" data-target="mic">
+                    <i class="fa-solid fa-microphone w-5"></i>
+                    <span class="font-medium">Mic-Monitor</span>
+                </button>
+            </nav>
+            <div class="p-4 border-t border-slate-800 text-xs text-center text-slate-500">
+                v1.0.0 • Local Storage Aktiv
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-6 md:p-10 max-w-5xl mx-auto pb-24">
+
+            <!-- TAB 1: NOTES -->
+            <section id="tab-notes" class="tab-content space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-note-sticky text-cyan-400"></i> Quick-Notes & Server Clipboard
+                    </h1>
+                    <p class="text-slate-400 text-sm">Speichere IP-Adressen, Loot-Pläne oder Passwörter temporär für deine Session.</p>
+                </div>
+                <div class="bg-gaming-card border border-slate-800 rounded-2xl p-6 neon-border transition">
+                    <textarea id="scratchpad" class="w-full h-64 bg-slate-900 border border-slate-700 rounded-xl p-4 text-slate-200 focus:outline-none focus:border-cyan-400 font-mono text-sm resize-none" placeholder="Hier tippen... (Wird automatisch gespeichert)"></textarea>
+                    <div class="flex justify-between items-center mt-4">
+                        <span id="save-status" class="text-xs text-slate-500">Automatisch gespeichert</span>
+                        <button onclick="copyNotes()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold px-5 py-2 rounded-xl transition flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-copy"></i> In Zwischenablage
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: REACTION TRAINER -->
+            <section id="tab-reaction" class="tab-content hidden space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-cyan-400"></i> Reaktionszeit-Warmup
+                    </h1>
+                    <p class="text-slate-400 text-sm">Teste deine Reflexe vor dem nächsten Match.</p>
+                </div>
+                <div id="reaction-box" onclick="handleReactionClick()" class="bg-slate-900 border border-slate-800 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer select-none transition neon-border">
+                    <i class="fa-solid fa-hand-pointer text-4xl text-cyan-400 mb-3 animate-bounce"></i>
+                    <h2 id="reaction-text" class="text-xl font-bold text-white">Klicke hier, um zu starten</h2>
+                    <p id="reaction-sub" class="text-sm text-slate-400 mt-1">Warte auf das Signal...</p>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gaming-card border border-slate-800 rounded-xl p-4 text-center">
+                        <div class="text-xs text-slate-400 uppercase">Letzte Zeit</div>
+                        <div id="last-time" class="text-2xl font-mono font-bold text-cyan-400 mt-1">- ms</div>
+                    </div>
+                    <div class="bg-gaming-card border border-slate-800 rounded-xl p-4 text-center">
+                        <div class="text-xs text-slate-400 uppercase">Highscore (Bestzeit)</div>
+                        <div id="best-time" class="text-2xl font-mono font-bold text-emerald-400 mt-1">- ms</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: TIMERS -->
+            <section id="tab-timers" class="tab-content hidden space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch text-cyan-400"></i> Multi-Timer & Cooldowns
+                    </h1>
+                    <p class="text-slate-400 text-sm">Perfekt für Boss-Respawns, Buffs oder Koch-Timer.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gaming-card border border-slate-800 rounded-2xl p-6 space-y-4">
+                        <h3 class="font-bold text-white">Schnell-Timer</h3>
+                        <div class="flex gap-2">
+                            <button onclick="startTimer(30)" class="flex-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl text-sm font-medium transition">30 Sek</button>
+                            <button onclick="startTimer(60)" class="flex-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl text-sm font-medium transition">1 Min</button>
+                            <button onclick="startTimer(300)" class="flex-1 bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-xl text-sm font-medium transition">5 Min</button>
+                        </div>
+                        <div class="text-center py-6 bg-slate-900 rounded-xl border border-slate-800">
+                            <div id="timer-display" class="text-4xl font-mono font-bold text-cyan-400">00:00</div>
+                            <div id="timer-label" class="text-xs text-slate-500 mt-1">Kein Timer aktiv</div>
+                        </div>
+                        <button onclick="stopTimer()" class="w-full bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 py-2 rounded-xl text-sm font-medium transition">Timer stoppen</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: DECISION WHEEL -->
+            <section id="tab-wheel" class="tab-content hidden space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-dice text-cyan-400"></i> Entscheidungs-Helfer
+                    </h1>
+                    <p class="text-slate-400 text-sm">Wer fängt an? Welches Spiel wird gespielt?</p>
+                </div>
+                <div class="bg-gaming-card border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <input type="text" id="wheel-input" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-cyan-400" placeholder="Namen/Optionen mit Komma getrennt eingeben (z.B. Alex, Lisa, Tom)">
+                    <button onclick="pickRandom()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-3 rounded-xl transition">Zufällige Wahl treffen</button>
+                    <div id="wheel-result" class="text-center py-8 text-2xl font-bold text-cyan-400 bg-slate-900 rounded-xl border border-slate-800 min-h-[100px] flex items-center justify-center">
+                        Bereit...
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: MIC MONITOR -->
+            <section id="tab-mic" class="tab-content hidden space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-microphone text-cyan-400"></i> Mikrofon-Pegel-Tester
+                    </h1>
+                    <p class="text-slate-400 text-sm">Prüfe, ob dein Mikrofon aktiv ist und ob Hintergrundgeräusche da sind.</p>
+                </div>
+                <div class="bg-gaming-card border border-slate-800 rounded-2xl p-6 space-y-6 text-center">
+                    <button id="mic-btn" onclick="toggleMic()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold px-6 py-3 rounded-xl transition">Mikrofon aktivieren</button>
+                    <div class="w-full bg-slate-900 border border-slate-800 h-8 rounded-xl overflow-hidden p-1">
+                        <div id="mic-bar" class="bg-cyan-400 h-full w-0 rounded-lg transition-all duration-75"></div>
+                    </div>
+                    <p id="mic-status" class="text-xs text-slate-500">Mikrofon ist deaktiviert</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Scroll-to-Top Button -->
+    <button id="scroll-top-btn" onclick="scrollToTop()" class="fixed bottom-6 right-6 bg-gaming-card border border-slate-700 text-cyan-400 w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg opacity-0 pointer-events-none hover:bg-slate-800 hover:border-cyan-400 transition-all duration-300 z-50">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <!-- JavaScript Logik -->
+    <script>
+        // Tab Switching
+        function switchTab(targetId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-cyan-400', 'bg-cyan-500/10', 'border', 'border-cyan-500/25');
+                btn.classList.add('text-slate-400');
+            });
+            
+            document.getElementById('tab-' + targetId).classList.remove('hidden');
+            const activeBtn = document.querySelector(`[data-target="${targetId}"]`);
+            activeBtn.classList.remove('text-slate-400');
+            activeBtn.classList.add('text-cyan-400', 'bg-cyan-500/10', 'border', 'border-cyan-500/25');
+            
+            if(window.innerWidth < 768) {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+            }
+        }
+
+        // Sidebar Mobile Toggle
+        document.getElementById('sidebar-toggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        });
+
+        // Session Timer
+        let sessionSeconds = 0;
+        setInterval(() => {
+            sessionSeconds++;
+            let hrs = Math.floor(sessionSeconds / 3600).toString().padStart(2, '0');
+            let mins = Math.floor((sessionSeconds % 3600) / 60).toString().padStart(2, '0');
+            let secs = (sessionSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('session-timer').innerText = `${hrs}:${mins}:${secs}`;
+        }, 1000);
+
+        // Scroll to Top Button Logic
+        const scrollBtn = document.getElementById('scroll-top-btn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                scrollBtn.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                scrollBtn.classList.add('opacity-0', 'pointer-events-none');
+            }
+        });
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Scratchpad LocalStorage
+        const scratchpad = document.getElementById('scratchpad');
+        scratchpad.value = localStorage.getItem('nexus_notes') || '';
+        scratchpad.addEventListener('input', () => {
+            localStorage.setItem('nexus_notes', scratchpad.value);
+            document.getElementById('save-status').innerText = 'Gespeichert!';
+            setTimeout(() => { document.getElementById('save-status').innerText = 'Automatisch gespeichert'; }, 1500);
+        });
+        function copyNotes() {
+            navigator.clipboard.writeText(scratchpad.value);
+            alert('In die Zwischenablage kopiert!');
+        }
+
+        // Reaction Trainer State
+        let reactionState = 'idle'; // idle, waiting, ready, finished
+        let startTime, timeoutId;
+        let bestTime = localStorage.getItem('nexus_best_reaction') || null;
+        if(bestTime) document.getElementById('best-time').innerText = bestTime + ' ms';
+
+        function handleReactionClick() {
+            const box = document.getElementById('reaction-box');
+            const text = document.getElementById('reaction-text');
+            const sub = document.getElementById('reaction-sub');
+
+            if (reactionState === 'idle') {
+                reactionState = 'waiting';
+                box.className = "bg-red-500/20 border border-red-500/50 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer select-none transition";
+                text.innerText = "Warte auf Grün...";
+                sub.innerText = "Nicht zu früh klicken!";
+                
+                let randomTime = Math.floor(Math.random() * 2000) + 1500;
+                timeoutId = setTimeout(() => {
+                    reactionState = 'ready';
+                    startTime = Date.now();
+                    box.className = "bg-emerald-500/20 border border-emerald-500/50 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer select-none transition";
+                    text.innerText = "JETZT KLICKEN!";
+                    sub.innerText = "";
+                }, randomTime);
+            } else if (reactionState === 'waiting') {
+                clearTimeout(timeoutId);
+                reactionState = 'idle';
+                box.className = "bg-slate-900 border border-slate-800 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer select-none transition neon-border";
+                text.innerText = "Zu früh geklickt!";
+                sub.innerText = "Klicke hier, um es nochmal zu versuchen.";
+            } else if (reactionState === 'ready') {
+                let endTime = Date.now() - startTime;
+                reactionState = 'idle';
+                document.getElementById('last-time').innerText = endTime + ' ms';
+                if (!bestTime || endTime < bestTime) {
+                    bestTime = endTime;
+                    localStorage.setItem('nexus_best_reaction', bestTime);
+                    document.getElementById('best-time').innerText = bestTime + ' ms';
+                }
+                box.className = "bg-slate-900 border border-slate-800 rounded-2xl h-64 flex flex-col items-center justify-center cursor-pointer select-none transition neon-border";
+                text.innerText = `Deine Zeit: ${endTime} ms`;
+                sub.innerText = "Klicke, um eine neue Runde zu starten.";
+            }
+        }
+
+        // Timer Logic
+        let countdownInterval;
+        function startTimer(seconds) {
+            stopTimer();
+            let remaining = seconds;
+            updateDisplay(remaining);
+            document.getElementById('timer-label').innerText = "Läuft...";
+            
+            countdownInterval = setInterval(() => {
+                remaining--;
+                updateDisplay(remaining);
+                if (remaining <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('timer-label').innerText = "Zeit abgelaufen!";
+                }
+            }, 1000);
+        }
+        function stopTimer() {
+            clearInterval(countdownInterval);
+            document.getElementById('timer-display').innerText = "00:00";
+            document.getElementById('timer-label').innerText = "Kein Timer aktiv";
+        }
+        function updateDisplay(sec) {
+            let m = Math.floor(sec / 60).toString().padStart(2, '0');
+            let s = (sec % 60).toString().padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
+
+        // Wheel / Picker
+        function pickRandom() {
+            let input = document.getElementById('wheel-input').value;
+            let items = input.split(',').map(i => i.trim()).filter(i => i.length > 0);
+            let resDiv = document.getElementById('wheel-result');
+            
+            if (items.length === 0) {
+                resDiv.innerText = "Bitte gib Optionen ein!";
+                return;
+            }
+            
+            let count = 0;
+            let shuffle = setInterval(() => {
+                let randomItem = items[Math.floor(Math.random() * items.length)];
+                resDiv.innerText = randomItem;
+                count++;
+                if (count > 15) {
+                    clearInterval(shuffle);
+                }
+            }, 50);
+        }
+
+        // Mic Monitor Logic
+        let audioContext, analyser, microphone, javascriptNode;
+        let isMicActive = false;
+        function toggleMic() {
+            const btn = document.getElementById('mic-btn');
+            const status = document.getElementById('mic-status');
+            const bar = document.getElementById('mic-bar');
+
+            if (!isMicActive) {
+                navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+                    .then(stream => {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        analyser = audioContext.createAnalyser();
+                        microphone = audioContext.createMediaStreamSource(stream);
+                        javascriptNode = audioContext.createScriptProcessor(2048, 1, 1);
+
+                        analyser.smoothingTimeConstant = 0.8;
+                        analyser.fftSize = 1024;
+
+                        microphone.connect(analyser);
+                        analyser.connect(javascriptNode);
+                        javascriptNode.connect(audioContext.destination);
+
+                        javascriptNode.onaudioprocess = function() {
+                            let array = new Uint8Array(analyser.frequencyBinCount);
+                            analyser.getByteFrequencyData(array);
+                            let values = 0;
+                            let length = array.length;
+                            for (let i = 0; i < length; i++) {
+                                values += (array[i]);
+                            }
+                            let average = values / length;
+                            let percentage = Math.min(100, Math.round((average / 100) * 100));
+                            bar.style.width = percentage + '%';
+                        }
+
+                        isMicActive = true;
+                        btn.innerText = "Mikrofon stoppen";
+                        btn.className = "bg-red-500 hover:bg-red-600 text-slate-950 font-bold px-6 py-3 rounded-xl transition";
+                        status.innerText = "Mikrofon aktiv & lauscht";
+                    })
+                    .catch(err => {
+                        status.innerText = "Mikrofon-Zugriff verweigert!";
+                    });
+            } else {
+                if (audioContext) audioContext.close();
+                bar.style.width = '0%';
+                isMicActive = false;
+                btn.innerText = "Mikrofon aktivieren";
+                btn.className = "bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold px-6 py-3 rounded-xl transition";
+                status.innerText = "Mikrofon ist deaktiviert";
+            }
+        }
+
+        // Fullscreen Toggle
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
 
