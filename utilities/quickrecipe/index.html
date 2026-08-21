@@ -179,7 +179,7 @@
             font-size: 1.1rem;
         }
 
-        /* === Such- und Filterbereich === */
+        /* === Suchbereich (ohne Kategorie) === */
         .search-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -193,7 +193,7 @@
             align-items: center;
         }
         .search-section input {
-            flex: 2;
+            flex: 1;
             min-width: 200px;
             padding: 14px 20px;
             border-radius: 12px;
@@ -213,48 +213,26 @@
             color: var(--text-muted);
             opacity: 0.7;
         }
-        .search-section .search-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            flex: 1;
-        }
         .search-section button {
-            padding: 14px 24px;
+            padding: 14px 28px;
             border-radius: 12px;
             border: none;
             background: var(--primary);
             color: #fff;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             letter-spacing: 0.5px;
         }
         .search-section button:hover {
             background: #4a8aff;
             transform: scale(1.02);
             box-shadow: 0 0 30px var(--primary-glow);
-        }
-        .search-section select {
-            padding: 14px 20px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-color);
-            font-size: 0.95rem;
-            outline: none;
-            font-family: 'Inter', sans-serif;
-            min-width: 150px;
-            cursor: pointer;
-        }
-        .search-section select option {
-            background: #0a0e1a;
-            color: #fff;
         }
 
         /* === Eingabemarkierungen (Zutaten-Tags) === */
@@ -281,7 +259,7 @@
             font-size: 0.7rem;
         }
 
-        /* === Filter-Bar === */
+        /* === Filter-Bar (nur Favoriten + Infos) === */
         .filter-bar {
             display: flex;
             gap: 20px;
@@ -633,7 +611,6 @@
             .back-btn { font-size: 0.75rem; padding: 8px 14px; }
             h1 { font-size: 2rem; }
             .search-section { flex-direction: column; align-items: stretch; }
-            .search-section .search-actions { flex-direction: column; }
             .results-grid { grid-template-columns: 1fr; }
             .recipe-detail { padding: 1.5rem; }
             .recipe-detail .detail-top { flex-direction: column; align-items: center; }
@@ -660,25 +637,19 @@
 
         <header>
             <h1>QuickRecipe</h1>
-            <div class="subhead">Durchstöbere tausende Rezepte – nach Kategorie, Gericht oder mehreren Zutaten.</div>
+            <div class="subhead">Durchstöbere tausende Rezepte – nach Gericht oder mehreren Zutaten (automatisch übersetzt).</div>
         </header>
 
-        <!-- Suche & Filter -->
+        <!-- Suche (ohne Kategorie) -->
         <div class="search-section">
-            <input type="text" id="searchInput" placeholder="z.B. Hähnchen, Reis, Paprika  (Zutaten mit Komma trennen)" />
-            <div class="search-actions">
-                <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
-                <select id="categorySelect">
-                    <option value="">— Kategorie wählen —</option>
-                </select>
-                <button id="categoryBtn"><i class="fa-solid fa-filter"></i> Filter</button>
-            </div>
+            <input type="text" id="searchInput" placeholder="z.B. kad kra pao  oder  Hähnchen, Reis, Paprika" />
+            <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
         </div>
 
         <!-- Eingabemarkierungen (Zutaten-Tags) -->
         <div id="ingredientTags" class="ingredient-tags"></div>
 
-        <!-- Filter-Bar -->
+        <!-- Filter-Bar (nur Favoriten + Infos) -->
         <div class="filter-bar">
             <label>
                 <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
@@ -756,8 +727,6 @@
         // ========== DOM-Referenzen ==========
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
-        const categorySelect = document.getElementById('categorySelect');
-        const categoryBtn = document.getElementById('categoryBtn');
         const favFilter = document.getElementById('favFilter');
         const resultsContainer = document.getElementById('resultsContainer');
         const loadMoreBtn = document.getElementById('loadMoreBtn');
@@ -782,51 +751,33 @@
 
         let currentRecipe = null;
         let currentStepIndex = 0;
-        let currentMeals = [];           // aktuell angezeigte Rezepte (volle Objekte)
-        let allMeals = [];              // alle geladenen Rezepte
-        let currentMode = 'random';      // 'random', 'search', 'category', 'ingredients'
+        let currentMeals = [];
+        let allMeals = [];
+        let currentMode = 'random';
         let currentQuery = '';
-        let currentIngredients = [];     // für Zutaten-Suche
-        let currentMatchType = '';       // 'all' oder 'any'
+        let currentIngredients = [];
+        let currentMatchType = '';
 
         // ========== API-Funktionen ==========
 
-        // Kategorien abrufen
-        async function fetchCategories() {
-            const res = await fetch(API_BASE + 'list.php?c=list');
-            const data = await res.json();
-            return data.meals || [];
-        }
-
-        // Rezepte einer Kategorie (nur ID, Name, Bild)
-        async function fetchCategoryRecipes(category) {
-            const res = await fetch(API_BASE + 'filter.php?c=' + encodeURIComponent(category));
-            const data = await res.json();
-            return data.meals || [];
-        }
-
-        // Rezeptdetails per ID
         async function fetchRecipeById(id) {
             const res = await fetch(API_BASE + 'lookup.php?i=' + id);
             const data = await res.json();
             return data.meals ? data.meals[0] : null;
         }
 
-        // Suche nach Name
         async function searchByName(query) {
             const res = await fetch(API_BASE + 'search.php?s=' + encodeURIComponent(query));
             const data = await res.json();
             return data.meals || [];
         }
 
-        // Rezepte für eine Zutat (filter.php?i=...)
         async function fetchRecipesByIngredient(ingredient) {
             const res = await fetch(API_BASE + 'filter.php?i=' + encodeURIComponent(ingredient));
             const data = await res.json();
             return data.meals || [];
         }
 
-        // Zufällige Rezepte (count Stück)
         async function fetchRandomRecipes(count = 20) {
             const promises = [];
             for (let i = 0; i < count; i++) {
@@ -841,14 +792,10 @@
         async function searchByIngredients(ingredientList) {
             if (!ingredientList || ingredientList.length === 0) return [];
 
-            // Für jede Zutat die Rezepte holen (parallel)
             const promises = ingredientList.map(ing => fetchRecipesByIngredient(ing.trim()));
             const results = await Promise.all(promises);
 
-            // Ergebnisse: Array von Arrays (je Zutat eine Liste von {idMeal, strMeal, strMealThumb})
-            // Wir wollen die Schnittmenge der IDs (alle Zutaten enthalten)
             const idSets = results.map(list => new Set(list.map(m => m.idMeal)));
-            // Schnittmenge bilden
             let commonIds = new Set();
             if (idSets.length > 0) {
                 commonIds = new Set(idSets[0]);
@@ -859,13 +806,11 @@
 
             let meals = [];
             if (commonIds.size > 0) {
-                // Details für alle gefundenen IDs laden
                 const detailPromises = [...commonIds].map(id => fetchRecipeById(id));
                 meals = await Promise.all(detailPromises);
                 meals = meals.filter(m => m !== null);
                 currentMatchType = 'all';
             } else {
-                // Keine Schnittmenge -> zeige Vereinigungsmenge (mindestens eine Zutat)
                 const allIds = new Set();
                 idSets.forEach(set => set.forEach(id => allIds.add(id)));
                 if (allIds.size > 0) {
@@ -911,8 +856,98 @@
         }
 
         function getIngredientNamesFromQuery(query) {
-            // Trenne bei Kommas, bereinige Leerzeichen
             return query.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        }
+
+        // ========== Übersetzungs- und Einheitenumrechnung ==========
+
+        // Einheiten-Mapping für Umrechnung
+        const unitMap = {
+            'cup': { ml: 240, g: 128 }, // für Flüssigkeiten und Mehl/Zucker unterschiedlich, aber wir nehmen ml als Standard
+            'oz': { g: 28.35 },
+            'lb': { g: 453.6 },
+            'tbsp': { ml: 15 },
+            'tsp': { ml: 5 },
+            'fl oz': { ml: 29.57 },
+            'pint': { ml: 473 },
+            'quart': { ml: 946 },
+            'gallon': { ml: 3785 }
+        };
+
+        function convertUnit(amount, unit) {
+            // versuche Einheit zu erkennen
+            const lower = unit.toLowerCase();
+            for (const [key, val] of Object.entries(unitMap)) {
+                if (lower.includes(key)) {
+                    const num = parseFloat(amount);
+                    if (!isNaN(num)) {
+                        if (val.ml) return (num * val.ml).toFixed(0) + ' ml';
+                        if (val.g) return (num * val.g).toFixed(0) + ' g';
+                    }
+                    break;
+                }
+            }
+            // Fallback: Einheit nicht erkannt
+            return amount + ' ' + unit;
+        }
+
+        // Übersetzungsfunktion mit MyMemory-API
+        async function translateText(text, target = 'de') {
+            if (!text || text.trim() === '') return text;
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${target}`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.responseData && data.responseData.translatedText) {
+                    return data.responseData.translatedText;
+                }
+                return text;
+            } catch (e) {
+                console.warn('Übersetzung fehlgeschlagen:', e);
+                return text;
+            }
+        }
+
+        // Übersetzt Zutatenliste (Namen und Mengen) und Schritte
+        async function translateRecipe(meal) {
+            // Zutaten übersetzen
+            const ingredients = extractIngredients(meal);
+            const translatedIngredients = [];
+            for (const ing of ingredients) {
+                let name = ing.name;
+                let amount = ing.amount;
+                // Einheiten umrechnen
+                if (amount) {
+                    // versuche, Menge und Einheit zu trennen
+                    const parts = amount.match(/([\d.]+)\s*(.*)/);
+                    if (parts) {
+                        const num = parts[1];
+                        const unit = parts[2].trim();
+                        if (unit) {
+                            const converted = convertUnit(num, unit);
+                            if (converted) {
+                                amount = converted;
+                            }
+                        }
+                    }
+                }
+                // Zutatennamen übersetzen
+                const translatedName = await translateText(name);
+                translatedIngredients.push({
+                    amount: amount,
+                    name: translatedName
+                });
+            }
+
+            // Schritte übersetzen
+            const steps = splitInstructions(meal.strInstructions);
+            const translatedSteps = [];
+            for (const step of steps) {
+                const translated = await translateText(step);
+                translatedSteps.push(translated);
+            }
+
+            return { translatedIngredients, translatedSteps };
         }
 
         // ========== Rendering ==========
@@ -923,7 +958,6 @@
                 currentMeals = [];
             }
 
-            // Filtern nach Favoriten
             let filtered = meals;
             if (favFilter.checked) {
                 filtered = meals.filter(m => isFavorite(m.idMeal));
@@ -940,7 +974,6 @@
                 const card = document.createElement('div');
                 card.className = 'recipe-card';
                 const fav = isFavorite(meal.idMeal);
-                // Prüfe, ob alle Zutaten enthalten sind (nur bei 'all'-Match)
                 let matchBadge = '';
                 if (currentMode === 'ingredients' && currentMatchType === 'all') {
                     matchBadge = `<span class="match-badge"><i class="fa-solid fa-check"></i> Alle Zutaten</span>`;
@@ -984,7 +1017,6 @@
                 currentMeals.push(meal);
             });
 
-            // Zähler aktualisieren
             resultCount.textContent = `${currentMeals.length} Rezepte`;
             if (currentMode === 'ingredients') {
                 if (currentMatchType === 'all') {
@@ -998,9 +1030,9 @@
             loadMoreBtn.style.display = (currentMode === 'random' || currentMode === 'search') ? 'inline-block' : 'none';
         }
 
-        // ========== Detailansicht ==========
+        // ========== Detailansicht mit Übersetzung ==========
 
-        function showDetail(meal) {
+        async function showDetail(meal) {
             currentRecipe = meal;
             currentStepIndex = 0;
 
@@ -1015,12 +1047,16 @@
             detailServings.textContent = meal.strServings || '2-4';
             detailCategory.textContent = meal.strCategory || 'Verschiedenes';
 
-            const ingredients = extractIngredients(meal);
-            detailIngredients.innerHTML = ingredients.map(ing =>
+            // Übersetzung und Einheitenumrechnung starten
+            const translated = await translateRecipe(meal);
+
+            // Zutaten anzeigen (übersetzt und mit umgerechneten Einheiten)
+            detailIngredients.innerHTML = translated.translatedIngredients.map(ing =>
                 `<li>${ing.amount ? ing.amount + ' ' : ''}${ing.name}</li>`
             ).join('');
 
-            const steps = splitInstructions(meal.strInstructions);
+            // Schritte speichern (übersetzt)
+            const steps = translated.translatedSteps;
             meal._steps = steps;
             currentRecipe._steps = steps;
             updateStepDisplay();
@@ -1065,13 +1101,42 @@
             }
         }
 
-        // Hauptaktion: Lädt Rezepte basierend auf Modus
+        // Sortierfunktion für Namenssuche
+        function sortByNameSearch(meals, query) {
+            const q = query.toLowerCase();
+            return meals.sort((a, b) => {
+                const aName = a.strMeal.toLowerCase();
+                const bName = b.strMeal.toLowerCase();
+                // Exakte Übereinstimmung zuerst
+                if (aName === q) return -1;
+                if (bName === q) return 1;
+                // Beginnt mit Suchbegriff
+                const aStarts = aName.startsWith(q);
+                const bStarts = bName.startsWith(q);
+                if (aStarts && !bStarts) return -1;
+                if (!aStarts && bStarts) return 1;
+                // Sonst alphabetisch
+                return aName.localeCompare(bName);
+            });
+        }
+
+        // Sortierfunktion für Zutaten-Suche (meiste Übereinstimmungen zuerst)
+        function sortByIngredientMatch(meals, ingredients) {
+            const ingSet = new Set(ingredients.map(i => i.toLowerCase()));
+            return meals.sort((a, b) => {
+                const aIngredients = extractIngredients(a).map(i => i.name.toLowerCase());
+                const bIngredients = extractIngredients(b).map(i => i.name.toLowerCase());
+                const aMatch = aIngredients.filter(i => ingSet.has(i)).length;
+                const bMatch = bIngredients.filter(i => ingSet.has(i)).length;
+                return bMatch - aMatch;
+            });
+        }
+
         async function loadRecipes(mode, query = '') {
             currentMode = mode;
             currentQuery = query;
             let meals = [];
 
-            // Tags zurücksetzen
             ingredientTags.innerHTML = '';
 
             if (mode === 'random') {
@@ -1082,19 +1147,14 @@
                 if (meals.length === 0) {
                     meals = await fetchRandomRecipes(20);
                     mode = 'random';
+                } else {
+                    // Sortieren
+                    meals = sortByNameSearch(meals, query);
                 }
-                currentIngredients = [];
-            } else if (mode === 'category') {
-                const category = query;
-                const list = await fetchCategoryRecipes(category);
-                const detailPromises = list.map(item => fetchRecipeById(item.idMeal));
-                meals = await Promise.all(detailPromises);
-                meals = meals.filter(m => m !== null);
                 currentIngredients = [];
             } else if (mode === 'ingredients') {
                 const ingredients = getIngredientNamesFromQuery(query);
                 currentIngredients = ingredients;
-                // Tags anzeigen
                 ingredients.forEach(ing => {
                     const tag = document.createElement('span');
                     tag.className = 'ingredient-tag';
@@ -1103,11 +1163,13 @@
                 });
                 meals = await searchByIngredients(ingredients);
                 if (meals.length === 0) {
-                    // Fallback: zufällige Vorschläge
                     meals = await fetchRandomRecipes(20);
                     mode = 'random';
                     currentIngredients = [];
                     ingredientTags.innerHTML = '';
+                } else {
+                    // Sortieren nach Übereinstimmung
+                    meals = sortByIngredientMatch(meals, ingredients);
                 }
             }
 
@@ -1115,7 +1177,6 @@
             renderMeals(meals, false);
         }
 
-        // "Mehr laden" – fügt weitere zufällige Rezepte hinzu (bei random oder search)
         async function loadMore() {
             if (currentMode === 'random' || currentMode === 'search') {
                 const newMeals = await fetchRandomRecipes(10);
@@ -1134,13 +1195,11 @@
 
         // ========== Event-Listener ==========
 
-        // Suche (unterscheidet zwischen Komma-getrennten Zutaten und normaler Suche)
         searchBtn.addEventListener('click', () => {
             const query = searchInput.value.trim();
             if (query === '') {
                 loadRecipes('random');
             } else if (query.includes(',')) {
-                // Zutaten-basierte Suche
                 loadRecipes('ingredients', query);
             } else {
                 loadRecipes('search', query);
@@ -1151,23 +1210,12 @@
             if (e.key === 'Enter') searchBtn.click();
         });
 
-        // Kategorie-Filter
-        categoryBtn.addEventListener('click', () => {
-            const category = categorySelect.value;
-            if (category) {
-                loadRecipes('category', category);
-            }
-        });
-
-        // Favoriten-Filter
         favFilter.addEventListener('change', () => {
             renderCurrentView();
         });
 
-        // "Mehr laden"
         loadMoreBtn.addEventListener('click', loadMore);
 
-        // Detail-Navigation
         prevStep.addEventListener('click', () => {
             if (currentStepIndex > 0) {
                 currentStepIndex--;
@@ -1200,22 +1248,12 @@
         // ========== Initialisierung ==========
 
         async function init() {
-            // Kategorien laden
-            const categories = await fetchCategories();
-            categories.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat.strCategory;
-                opt.textContent = cat.strCategory;
-                categorySelect.appendChild(opt);
-            });
-
-            // Zufällige Vorschläge
             await loadRecipes('random');
         }
 
         init();
 
-        // ========== Hintergrund-Partikel (wie gehabt) ==========
+        // ========== Hintergrund-Partikel ==========
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
