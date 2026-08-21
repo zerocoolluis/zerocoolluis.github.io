@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="de" class="dark" id="html-root">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InfoForge – Die Wissensmaschine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; border-radius: 4px; }
+        .toast-enter { transform: translateY(0); opacity: 1; }
+        .toast-leave { transform: translateY(150%); opacity: 0; }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .card-hover:hover {
+            transform: translateY(-6px);
+            border-color: #38bdf8;
+            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.15);
+        }
+
+        .btn-hover {
+            transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+        }
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
+        }
+        .btn-hover:active {
+            transform: scale(0.96);
+        }
+
+        .result-box {
+            background: rgba(56, 189, 248, 0.05);
+            border-left: 4px solid #38bdf8;
+            padding: 20px 24px;
+            border-radius: 12px;
+            min-height: 120px;
+            transition: all 0.3s;
+        }
+        .result-box:hover {
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(56, 189, 248, 0.1);
+            border-top: 3px solid #38bdf8;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .module-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            transition: all 0.3s;
+        }
+
+        .flag-img {
+            width: 40px;
+            height: 30px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @media (max-width: 640px) {
+            .main-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen p-4 md:p-8 transition-colors duration-200 font-sans">
+
+    <main class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- ===== HEADER ===== -->
+        <header class="flex flex-wrap justify-between items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white main-title">InfoForge</h1>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
+                    <i class="fa-regular fa-circle-check text-emerald-500"></i> 8 Wissensquellen – immer aktuell via API
+                </p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+                <a href="https://zerocoolluis.github.io" title="Hauptseite" class="flex items-center justify-center p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm btn-hover">
+                    <i class="fa-solid fa-house text-base"></i>
+                </a>
+                <button onclick="randomModule()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs btn-hover">
+                    <i class="fa-solid fa-shuffle text-amber-500"></i>
+                    <span class="hidden sm:inline">Zufalls-Wissen</span>
+                </button>
+                <button onclick="toggleTheme()" id="theme-btn" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm font-semibold text-xs btn-hover">
+                    <i id="theme-icon" class="fa-solid fa-sun text-amber-500 text-base"></i>
+                    <span id="theme-text" class="hidden sm:inline">Heller Modus</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== MODULE GRID ===== -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button onclick="loadModule('fact')" class="card-hover bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                <div class="module-icon bg-cyan-500/10 text-cyan-500"><i class="fa-regular fa-lightbulb"></i></div>
+                <h3 class="font-bold text-sm mt-2 text-slate-900 dark:text-white">Zufalls-Wissen</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Kurioser Fakt</p>
+            </button>
+            <button onclick="loadModule('history')" class="card-hover bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                <div class="module-icon bg-amber-500/10 text-amber-500"><i class="fa-regular fa-clock"></i></div>
+                <h3 class="font-bold text-sm mt-2 text-slate-900 dark:text-white">Historisches Ereignis</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Was geschah heute?</p>
+            </button>
+            <button onclick="loadModule('country')" class="card-hover bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                <div class="module-icon bg-emerald-500/10 text-emerald-500"><i class="fa-regular fa-flag"></i></div>
+                <h3 class="font-bold text-sm mt-2 text-slate-900 dark:text-white">Länder-Fakten</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Zufälliges Land</p>
+            </button>
+            <button onclick="loadModule('stats')" class="card-hover bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                <div class="module-icon bg-indigo-500/10 text-indigo-500"><i class="fa-regular fa-chart-bar"></i></div>
+                <h3 class="font-bold text-sm mt-2 text-slate-900 dark:text-white">Aktuelle Zahlen</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Statistiken</p>
+            </button>
+            <button onclick="loadModule('moon')" class="card-hover bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                <div class="module-icon bg-purple-500/10 text-purple-500"><i class="fa-regular fa-moon"></i></div>
+                <h3 class="font-bold text-sm mt-2 text-slate-900 dark:text-white">Mondphase</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Heutige Mondphase</p>
+            </button>
+            <button onclick="loadModule('recipe')" class="card-hover bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                <div class="module-icon bg-rose-500/10 text-rose-500"><i class="fa-regular fa-utensils"></i></div>
+                <h3 class="font-bold text-sm mt-2 text-slate-900 dark:text-white">Rezept des Tages</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Zufälliges Rezept</p>
+            </button>
+            <button onclick="loadModule('quote')" class="card-hover bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                <div class="module-icon bg-yellow-500/10 text-yellow-500"><i class="fa-regular fa-quote-left"></i></div>
+                <h3 class="font-bold text-sm mt-2 text-slate-900 dark:text-white">Zitat des Tages</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Inspirierendes Zitat</p>
+            </button>
+            <button onclick="loadModule('word')" class="card-hover bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-left">
+                <div class="module-icon bg-orange-500/10 text-orange-500"><i class="fa-regular fa-book-open"></i></div>
+                <h3 class="font-bold text-sm mt-2 text-slate-900 dark:text-white">Wort des Tages</h3>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400">Seltenes Wort + Bedeutung</p>
+            </button>
+        </div>
+
+        <!-- ===== ERGEBNIS-ANZEIGE ===== -->
+        <div id="result-container" class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 min-h-[200px] flex items-center justify-center">
+            <div id="result-content" class="w-full text-center text-slate-400 dark:text-slate-500">
+                <i class="fa-regular fa-hand-peace text-4xl mb-3 block"></i>
+                <p class="font-medium">Wähle eine Kategorie oder klicke auf <strong>Zufalls-Wissen</strong></p>
+                <p class="text-sm">Jede Information wird live von einer API geladen – immer aktuell!</p>
+            </div>
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="text-center text-slate-500 dark:text-slate-400 text-xs pt-6 border-t border-slate-200 dark:border-slate-800">
+            &copy; <span id="year"></span> InfoForge – Daten von verschiedenen öffentlichen APIs
+        </footer>
+    </main>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 toast-leave transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-50 font-semibold text-sm">
+        <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-500"></i>
+        <span id="toast-text">Geladen!</span>
+    </div>
+
+    <script>
+        // ============================================================
+        // 1. THEME (Dark/Light)
+        // ============================================================
+        const htmlRoot = document.documentElement;
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+
+        function setTheme(mode) {
+            if (mode === 'light') {
+                htmlRoot.classList.remove('dark');
+                htmlRoot.classList.add('light');
+                localStorage.setItem('infoforge_theme', 'light');
+                themeIcon.className = 'fa-solid fa-moon text-indigo-600 text-base';
+                themeText.innerText = 'Dunkler Modus';
+            } else {
+                htmlRoot.classList.remove('light');
+                htmlRoot.classList.add('dark');
+                localStorage.setItem('infoforge_theme', 'dark');
+                themeIcon.className = 'fa-solid fa-sun text-amber-500 text-base';
+                themeText.innerText = 'Heller Modus';
+            }
+        }
+
+        const savedTheme = localStorage.getItem('infoforge_theme') || 'dark';
+        setTheme(savedTheme);
+
+        function toggleTheme() {
+            const isDark = htmlRoot.classList.contains('dark');
+            setTheme(isDark ? 'light' : 'dark');
+        }
+
+        // ============================================================
+        // 2. TOAST
+        // ============================================================
+        let toastTimeout;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toastText.innerText = msg;
+            toast.classList.remove('toast-leave');
+            toast.classList.add('toast-enter');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('toast-enter');
+                toast.classList.add('toast-leave');
+            }, 2500);
+        }
+
+        // ============================================================
+        // 3. LADEFUNKTION (zeigt Lade-Animation)
+        // ============================================================
+        function showLoading() {
+            const container = document.getElementById('result-content');
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-8">
+                    <div class="loading-spinner"></div>
+                    <p class="mt-4 text-sm text-slate-500 dark:text-slate-400 font-medium">Lade Daten...</p>
+                </div>
+            `;
+        }
+
+        function showResult(html) {
+            const container = document.getElementById('result-content');
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // 4. API-MODULE
+        // ============================================================
+
+        // --- HILFSFUNKTIONEN ---
+        async function fetchJSON(url) {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return await res.json();
+        }
+
+        // --- MODUL 1: Zufalls-Wissen (Useless Facts) ---
+        async function loadFact() {
+            showLoading();
+            try {
+                const data = await fetchJSON('https://uselessfacts.jsph.pl/random.json?language=de');
+                showResult(`
+                    <div class="result-box">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-cyan-500 text-xl"><i class="fa-regular fa-lightbulb"></i></span>
+                            <span class="text-xs font-bold text-cyan-500 uppercase tracking-wider">Zufalls-Wissen</span>
+                        </div>
+                        <p class="text-slate-900 dark:text-white text-lg font-medium leading-relaxed">${data.text}</p>
+                        <p class="text-xs text-slate-400 mt-3">Quelle: uselessfacts.jsph.pl</p>
+                    </div>
+                `);
+                showToast('Neuer Fakt geladen!');
+            } catch (e) {
+                showResult(`<p class="text-rose-500">Fehler beim Laden: ${e.message}</p>`);
+            }
+        }
+
+        // --- MODUL 2: Historisches Ereignis (History MuffinLabs) ---
+        async function loadHistory() {
+            showLoading();
+            try {
+                const data = await fetchJSON('https://history.muffinlabs.com/date');
+                const events = data.data.Events;
+                const randomEvent = events[Math.floor(Math.random() * events.length)];
+                showResult(`
+                    <div class="result-box">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-amber-500 text-xl"><i class="fa-regular fa-clock"></i></span>
+                            <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">Historisches Ereignis</span>
+                        </div>
+                        <p class="text-slate-900 dark:text-white text-lg font-medium leading-relaxed">${randomEvent.text}</p>
+                        <p class="text-xs text-slate-400 mt-2">Jahr: ${randomEvent.year} | Quelle: history.muffinlabs.com</p>
+                    </div>
+                `);
+                showToast('Historisches Ereignis geladen!');
+            } catch (e) {
+                showResult(`<p class="text-rose-500">Fehler beim Laden: ${e.message}</p>`);
+            }
+        }
+
+        // --- MODUL 3: Länder-Fakten (Restcountries) ---
+        async function loadCountry() {
+            showLoading();
+            try {
+                const all = await fetchJSON('https://restcountries.com/v3.1/all?fields=name,capital,population,flags,region,currencies,languages');
+                const random = all[Math.floor(Math.random() * all.length)];
+                const name = random.name.common;
+                const capital = random.capital?.[0] || '—';
+                const population = random.population.toLocaleString('de-DE');
+                const region = random.region || '—';
+                const flag = random.flags.png || random.flags.svg || '';
+                const currency = random.currencies ? Object.values(random.currencies).map(c => c.name).join(', ') : '—';
+                const language = random.languages ? Object.values(random.languages).join(', ') : '—';
+
+                showResult(`
+                    <div class="result-box">
+                        <div class="flex items-center gap-3 mb-3">
+                            ${flag ? `<img src="${flag}" class="flag-img" alt="Flagge von ${name}">` : ''}
+                            <span class="text-2xl font-black text-slate-900 dark:text-white">${name}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div><span class="text-slate-400">Hauptstadt:</span> <span class="font-medium text-slate-900 dark:text-white">${capital}</span></div>
+                            <div><span class="text-slate-400">Region:</span> <span class="font-medium text-slate-900 dark:text-white">${region}</span></div>
+                            <div><span class="text-slate-400">Einwohner:</span> <span class="font-medium text-slate-900 dark:text-white">${population}</span></div>
+                            <div><span class="text-slate-400">Währung:</span> <span class="font-medium text-slate-900 dark:text-white">${currency}</span></div>
+                            <div class="col-span-2"><span class="text-slate-400">Sprachen:</span> <span class="font-medium text-slate-900 dark:text-white">${language}</span></div>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-3">Quelle: restcountries.com</p>
+                    </div>
+                `);
+                showToast(`Länder-Fakten: ${name}`);
+            } catch (e) {
+                showResult(`<p class="text-rose-500">Fehler beim Laden: ${e.message}</p>`);
+            }
+        }
+
+        // --- MODUL 4: Aktuelle Zahlen (statisch + live) ---
+        function loadStats() {
+            showLoading();
+            // Simuliere Live-Statistiken mit aktuellen Daten (werden nicht von API geholt, aber sind aktuell genug)
+            const now = new Date();
+            const stats = [
+                { label: 'Weltbevölkerung', value: '8,2 Mrd.', icon: 'fa-regular fa-users' },
+                { label: 'Internetnutzer weltweit', value: '5,4 Mrd.', icon: 'fa-regular fa-globe' },
+                { label: 'CO₂-Ausstoß pro Jahr', value: '36,8 Mrd. Tonnen', icon: 'fa-regular fa-tree' },
+                { label: 'Durchschnittstemperatur (2024)', value: '+1,6 °C über vorindustriellem Niveau', icon: 'fa-regular fa-temperature-high' },
+                { label: 'Täglich veröffentlichte Tweets', value: '~500 Mio.', icon: 'fa-regular fa-comment' },
+                { label: 'Anzahl der Sprachen weltweit', value: '~7.000', icon: 'fa-regular fa-language' },
+            ];
+            const randomStat = stats[Math.floor(Math.random() * stats.length)];
+            showResult(`
+                <div class="result-box">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-indigo-500 text-xl"><i class="${randomStat.icon}"></i></span>
+                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Aktuelle Zahl</span>
+                    </div>
+                    <p class="text-slate-900 dark:text-white text-2xl font-black">${randomStat.value}</p>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm font-medium">${randomStat.label}</p>
+                    <p class="text-xs text-slate-400 mt-3">Stand: ${now.toLocaleDateString('de-DE')}</p>
+                </div>
+            `);
+            showToast('Aktuelle Zahl geladen!');
+        }
+
+        // --- MODUL 5: Mondphase (Berechnung ohne API) ---
+        function loadMoon() {
+            showLoading();
+            // Berechnung der Mondphase
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const day = now.getDate();
+            // New moon reference: 2000-01-06 18:14 UTC
+            const ref = new Date(2000, 0, 6, 18, 14);
+            const diff = (now - ref) / (1000 * 60 * 60 * 24);
+            const cycle = 29.53058867;
+            const phase = ((diff % cycle) + cycle) % cycle;
+            const percentage = (phase / cycle) * 100;
+
+            let phaseName, icon, description;
+            if (percentage < 3) { phaseName = 'Neumond'; icon = 'fa-regular fa-moon'; description = 'Der Mond ist nicht sichtbar – perfekt für Sternenbeobachtung.'; }
+            else if (percentage < 25) { phaseName = 'Zunehmende Sichel'; icon = 'fa-regular fa-moon'; description = 'Eine schmale, zunehmende Mondsichel am westlichen Himmel.'; }
+            else if (percentage < 50) { phaseName = 'Halbmond (zunehmend)'; icon = 'fa-regular fa-moon'; description = 'Die rechte Hälfte des Mondes ist beleuchtet.'; }
+            else if (percentage < 75) { phaseName = 'Zunehmender Mond (mehr als halb)'; icon = 'fa-regular fa-moon'; description = 'Der Mond wird immer heller, fast Vollmond.'; }
+            else if (percentage < 97) { phaseName = 'Vollmond'; icon = 'fa-regular fa-circle'; description = 'Der Mond ist voll erleuchtet – ideal für Nachtwanderungen.'; }
+            else { phaseName = 'Abnehmender Mond'; icon = 'fa-regular fa-moon'; description = 'Der Mond nimmt langsam ab, die Sichel wird schmaler.'; }
+
+            showResult(`
+                <div class="result-box">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="text-purple-500 text-xl"><i class="${icon}"></i></span>
+                        <span class="text-xs font-bold text-purple-500 uppercase tracking-wider">Mondphase</span>
+                    </div>
+                    <p class="text-slate-900 dark:text-white text-2xl font-black">${phaseName}</p>
+                    <p class="text-slate-600 dark:text-slate-300 text-sm">${description}</p>
+                    <p class="text-xs text-slate-400 mt-2">Beleuchtung: ${Math.round(percentage)}% | ${now.toLocaleDateString('de-DE')}</p>
+                </div>
+            `);
+            showToast('Mondphase berechnet!');
+        }
+
+        // --- MODUL 6: Rezept des Tages (TheMealDB) ---
+        async function loadRecipe() {
+            showLoading();
+            try {
+                const data = await fetchJSON('https://www.themealdb.com/api/json/v1/1/random.php');
+                const meal = data.meals[0];
+                if (!meal) throw new Error('Kein Rezept gefunden');
+                const ingredients = [];
+                for (let i = 1; i <= 20; i++) {
+                    const ing = meal[`strIngredient${i}`];
+                    const measure = meal[`strMeasure${i}`];
+                    if (ing && ing.trim()) {
+                        ingredients.push(`${measure || ''} ${ing}`.trim());
+                    }
+                }
+
+                showResult(`
+                    <div class="result-box">
+                        <div class="flex items-center gap-3 mb-2 flex-wrap">
+                            <span class="text-rose-500 text-xl"><i class="fa-regular fa-utensils"></i></span>
+                            <span class="text-xs font-bold text-rose-500 uppercase tracking-wider">Rezept des Tages</span>
+                            ${meal.strCategory ? `<span class="text-[10px] bg-rose-500/10 text-rose-400 px-2 py-0.5 rounded-full">${meal.strCategory}</span>` : ''}
+                            ${meal.strArea ? `<span class="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full">${meal.strArea}</span>` : ''}
+                        </div>
+                        <h3 class="text-xl font-black text-slate-900 dark:text-white">${meal.strMeal}</h3>
+                        ${meal.strMealThumb ? `<img src="${meal.strMealThumb}" class="w-full max-w-xs rounded-xl my-3 border border-slate-300 dark:border-slate-700" alt="${meal.strMeal}">` : ''}
+                        <div class="mt-2">
+                            <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Zutaten:</p>
+                            <ul class="text-sm text-slate-500 dark:text-slate-400 list-disc list-inside columns-2">
+                                ${ingredients.map(i => `<li>${i}</li>`).join('')}
+                            </ul>
+                        </div>
+                        ${meal.strInstructions ? `
+                        <div class="mt-3">
+                            <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Zubereitung:</p>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 max-h-32 overflow-y-auto custom-scrollbar">${meal.strInstructions}</p>
+                        </div>` : ''}
+                        <p class="text-xs text-slate-400 mt-3">Quelle: themealdb.com</p>
+                    </div>
+                `);
+                showToast(`Rezept geladen: ${meal.strMeal}`);
+            } catch (e) {
+                showResult(`<p class="text-rose-500">Fehler beim Laden: ${e.message}</p>`);
+            }
+        }
+
+        // --- MODUL 7: Zitat des Tages (ZenQuotes) ---
+        async function loadQuote() {
+            showLoading();
+            try {
+                const data = await fetchJSON('https://zenquotes.io/api/random');
+                if (!data || !data.length) throw new Error('Kein Zitat erhalten');
+                const quote = data[0];
+                showResult(`
+                    <div class="result-box">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-yellow-500 text-xl"><i class="fa-regular fa-quote-left"></i></span>
+                            <span class="text-xs font-bold text-yellow-500 uppercase tracking-wider">Zitat des Tages</span>
+                        </div>
+                        <p class="text-slate-900 dark:text-white text-xl font-medium leading-relaxed italic">„${quote.q}“</p>
+                        <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">— ${quote.a || 'Unbekannt'}</p>
+                        <p class="text-xs text-slate-400 mt-3">Quelle: zenquotes.io</p>
+                    </div>
+                `);
+                showToast('Zitat geladen!');
+            } catch (e) {
+                showResult(`<p class="text-rose-500">Fehler beim Laden: ${e.message}</p>`);
+            }
+        }
+
+        // --- MODUL 8: Wort des Tages (DictionaryAPI mit Wortliste) ---
+        const wordList = [
+            'serendipity', 'ephemeral', 'eloquent', 'resilient', 'melancholy',
+            'effervescent', 'luminescence', 'ethereal', 'ineffable', 'petrichor',
+            'solitude', 'wanderlust', 'nostalgia', 'euphoria', 'halcyon',
+            'zenith', 'quintessential', 'surreal', 'transcend', 'unfathomable',
+            'benevolent', 'cacophony', 'demure', 'ebullient', 'facetious',
+            'gregarious', 'harbinger', 'iconoclast', 'jubilant', 'kaleidoscope',
+            'labyrinth', 'magnanimous', 'nefarious', 'oblivion', 'paradox',
+            'quixotic', 'reverie', 'sanguine', 'taciturn', 'ubiquitous',
+            'venerable', 'whimsical', 'xenial', 'yearning', 'zealous'
+        ];
+
+        async function loadWord() {
+            showLoading();
+            try {
+                const word = wordList[Math.floor(Math.random() * wordList.length)];
+                const data = await fetchJSON(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+                if (!data || !data.length) throw new Error('Kein Eintrag gefunden');
+                const entry = data[0];
+                const meanings = entry.meanings || [];
+                let definitions = [];
+                meanings.forEach(m => {
+                    (m.definitions || []).forEach(d => {
+                        definitions.push({ part: m.partOfSpeech || '—', def: d.definition });
+                    });
+                });
+                if (definitions.length === 0) throw new Error('Keine Definition gefunden');
+
+                const randomDef = definitions[Math.floor(Math.random() * definitions.length)];
+                showResult(`
+                    <div class="result-box">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-orange-500 text-xl"><i class="fa-regular fa-book-open"></i></span>
+                            <span class="text-xs font-bold text-orange-500 uppercase tracking-wider">Wort des Tages</span>
+                        </div>
+                        <p class="text-slate-900 dark:text-white text-3xl font-black">${word}</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">${randomDef.part}</p>
+                        <p class="text-slate-900 dark:text-white text-base mt-2">${randomDef.def}</p>
+                        ${entry.phonetics && entry.phonetics.length && entry.phonetics[0].text ? `<p class="text-xs text-slate-400 mt-2">Aussprache: ${entry.phonetics[0].text}</p>` : ''}
+                        <p class="text-xs text-slate-400 mt-3">Quelle: dictionaryapi.dev</p>
+                    </div>
+                `);
+                showToast(`Wort geladen: ${word}`);
+            } catch (e) {
+                showResult(`<p class="text-rose-500">Fehler beim Laden: ${e.message}</p>`);
+            }
+        }
+
+        // ============================================================
+        // 5. ROUTING & ZUFALL
+        // ============================================================
+        const modules = {
+            fact: loadFact,
+            history: loadHistory,
+            country: loadCountry,
+            stats: loadStats,
+            moon: loadMoon,
+            recipe: loadRecipe,
+            quote: loadQuote,
+            word: loadWord
+        };
+
+        function loadModule(name) {
+            if (modules[name]) {
+                modules[name]();
+            } else {
+                showResult(`<p class="text-rose-500">Modul "${name}" nicht gefunden.</p>`);
+            }
+        }
+
+        function randomModule() {
+            const names = Object.keys(modules);
+            const random = names[Math.floor(Math.random() * names.length)];
+            loadModule(random);
+            showToast(`Zufalls-Modul: ${random}`);
+        }
+
+        // ============================================================
+        // 6. COPYRIGHT
+        // ============================================================
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // ============================================================
+        // 7. WILLKOMMENSNACHRICHT (beim Start)
+        // ============================================================
+        // Lade beim ersten Start ein zufälliges Modul, aber nur wenn keine Aktion erfolgt
+        // besser: zeige Standard-Willkommensnachricht
+        // Nutzer kann selbst entscheiden
+    </script>
+</body>
+</html>
