@@ -235,7 +235,30 @@
             box-shadow: 0 0 30px var(--primary-glow);
         }
 
-        /* === Ergebnisliste === */
+        /* === Favoriten-Filter === */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filter-bar label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        .filter-bar input[type="checkbox"] {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* === Ergebnisliste (Karten) === */
         .results-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -247,34 +270,73 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            padding: 1.5rem;
+            overflow: hidden;
             transition: all 0.3s ease;
             cursor: pointer;
             backdrop-filter: blur(10px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
         }
         .recipe-card:hover {
             border-color: var(--primary);
             transform: translateY(-5px);
             box-shadow: 0 15px 40px var(--primary-glow);
         }
+        .recipe-card .card-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            background: #1a1f2e;
+        }
+        .recipe-card .card-body {
+            padding: 1.2rem 1.5rem 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .recipe-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
         .recipe-card h3 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
             color: var(--text-color);
+            flex: 1;
         }
-        .recipe-card p {
+        .recipe-card .fav-btn {
+            background: none;
+            border: none;
             color: var(--text-muted);
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 4px;
+            line-height: 1;
+        }
+        .recipe-card .fav-btn:hover {
+            transform: scale(1.2);
+        }
+        .recipe-card .fav-btn.active {
+            color: var(--accent-pink);
+        }
+        .recipe-card .category {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
         }
         .recipe-card .meta {
-            margin-top: 10px;
             display: flex;
             gap: 12px;
             font-size: 0.8rem;
             color: var(--text-muted);
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
         }
         .recipe-card .meta i {
             margin-right: 4px;
@@ -295,25 +357,62 @@
             display: block;
             animation: fadeIn 0.4s ease;
         }
-        .recipe-detail h2 {
+        .recipe-detail .detail-top {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .recipe-detail .detail-img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #1a1f2e;
+            aspect-ratio: 4/3;
+        }
+        .recipe-detail .detail-info {
+            flex: 1;
+        }
+        .recipe-detail .detail-info h2 {
             font-family: 'Orbitron', sans-serif;
             font-size: 1.8rem;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
-        .recipe-detail .info {
+        .recipe-detail .detail-info h2 .fav-btn-big {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 4px;
+            line-height: 1;
+        }
+        .recipe-detail .detail-info h2 .fav-btn-big:hover {
+            transform: scale(1.2);
+        }
+        .recipe-detail .detail-info h2 .fav-btn-big.active {
+            color: var(--accent-pink);
+        }
+        .recipe-detail .detail-meta {
             display: flex;
             gap: 20px;
             flex-wrap: wrap;
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-        .recipe-detail .info span {
+        .recipe-detail .detail-meta span {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        .recipe-detail .info i {
+        .recipe-detail .detail-meta i {
             color: var(--primary);
         }
 
@@ -438,6 +537,8 @@
             .search-section button { justify-content: center; }
             .results-grid { grid-template-columns: 1fr; }
             .recipe-detail { padding: 1.5rem; }
+            .recipe-detail .detail-top { flex-direction: column; align-items: center; }
+            .recipe-detail .detail-img { max-width: 100%; }
         }
     </style>
 </head>
@@ -469,13 +570,32 @@
             <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
         </div>
 
+        <!-- Filter: Favoriten -->
+        <div class="filter-bar">
+            <label>
+                <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
+            </label>
+        </div>
+
         <!-- Ergebnisse -->
         <div id="resultsContainer" class="results-grid"></div>
 
-        <!-- Detailansicht (wird bei Klick auf Rezept eingeblendet) -->
+        <!-- Detailansicht -->
         <div id="detailContainer" class="recipe-detail">
-            <h2 id="detailTitle"></h2>
-            <div class="info" id="detailInfo"></div>
+            <div class="detail-top">
+                <img id="detailImg" class="detail-img" src="" alt="Rezeptbild" />
+                <div class="detail-info">
+                    <h2>
+                        <span id="detailTitle"></span>
+                        <button class="fav-btn-big" id="detailFavBtn"><i class="fa-regular fa-heart"></i></button>
+                    </h2>
+                    <div class="detail-meta" id="detailMeta">
+                        <span><i class="fa-regular fa-clock"></i> <span id="detailTime"></span></span>
+                        <span><i class="fa-regular fa-user"></i> <span id="detailServings"></span> Port.</span>
+                        <span><i class="fa-regular fa-tag"></i> <span id="detailCategory"></span></span>
+                    </div>
+                </div>
+            </div>
             <div class="ingredients">
                 <h3><i class="fa-solid fa-basket-shopping"></i> Zutaten</h3>
                 <ul id="detailIngredients"></ul>
@@ -499,107 +619,152 @@
     </div>
 
     <script>
-        // ========== REZEPT-DATENBANK ==========
-        const recipes = [
-            {
-                id: 1,
-                title: "Gebratener Reis mit Gemüse",
-                category: "Reis",
-                ingredients: ["Reis", "Karotte", "Erbsen", "Frühlingszwiebel", "Sojasauce", "Ei"],
-                steps: [
-                    "Reis nach Packungsanweisung kochen und abkühlen lassen.",
-                    "Karotte würfeln, Frühlingszwiebel in Ringe schneiden.",
-                    "Öl in einer Pfanne erhitzen, Gemüse kurz anbraten.",
-                    "Reis hinzufügen und unter Rühren erhitzen.",
-                    "Sojasauce und verquirltes Ei unterrühren, kurz mitbraten."
-                ],
-                time: "20 min",
-                servings: 2
-            },
-            {
-                id: 2,
-                title: "Hähnchenbrust mit Reis und Brokkoli",
-                category: "Hähnchen",
-                ingredients: ["Hähnchenbrust", "Reis", "Brokkoli", "Knoblauch", "Sojasauce", "Öl"],
-                steps: [
-                    "Reis kochen.",
-                    "Hähnchenbrust in Streifen schneiden, mit Salz und Pfeffer würzen.",
-                    "Brokkoli in Röschen teilen und blanchieren.",
-                    "Hähnchen in einer Pfanne goldbraun braten, Knoblauch hinzufügen.",
-                    "Brokkoli und Sojasauce zugeben, kurz schwenken – mit Reis servieren."
-                ],
-                time: "30 min",
-                servings: 2
-            },
-            {
-                id: 3,
-                title: "Pasta mit Tomaten-Basilikum-Sauce",
-                category: "Pasta",
-                ingredients: ["Pasta", "Tomaten", "Basilikum", "Knoblauch", "Olivenöl", "Parmesan"],
-                steps: [
-                    "Pasta nach Packungsangabe kochen.",
-                    "Tomaten würfeln, Knoblauch hacken.",
-                    "Olivenöl erhitzen, Knoblauch anbraten, Tomaten zugeben und köcheln lassen.",
-                    "Sauce mit Salz, Pfeffer und Basilikum abschmecken.",
-                    "Pasta abgießen, mit Sauce vermengen und mit Parmesan bestreuen."
-                ],
-                time: "25 min",
-                servings: 2
-            },
-            {
-                id: 4,
-                title: "Linsensuppe",
-                category: "Suppe",
-                ingredients: ["Linsen (rot)", "Karotte", "Sellerie", "Zwiebel", "Gemüsebrühe", "Majoran"],
-                steps: [
-                    "Zwiebel, Karotte und Sellerie fein würfeln.",
-                    "In einem Topf mit Öl anschwitzen.",
-                    "Linsen und Brühe hinzufügen, aufkochen.",
-                    "Bei schwacher Hitze 20 Minuten köcheln lassen.",
-                    "Mit Majoran, Salz und Pfeffer abschmecken."
-                ],
-                time: "35 min",
-                servings: 4
-            },
-            {
-                id: 5,
-                title: "Kartoffelgratin",
-                category: "Kartoffeln",
-                ingredients: ["Kartoffeln", "Sahne", "Knoblauch", "Muskat", "Käse"],
-                steps: [
-                    "Kartoffeln schälen und in dünne Scheiben schneiden.",
-                    "Knoblauch pressen, mit Sahne und Muskat verrühren.",
-                    "Kartoffelscheiben in eine Auflaufform schichten, mit der Sahne übergießen.",
-                    "Käse darüberstreuen.",
-                    "Im Ofen bei 180 °C ca. 40 Minuten backen."
-                ],
-                time: "50 min",
-                servings: 4
-            },
-            {
-                id: 6,
-                title: "Falafel mit Joghurtsauce",
-                category: "Vegan",
-                ingredients: ["Kichererbsen", "Zwiebel", "Knoblauch", "Petersilie", "Kreuzkümmel", "Joghurt"],
-                steps: [
-                    "Kichererbsen abtropfen lassen, mit Zwiebel, Knoblauch und Petersilie pürieren.",
-                    "Kreuzkümmel, Salz und Mehl unterkneten.",
-                    "Kleine Bällchen formen und in Öl knusprig braten.",
-                    "Joghurt mit Knoblauch und Minze als Sauce anrühren.",
-                    "Mit Fladenbrot und Salat servieren."
-                ],
-                time: "30 min",
-                servings: 3
-            }
-        ];
+        // ========== REZEPT-DATENBANK (mit Mengenangaben) ==========
+        const recipes = [{
+            id: 1,
+            title: "Gebratener Reis mit Gemüse",
+            category: "Reis",
+            ingredients: [
+                { amount: "200", unit: "g", name: "Reis (gekocht)" },
+                { amount: "1", unit: "", name: "Karotte" },
+                { amount: "100", unit: "g", name: "Erbsen (TK)" },
+                { amount: "2", unit: "", name: "Frühlingszwiebeln" },
+                { amount: "2", unit: "EL", name: "Sojasauce" },
+                { amount: "2", unit: "", name: "Eier" }
+            ],
+            steps: [
+                "Reis nach Packungsanweisung kochen und abkühlen lassen.",
+                "Karotte schälen und würfeln, Frühlingszwiebeln in Ringe schneiden.",
+                "Öl in einer Pfanne erhitzen, Karotte und Erbsen kurz anbraten.",
+                "Reis hinzufügen und unter Rühren erhitzen.",
+                "Sojasauce und verquirlte Eier unterrühren, kurz mitbraten – mit Frühlingszwiebeln garnieren."
+            ],
+            time: "20 min",
+            servings: 2,
+            image: "https://picsum.photos/seed/reis/400/300"
+        }, {
+            id: 2,
+            title: "Hähnchenbrust mit Reis und Brokkoli",
+            category: "Hähnchen",
+            ingredients: [
+                { amount: "2", unit: "", name: "Hähnchenbrustfilets (je 150 g)" },
+                { amount: "200", unit: "g", name: "Reis" },
+                { amount: "1", unit: "", name: "Brokkoli" },
+                { amount: "2", unit: "", name: "Knoblauchzehen" },
+                { amount: "3", unit: "EL", name: "Sojasauce" },
+                { amount: "2", unit: "EL", name: "Öl" }
+            ],
+            steps: [
+                "Reis nach Packungsanweisung kochen.",
+                "Brokkoli in Röschen teilen und in Salzwasser blanchieren (ca. 3 min).",
+                "Hähnchenbrust in Streifen schneiden, mit Salz und Pfeffer würzen.",
+                "Öl in einer Pfanne erhitzen, Hähnchen goldbraun braten, Knoblauch pressen und kurz mitbraten.",
+                "Brokkoli und Sojasauce zugeben, kurz schwenken – mit Reis servieren."
+            ],
+            time: "30 min",
+            servings: 2,
+            image: "https://picsum.photos/seed/hähnchen/400/300"
+        }, {
+            id: 3,
+            title: "Pasta mit Tomaten-Basilikum-Sauce",
+            category: "Pasta",
+            ingredients: [
+                { amount: "250", unit: "g", name: "Pasta (z.B. Spaghetti)" },
+                { amount: "400", unit: "g", name: "Tomaten (Dose, geschält)" },
+                { amount: "1", unit: "Bund", name: "Basilikum" },
+                { amount: "2", unit: "", name: "Knoblauchzehen" },
+                { amount: "3", unit: "EL", name: "Olivenöl" },
+                { amount: "50", unit: "g", name: "Parmesan, gerieben" }
+            ],
+            steps: [
+                "Pasta nach Packungsangabe in reichlich Salzwasser kochen.",
+                "Knoblauch fein hacken, Tomaten aus der Dose leicht zerdrücken.",
+                "Olivenöl in einer Pfanne erhitzen, Knoblauch anbraten, Tomaten zugeben und 10 Minuten köcheln lassen.",
+                "Sauce mit Salz, Pfeffer und einem Teil des Basilikums abschmecken.",
+                "Pasta abgießen, mit der Sauce vermengen, mit Parmesan und restlichem Basilikum bestreuen."
+            ],
+            time: "25 min",
+            servings: 2,
+            image: "https://picsum.photos/seed/pasta/400/300"
+        }, {
+            id: 4,
+            title: "Linsensuppe",
+            category: "Suppe",
+            ingredients: [
+                { amount: "200", unit: "g", name: "Rote Linsen" },
+                { amount: "1", unit: "", name: "Karotte" },
+                { amount: "1", unit: "Stange", name: "Sellerie" },
+                { amount: "1", unit: "", name: "Zwiebel" },
+                { amount: "1", unit: "l", name: "Gemüsebrühe" },
+                { amount: "1", unit: "TL", name: "Majoran (getrocknet)" }
+            ],
+            steps: [
+                "Zwiebel, Karotte und Sellerie fein würfeln.",
+                "In einem Topf mit etwas Öl anschwitzen, bis sie glasig sind.",
+                "Linsen und Brühe hinzufügen, aufkochen und bei schwacher Hitze 20 Minuten köcheln lassen.",
+                "Mit Majoran, Salz und Pfeffer abschmecken.",
+                "Bei Bedarf pürieren – mit etwas Crème fraîche servieren."
+            ],
+            time: "35 min",
+            servings: 4,
+            image: "https://picsum.photos/seed/linsensuppe/400/300"
+        }, {
+            id: 5,
+            title: "Kartoffelgratin",
+            category: "Kartoffeln",
+            ingredients: [
+                { amount: "800", unit: "g", name: "Kartoffeln (festkochend)" },
+                { amount: "200", unit: "ml", name: "Sahne" },
+                { amount: "2", unit: "", name: "Knoblauchzehen" },
+                { amount: "1", unit: "Prise", name: "Muskatnuss" },
+                { amount: "100", unit: "g", name: "Käse (z.B. Gruyère), gerieben" }
+            ],
+            steps: [
+                "Kartoffeln schälen und in dünne Scheiben (ca. 3 mm) schneiden.",
+                "Knoblauch pressen, mit Sahne und Muskat verrühren.",
+                "Kartoffelscheiben in eine gefettete Auflaufform schichten, jede Lage mit der Sahne-Mischung beträufeln.",
+                "Käse darüberstreuen.",
+                "Bei 180 °C Umluft ca. 40–45 Minuten goldbraun backen."
+            ],
+            time: "50 min",
+            servings: 4,
+            image: "https://picsum.photos/seed/kartoffelgratin/400/300"
+        }, {
+            id: 6,
+            title: "Falafel mit Joghurtsauce",
+            category: "Vegan",
+            ingredients: [
+                { amount: "1", unit: "Dose (400 g)", name: "Kichererbsen (Abtropfgewicht)" },
+                { amount: "1", unit: "", name: "Zwiebel" },
+                { amount: "2", unit: "", name: "Knoblauchzehen" },
+                { amount: "1", unit: "Bund", name: "Petersilie" },
+                { amount: "1", unit: "TL", name: "Kreuzkümmel" },
+                { amount: "200", unit: "g", name: "Joghurt (für die Sauce)" }
+            ],
+            steps: [
+                "Kichererbsen abtropfen lassen, mit Zwiebel, Knoblauch und Petersilie im Mixer pürieren.",
+                "Kreuzkümmel, Salz und etwas Mehl unterkneten, bis eine formbare Masse entsteht.",
+                "Kleine Bällchen formen und in heißem Öl goldbraun ausbacken (oder im Ofen backen).",
+                "Joghurt mit einer gepressten Knoblauchzehe, Salz und Minze verrühren.",
+                "Falafel mit Joghurtsauce, Fladenbrot und Salat servieren."
+            ],
+            time: "30 min",
+            servings: 3,
+            image: "https://picsum.photos/seed/falafel/400/300"
+        }];
 
         // ========== DOM-Referenzen ==========
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
+        const favFilter = document.getElementById('favFilter');
         const resultsContainer = document.getElementById('resultsContainer');
         const detailContainer = document.getElementById('detailContainer');
+        const detailImg = document.getElementById('detailImg');
         const detailTitle = document.getElementById('detailTitle');
-        const detailInfo = document.getElementById('detailInfo');
+        const detailMeta = document.getElementById('detailMeta');
+        const detailTime = document.getElementById('detailTime');
+        const detailServings = document.getElementById('detailServings');
+        const detailCategory = document.getElementById('detailCategory');
         const detailIngredients = document.getElementById('detailIngredients');
         const stepNumber = document.getElementById('stepNumber');
         const stepText = document.getElementById('stepText');
@@ -607,24 +772,58 @@
         const prevStep = document.getElementById('prevStep');
         const nextStep = document.getElementById('nextStep');
         const backToResults = document.getElementById('backToResults');
+        const detailFavBtn = document.getElementById('detailFavBtn');
 
-        let currentRecipe = null;       // das aktuell angezeigte Rezeptobjekt
-        let currentStepIndex = 0;       // 0-basiert
+        let currentRecipe = null;
+        let currentStepIndex = 0;
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 
-        // ========== Suchfunktion ==========
-        function searchRecipes(query) {
-            const q = query.toLowerCase().trim();
-            if (q === '') return recipes; // bei leerer Eingabe alle anzeigen
-
-            // Suche in Titel, Kategorie und Zutaten
-            return recipes.filter(recipe =>
-                recipe.title.toLowerCase().includes(q) ||
-                recipe.category.toLowerCase().includes(q) ||
-                recipe.ingredients.some(ing => ing.toLowerCase().includes(q))
-            );
+        // ========== Favoriten-Hilfsfunktionen ==========
+        function toggleFavorite(id) {
+            const idx = favorites.indexOf(id);
+            if (idx > -1) favorites.splice(idx, 1);
+            else favorites.push(id);
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            // Aktuelle Ansicht aktualisieren
+            renderCurrentView();
+            if (currentRecipe && currentRecipe.id === id) {
+                updateFavButton(detailFavBtn, id);
+            }
         }
 
-        function renderResults(results) {
+        function isFavorite(id) {
+            return favorites.includes(id);
+        }
+
+        function updateFavButton(btn, id) {
+            if (isFavorite(id)) {
+                btn.innerHTML = '<i class="fa-solid fa-heart"></i>';
+                btn.classList.add('active');
+            } else {
+                btn.innerHTML = '<i class="fa-regular fa-heart"></i>';
+                btn.classList.remove('active');
+            }
+        }
+
+        // ========== Such- und Filterfunktion ==========
+        function getFilteredRecipes() {
+            const query = searchInput.value.toLowerCase().trim();
+            let filtered = recipes;
+            if (query !== '') {
+                filtered = filtered.filter(r =>
+                    r.title.toLowerCase().includes(query) ||
+                    r.category.toLowerCase().includes(query) ||
+                    r.ingredients.some(ing => ing.name.toLowerCase().includes(query))
+                );
+            }
+            if (favFilter.checked) {
+                filtered = filtered.filter(r => isFavorite(r.id));
+            }
+            return filtered;
+        }
+
+        function renderResults() {
+            const results = getFilteredRecipes();
             resultsContainer.innerHTML = '';
             if (results.length === 0) {
                 resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte gefunden. Versuche es mit einem anderen Begriff.</p>`;
@@ -634,14 +833,39 @@
                 const card = document.createElement('div');
                 card.className = 'recipe-card';
                 card.innerHTML = `
-                    <h3>${recipe.title}</h3>
-                    <p>${recipe.category}</p>
-                    <div class="meta">
-                        <span><i class="fa-regular fa-clock"></i> ${recipe.time}</span>
-                        <span><i class="fa-regular fa-user"></i> ${recipe.servings} Port.</span>
+                    <img class="card-img" src="${recipe.image}" alt="${recipe.title}" loading="lazy" />
+                    <div class="card-body">
+                        <div class="card-header">
+                            <h3>${recipe.title}</h3>
+                            <button class="fav-btn ${isFavorite(recipe.id) ? 'active' : ''}" data-id="${recipe.id}">
+                                <i class="${isFavorite(recipe.id) ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="category">${recipe.category}</div>
+                        <div class="meta">
+                            <span><i class="fa-regular fa-clock"></i> ${recipe.time}</span>
+                            <span><i class="fa-regular fa-user"></i> ${recipe.servings} Port.</span>
+                        </div>
                     </div>
                 `;
-                card.addEventListener('click', () => showDetail(recipe));
+                // Klick auf Karte öffnet Detail
+                card.addEventListener('click', (e) => {
+                    // Verhindern, dass Klick auf Fav-Button Detail öffnet
+                    if (e.target.closest('.fav-btn')) return;
+                    showDetail(recipe);
+                });
+                // Fav-Button in der Karte
+                const favBtn = card.querySelector('.fav-btn');
+                favBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(favBtn.dataset.id);
+                    toggleFavorite(id);
+                    // Button aktualisieren (wird durch renderCurrentView neu gezeichnet)
+                    // Aber wir rufen renderResults auf, das aktualisiert alles.
+                    // Damit die Ansicht nicht flackert, können wir nur diesen Button togglen.
+                    // Besser: gesamte Liste neu rendern.
+                    renderCurrentView();
+                });
                 resultsContainer.appendChild(card);
             });
         }
@@ -653,17 +877,22 @@
             detailContainer.classList.add('active');
             resultsContainer.style.display = 'none';
 
+            detailImg.src = recipe.image;
+            detailImg.alt = recipe.title;
             detailTitle.textContent = recipe.title;
-            detailInfo.innerHTML = `
-                <span><i class="fa-regular fa-clock"></i> ${recipe.time}</span>
-                <span><i class="fa-regular fa-user"></i> ${recipe.servings} Portionen</span>
-                <span><i class="fa-regular fa-tag"></i> ${recipe.category}</span>
-            `;
+            detailTime.textContent = recipe.time;
+            detailServings.textContent = recipe.servings;
+            detailCategory.textContent = recipe.category;
 
             // Zutaten
-            detailIngredients.innerHTML = recipe.ingredients.map(ing => `<li>${ing}</li>`).join('');
+            detailIngredients.innerHTML = recipe.ingredients.map(ing =>
+                `<li>${ing.amount} ${ing.unit} ${ing.name}</li>`
+            ).join('');
 
-            // Schritt 1 anzeigen
+            // Favoriten-Button im Detail
+            updateFavButton(detailFavBtn, recipe.id);
+
+            // Schritt anzeigen
             updateStepDisplay();
 
             // Navigation zurücksetzen
@@ -674,17 +903,15 @@
         function updateStepDisplay() {
             if (!currentRecipe) return;
             const total = currentRecipe.steps.length;
-            const current = currentStepIndex + 1; // für Anzeige 1-basiert
+            const current = currentStepIndex + 1;
             stepNumber.textContent = `Schritt ${current} von ${total}`;
             stepIndicator.textContent = `${current} / ${total}`;
             stepText.textContent = currentRecipe.steps[currentStepIndex];
-
-            // Buttons aktualisieren
             prevStep.disabled = (currentStepIndex === 0);
             nextStep.disabled = (currentStepIndex === total - 1);
         }
 
-        // ========== Event-Listener für Schrittnavigation ==========
+        // ========== Event-Listener ==========
         prevStep.addEventListener('click', () => {
             if (currentStepIndex > 0) {
                 currentStepIndex--;
@@ -699,24 +926,25 @@
             }
         });
 
-        // Zurück zur Ergebnisliste
         backToResults.addEventListener('click', () => {
             detailContainer.classList.remove('active');
             resultsContainer.style.display = 'grid';
-            // Suche erneut anzeigen (behalte letzte Suche)
-            const query = searchInput.value;
-            const results = searchRecipes(query);
-            renderResults(results);
+            renderCurrentView();
         });
 
-        // ========== Suche auslösen ==========
+        // Fav-Button im Detail
+        detailFavBtn.addEventListener('click', () => {
+            if (currentRecipe) {
+                toggleFavorite(currentRecipe.id);
+                updateFavButton(detailFavBtn, currentRecipe.id);
+                // Auch in der Übersicht aktualisieren
+                renderCurrentView();
+            }
+        });
+
+        // Suche
         function performSearch() {
-            const query = searchInput.value;
-            const results = searchRecipes(query);
-            renderResults(results);
-            // Detail schließen falls offen
-            detailContainer.classList.remove('active');
-            resultsContainer.style.display = 'grid';
+            renderCurrentView();
         }
 
         searchBtn.addEventListener('click', performSearch);
@@ -724,12 +952,40 @@
             if (e.key === 'Enter') performSearch();
         });
 
+        // Favoriten-Filter
+        favFilter.addEventListener('change', renderCurrentView);
+
+        // Hilfsfunktion: Aktuelle Ansicht neu rendern (Ergebnisse oder Detail)
+        function renderCurrentView() {
+            if (detailContainer.classList.contains('active')) {
+                // Wenn Detail offen, nur die Favoriten-Buttons in der Kartenliste aktualisieren wir nicht,
+                // aber wir können die Liste im Hintergrund neu rendern? Besser: Detail bleibt, aber wir merken uns den aktuellen Recipe.
+                // Bei Filteränderung schließen wir das Detail nicht.
+                // Aber wir können die Ergebnisliste neu rendern, ohne das Detail zu stören.
+                // Wir rendern die Ergebnisse neu, aber zeigen sie nicht an (display:none).
+                // Also einfach renderResults aufrufen, aber sie bleiben versteckt.
+                renderResults();
+                // Aber wenn wir das Detail offen haben, soll die Ergebnisliste aktualisiert werden,
+                // damit beim Zurückgehen die aktuelle Filterung sichtbar ist.
+                // Dazu speichern wir die Ergebnisse im Hintergrund.
+                // Das machen wir, indem wir renderResults aufrufen – die Liste wird neu aufgebaut, aber sie ist versteckt.
+                // Das ist okay.
+                renderResults();
+                // Zusätzlich den Favoriten-Status im Detail aktualisieren, falls das aktuelle Rezept betroffen ist.
+                if (currentRecipe) {
+                    updateFavButton(detailFavBtn, currentRecipe.id);
+                }
+            } else {
+                renderResults();
+            }
+        }
+
         // Initial alle Rezepte anzeigen
         window.addEventListener('load', () => {
-            renderResults(recipes);
+            renderResults();
         });
 
-        // ========== Hintergrund-Partikel (wie Hauptseite) ==========
+        // ========== Hintergrund-Partikel ==========
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -779,7 +1035,7 @@
             isTabActive = !document.hidden;
         });
 
-        // Dropdown-Menü
+        // Dropdown
         const menuToggle = document.getElementById('menuToggle');
         const dropdownMenu = document.getElementById('dropdownMenu');
         menuToggle.addEventListener('click', (e) => {
@@ -792,6 +1048,5 @@
 
         document.getElementById('year').textContent = new Date().getFullYear();
     </script>
-
 </body>
 </html>
