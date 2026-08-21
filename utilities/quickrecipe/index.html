@@ -48,7 +48,7 @@
         .container {
             position: relative;
             z-index: 1;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             animation: fadeIn 0.8s ease forwards;
         }
@@ -179,7 +179,7 @@
             font-size: 1.1rem;
         }
 
-        /* === Suchbereich === */
+        /* === Such- und Filterbereich === */
         .search-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -193,7 +193,7 @@
             align-items: center;
         }
         .search-section input {
-            flex: 1;
+            flex: 2;
             min-width: 200px;
             padding: 14px 20px;
             border-radius: 12px;
@@ -213,26 +213,48 @@
             color: var(--text-muted);
             opacity: 0.7;
         }
+        .search-section .search-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
         .search-section button {
-            padding: 14px 28px;
+            padding: 14px 24px;
             border-radius: 12px;
             border: none;
             background: var(--primary);
             color: #fff;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             letter-spacing: 0.5px;
         }
         .search-section button:hover {
             background: #4a8aff;
             transform: scale(1.02);
             box-shadow: 0 0 30px var(--primary-glow);
+        }
+        .search-section select {
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            font-size: 0.95rem;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            min-width: 150px;
+            cursor: pointer;
+        }
+        .search-section select option {
+            background: #0a0e1a;
+            color: #fff;
         }
 
         /* === Filter-Bar === */
@@ -350,6 +372,35 @@
         .recipe-card .meta i {
             margin-right: 4px;
             color: var(--primary);
+        }
+
+        /* === "Mehr laden" Button === */
+        .load-more-container {
+            text-align: center;
+            margin: 20px 0 40px;
+        }
+        .load-more-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 12px 32px;
+            border-radius: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .load-more-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
+            transform: scale(1.02);
+        }
+        .load-more-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
         }
 
         /* === Detailansicht === */
@@ -543,7 +594,7 @@
             .back-btn { font-size: 0.75rem; padding: 8px 14px; }
             h1 { font-size: 2rem; }
             .search-section { flex-direction: column; align-items: stretch; }
-            .search-section button { justify-content: center; }
+            .search-section .search-actions { flex-direction: column; }
             .results-grid { grid-template-columns: 1fr; }
             .recipe-detail { padding: 1.5rem; }
             .recipe-detail .detail-top { flex-direction: column; align-items: center; }
@@ -570,25 +621,37 @@
 
         <header>
             <h1>QuickRecipe</h1>
-            <div class="subhead">Gib eine Zutat oder ein Gericht ein – ich suche aus über 300 Rezepten das Passende.</div>
+            <div class="subhead">Durchstöbere tausende Rezepte – nach Kategorie, Zutat oder Gericht.</div>
         </header>
 
-        <!-- Suche -->
+        <!-- Suche & Filter -->
         <div class="search-section">
             <input type="text" id="searchInput" placeholder="z.B. Hähnchen, Pasta, Kartoffeln …" />
-            <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
+            <div class="search-actions">
+                <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
+                <select id="categorySelect">
+                    <option value="">— Kategorie wählen —</option>
+                </select>
+                <button id="categoryBtn"><i class="fa-solid fa-filter"></i> Filter</button>
+            </div>
         </div>
 
-        <!-- Filter + Datenbank-Info -->
+        <!-- Filter-Bar -->
         <div class="filter-bar">
             <label>
                 <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
             </label>
-            <span class="db-tag"><i class="fa-solid fa-database"></i> API: TheMealDB – 300+ Rezepte</span>
+            <span class="db-tag"><i class="fa-solid fa-database"></i> API: TheMealDB – 300+ Rezepte pro Kategorie</span>
+            <span id="resultCount" style="color: var(--text-muted); font-size: 0.9rem;"></span>
         </div>
 
         <!-- Ergebnisse -->
         <div id="resultsContainer" class="results-grid"></div>
+
+        <!-- "Mehr laden" -->
+        <div class="load-more-container">
+            <button class="load-more-btn" id="loadMoreBtn"><i class="fa-solid fa-plus"></i> Weitere laden</button>
+        </div>
 
         <!-- Detailansicht -->
         <div id="detailContainer" class="recipe-detail">
@@ -622,7 +685,7 @@
                     <button id="nextStep">Weiter <i class="fa-solid fa-chevron-right"></i></button>
                 </div>
             </div>
-            <span class="back-to-results" id="backToResults"><i class="fa-solid fa-arrow-left"></i> Zurück zur Suche</span>
+            <span class="back-to-results" id="backToResults"><i class="fa-solid fa-arrow-left"></i> Zurück zur Übersicht</span>
         </div>
 
         <footer>&copy; <span id="year"></span> Zero's Tool Hub // Entwickelt von Zerocoolluis</footer>
@@ -650,8 +713,13 @@
         // ========== DOM-Referenzen ==========
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
+        const categorySelect = document.getElementById('categorySelect');
+        const categoryBtn = document.getElementById('categoryBtn');
         const favFilter = document.getElementById('favFilter');
         const resultsContainer = document.getElementById('resultsContainer');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const resultCount = document.getElementById('resultCount');
+
         const detailContainer = document.getElementById('detailContainer');
         const detailImg = document.getElementById('detailImg');
         const detailTitle = document.getElementById('detailTitle');
@@ -667,68 +735,69 @@
         const backToResults = document.getElementById('backToResults');
         const detailFavBtn = document.getElementById('detailFavBtn');
 
-        let currentRecipe = null;      // das aktuell geöffnete Rezept (Objekt)
+        let currentRecipe = null;
         let currentStepIndex = 0;
-        let currentRecipeList = [];    // aktuell angezeigte Liste (für Filter)
+        let currentMeals = [];           // aktuell angezeigte Rezepte (volle Objekte)
+        let allMeals = [];              // alle geladenen Rezepte (für "Mehr laden")
+        let currentMode = 'random';      // 'random', 'search', 'category'
+        let currentQuery = '';
 
         // ========== API-Funktionen ==========
 
-        // Zufällige Rezepte abrufen (count Stück)
-        async function fetchRandomRecipes(count = 8) {
-            const promises = [];
-            for (let i = 0; i < count; i++) {
-                promises.push(fetch(API_BASE + 'random.php').then(res => res.json()));
-            }
-            const results = await Promise.all(promises);
-            // Jedes Ergebnis hat { meals: [...] } – wir extrahieren die meals
-            const meals = results.map(r => r.meals ? r.meals[0] : null).filter(m => m !== null);
-            return meals;
+        // Kategorien abrufen
+        async function fetchCategories() {
+            const res = await fetch(API_BASE + 'list.php?c=list');
+            const data = await res.json();
+            return data.meals || [];
         }
 
-        // Suche nach Name (s) oder Zutat (i)
-        async function searchRecipes(query) {
-            // Zuerst nach Name suchen
-            let url = API_BASE + 'search.php?s=' + encodeURIComponent(query);
-            let response = await fetch(url);
-            let data = await response.json();
-            let meals = data.meals || [];
-
-            // Wenn nichts gefunden, nach Zutat suchen
-            if (meals.length === 0) {
-                url = API_BASE + 'filter.php?i=' + encodeURIComponent(query);
-                response = await fetch(url);
-                data = await response.json();
-                // filter liefert nur ID, Bild, Name – wir müssen die Details für jede ID holen
-                const ids = (data.meals || []).map(m => m.idMeal);
-                if (ids.length > 0) {
-                    const detailPromises = ids.map(id =>
-                        fetch(API_BASE + 'lookup.php?i=' + id).then(res => res.json())
-                    );
-                    const details = await Promise.all(detailPromises);
-                    meals = details.map(d => d.meals ? d.meals[0] : null).filter(m => m !== null);
-                } else {
-                    meals = [];
-                }
-            }
-
-            // Bei leerer Suche (oder keine Ergebnisse) – zufällige Vorschläge
-            if (meals.length === 0 && query.trim() === '') {
-                meals = await fetchRandomRecipes(8);
-            }
-
-            return meals;
+        // Rezepte einer Kategorie (nur ID, Name, Bild)
+        async function fetchCategoryRecipes(category) {
+            const res = await fetch(API_BASE + 'filter.php?c=' + encodeURIComponent(category));
+            const data = await res.json();
+            return data.meals || [];
         }
 
-        // Rezept nach ID abrufen (für Detail, falls nötig)
+        // Rezeptdetails per ID
         async function fetchRecipeById(id) {
             const res = await fetch(API_BASE + 'lookup.php?i=' + id);
             const data = await res.json();
             return data.meals ? data.meals[0] : null;
         }
 
-        // ========== Hilfsfunktionen für Rezeptdaten ==========
+        // Suche nach Name oder Zutat
+        async function searchRecipes(query) {
+            // Zuerst nach Name
+            let res = await fetch(API_BASE + 'search.php?s=' + encodeURIComponent(query));
+            let data = await res.json();
+            let meals = data.meals || [];
+            if (meals.length === 0) {
+                // Dann nach Zutat
+                res = await fetch(API_BASE + 'filter.php?i=' + encodeURIComponent(query));
+                data = await res.json();
+                const ids = (data.meals || []).map(m => m.idMeal);
+                if (ids.length > 0) {
+                    const detailPromises = ids.map(id => fetchRecipeById(id));
+                    meals = await Promise.all(detailPromises);
+                    meals = meals.filter(m => m !== null);
+                }
+            }
+            return meals;
+        }
 
-        // Extrahiere Zutatenliste aus API-Objekt (strIngredient1..20 + strMeasure1..20)
+        // Zufällige Rezepte (count Stück)
+        async function fetchRandomRecipes(count = 20) {
+            const promises = [];
+            for (let i = 0; i < count; i++) {
+                promises.push(fetch(API_BASE + 'random.php').then(res => res.json()));
+            }
+            const results = await Promise.all(promises);
+            const meals = results.map(r => r.meals ? r.meals[0] : null).filter(m => m !== null);
+            return meals;
+        }
+
+        // ========== Hilfsfunktionen ==========
+
         function extractIngredients(meal) {
             const ingredients = [];
             for (let i = 1; i <= 20; i++) {
@@ -744,50 +813,41 @@
             return ingredients;
         }
 
-        // Zerlege Anleitung in einzelne Schritte (anhand von Satzzeichen, Nummerierung, Punkten)
         function splitInstructions(instructions) {
             if (!instructions) return ['Keine Anleitung vorhanden.'];
-            // Versuche anhand von "Step 1", "1." oder Punkten zu trennen
-            let steps = [];
-            // Wenn es nummerierte Schritte gibt (z.B. "1. ... 2. ...")
+            // Versuche nummerierte Schritte
             const numbered = instructions.match(/(\d+\.\s*[^.]*\.)/g);
             if (numbered && numbered.length > 1) {
-                steps = numbered.map(s => s.trim());
-            } else {
-                // Trenne bei Punkten und neuen Zeilen
-                const parts = instructions.split(/(?<=\.\s)|(?<=\n)/).filter(p => p.trim().length > 0);
-                if (parts.length > 1) {
-                    steps = parts.map(p => p.trim());
-                } else {
-                    // Fallback: gesamten Text als einen Schritt
-                    steps = [instructions.trim()];
-                }
+                return numbered.map(s => s.trim());
             }
-            // Leere Schritte entfernen
-            return steps.filter(s => s.length > 0);
+            // Trenne bei Punkten und Zeilenumbrüchen
+            const parts = instructions.split(/(?<=\.\s)|(?<=\n)/).filter(p => p.trim().length > 0);
+            if (parts.length > 1) {
+                return parts.map(p => p.trim());
+            }
+            return [instructions.trim()];
         }
 
         // ========== Rendering ==========
 
-        function renderRecipeCards(meals) {
-            resultsContainer.innerHTML = '';
-            if (!meals || meals.length === 0) {
-                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte gefunden. Versuche es mit einem anderen Begriff.</p>`;
-                return;
+        function renderMeals(meals, append = false) {
+            if (!append) {
+                resultsContainer.innerHTML = '';
+                currentMeals = [];
             }
 
-            // Bei aktivem Favoriten-Filter filtern
+            // Filtern nach Favoriten
             let filtered = meals;
             if (favFilter.checked) {
                 filtered = meals.filter(m => isFavorite(m.idMeal));
             }
 
             if (filtered.length === 0) {
-                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Favoriten gefunden.</p>`;
+                if (!append) {
+                    resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte gefunden.</p>`;
+                }
                 return;
             }
-
-            currentRecipeList = filtered;
 
             filtered.forEach(meal => {
                 const card = document.createElement('div');
@@ -810,7 +870,14 @@
                 `;
                 card.addEventListener('click', (e) => {
                     if (e.target.closest('.fav-btn')) return;
-                    showDetail(meal);
+                    // Wenn das Rezept noch nicht vollständig ist (nur ID, Name, Bild), lade Details nach
+                    if (!meal.strInstructions) {
+                        fetchRecipeById(meal.idMeal).then(detail => {
+                            if (detail) showDetail(detail);
+                        });
+                    } else {
+                        showDetail(meal);
+                    }
                 });
                 const favBtn = card.querySelector('.fav-btn');
                 favBtn.addEventListener('click', (e) => {
@@ -820,7 +887,12 @@
                     renderCurrentView();
                 });
                 resultsContainer.appendChild(card);
+                currentMeals.push(meal);
             });
+
+            // Zähler aktualisieren
+            resultCount.textContent = `${currentMeals.length} Rezepte`;
+            loadMoreBtn.style.display = (currentMode === 'random' || currentMode === 'search') ? 'inline-block' : 'none';
         }
 
         // ========== Detailansicht ==========
@@ -831,34 +903,26 @@
 
             detailContainer.classList.add('active');
             resultsContainer.style.display = 'none';
+            loadMoreBtn.style.display = 'none';
 
             detailImg.src = meal.strMealThumb;
             detailImg.alt = meal.strMeal;
             detailTitle.textContent = meal.strMeal;
             detailTime.textContent = meal.strTime || 'keine Angabe';
-            // Portionen: API hat manchmal strYoutube, aber keine Portionsangabe – wir schätzen 2-4
-            const servings = meal.strServings || '2-4';
-            detailServings.textContent = servings;
+            detailServings.textContent = meal.strServings || '2-4';
             detailCategory.textContent = meal.strCategory || 'Verschiedenes';
 
-            // Zutaten
             const ingredients = extractIngredients(meal);
             detailIngredients.innerHTML = ingredients.map(ing =>
                 `<li>${ing.amount ? ing.amount + ' ' : ''}${ing.name}</li>`
             ).join('');
 
-            // Schritte
             const steps = splitInstructions(meal.strInstructions);
-            // Speichere Schritte im Rezept-Objekt für Navigation
             meal._steps = steps;
             currentRecipe._steps = steps;
-
             updateStepDisplay();
 
-            // Favoriten-Button aktualisieren
             updateFavButton(detailFavBtn, meal.idMeal);
-
-            // Navigation zurücksetzen
             prevStep.disabled = (steps.length <= 1);
             nextStep.disabled = (steps.length <= 1);
         }
@@ -889,48 +953,97 @@
 
         function renderCurrentView() {
             if (detailContainer.classList.contains('active')) {
-                // Hintergrundliste aktualisieren, aber Detail bleibt offen
-                // Wir rendern die Liste neu (ohne sie anzuzeigen) – für den Fall, dass Favoriten gefiltert werden
-                // Aber wir haben currentRecipeList, die wir neu filtern können
-                if (currentRecipeList.length > 0) {
-                    // Wir müssen die Karten nicht neu zeichnen, aber die Fav-Buttons in der Liste aktualisieren
-                    // Einfach: gesamte Liste neu rendern, aber versteckt lassen? 
-                    // Besser: nur die Fav-Status in den Karten aktualisieren, aber das ist aufwändig.
-                    // Wir rufen einfach renderRecipeCards mit der aktuellen Liste auf – das überschreibt das Grid, 
-                    // aber es bleibt unsichtbar (display:none) – trotzdem wird es im Hintergrund neu aufgebaut.
-                    // Das ist okay.
-                    renderRecipeCards(currentRecipeList);
-                }
-                // Favoriten-Button im Detail aktualisieren
+                // Detailansicht aktualisieren (Fav-Status)
                 if (currentRecipe) {
                     updateFavButton(detailFavBtn, currentRecipe.idMeal);
                 }
+                // Hintergrundliste neu rendern (für Fav-Filter)
+                renderMeals(allMeals, false);
             } else {
-                // Normale Ansicht: neu laden mit aktueller Suche
-                performSearch();
+                // Normale Ansicht: aktuelle Liste neu rendern
+                renderMeals(allMeals, false);
             }
         }
 
-        async function performSearch() {
-            const query = searchInput.value.trim();
+        // Hauptaktion: Lädt Rezepte basierend auf Modus
+        async function loadRecipes(mode, query = '') {
+            currentMode = mode;
+            currentQuery = query;
             let meals = [];
-            if (query === '') {
-                // Vorschläge: zufällige Rezepte
-                meals = await fetchRandomRecipes(8);
-            } else {
+
+            if (mode === 'random') {
+                meals = await fetchRandomRecipes(20);
+            } else if (mode === 'search') {
                 meals = await searchRecipes(query);
-                // Wenn keine Ergebnisse, zeige zufällige
                 if (meals.length === 0) {
-                    meals = await fetchRandomRecipes(8);
+                    // Fallback: zufällige Vorschläge
+                    meals = await fetchRandomRecipes(20);
+                    mode = 'random';
                 }
+            } else if (mode === 'category') {
+                const category = query;
+                const list = await fetchCategoryRecipes(category);
+                // Für jedes Rezept die Details laden (für vollständige Anzeige)
+                const detailPromises = list.map(item => fetchRecipeById(item.idMeal));
+                meals = await Promise.all(detailPromises);
+                meals = meals.filter(m => m !== null);
             }
-            // Aktuelle Liste speichern
-            currentRecipeList = meals;
-            renderRecipeCards(meals);
+
+            allMeals = meals;
+            renderMeals(meals, false);
+        }
+
+        // "Mehr laden" – fügt weitere zufällige Rezepte hinzu (bei random oder search)
+        async function loadMore() {
+            if (currentMode === 'random' || currentMode === 'search') {
+                const newMeals = await fetchRandomRecipes(10);
+                // Nur neue, die nicht schon in allMeals sind (vergleiche ID)
+                const existingIds = new Set(allMeals.map(m => m.idMeal));
+                const uniqueNew = newMeals.filter(m => !existingIds.has(m.idMeal));
+                if (uniqueNew.length === 0) {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.textContent = 'Keine weiteren Rezepte';
+                    return;
+                }
+                allMeals = allMeals.concat(uniqueNew);
+                renderMeals(allMeals, false);
+                loadMoreBtn.disabled = false;
+            }
         }
 
         // ========== Event-Listener ==========
 
+        // Suche
+        searchBtn.addEventListener('click', () => {
+            const query = searchInput.value.trim();
+            if (query === '') {
+                loadRecipes('random');
+            } else {
+                loadRecipes('search', query);
+            }
+        });
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchBtn.click();
+        });
+
+        // Kategorie-Filter
+        categoryBtn.addEventListener('click', () => {
+            const category = categorySelect.value;
+            if (category) {
+                loadRecipes('category', category);
+            }
+        });
+
+        // Favoriten-Filter
+        favFilter.addEventListener('change', () => {
+            renderCurrentView();
+        });
+
+        // "Mehr laden"
+        loadMoreBtn.addEventListener('click', loadMore);
+
+        // Detail-Navigation
         prevStep.addEventListener('click', () => {
             if (currentStepIndex > 0) {
                 currentStepIndex--;
@@ -948,35 +1061,35 @@
         backToResults.addEventListener('click', () => {
             detailContainer.classList.remove('active');
             resultsContainer.style.display = 'grid';
-            // Aktuelle Liste neu rendern (sichtbar)
-            renderRecipeCards(currentRecipeList);
+            renderMeals(allMeals, false);
+            loadMoreBtn.style.display = (currentMode === 'random' || currentMode === 'search') ? 'inline-block' : 'none';
         });
 
         detailFavBtn.addEventListener('click', () => {
             if (currentRecipe) {
                 toggleFavorite(currentRecipe.idMeal);
                 updateFavButton(detailFavBtn, currentRecipe.idMeal);
-                // Auch die Kartenliste aktualisieren (Fav-Status)
                 renderCurrentView();
             }
         });
 
-        searchBtn.addEventListener('click', performSearch);
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') performSearch();
-        });
+        // ========== Initialisierung ==========
 
-        favFilter.addEventListener('change', () => {
-            // Filter anwenden auf aktuelle Liste
-            renderCurrentView();
-        });
+        async function init() {
+            // Kategorien laden
+            const categories = await fetchCategories();
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat.strCategory;
+                opt.textContent = cat.strCategory;
+                categorySelect.appendChild(opt);
+            });
 
-        // Initial: beim Laden zufällige Rezepte anzeigen
-        window.addEventListener('load', async () => {
-            const meals = await fetchRandomRecipes(8);
-            currentRecipeList = meals;
-            renderRecipeCards(meals);
-        });
+            // Zufällige Vorschläge
+            await loadRecipes('random');
+        }
+
+        init();
 
         // ========== Hintergrund-Partikel (wie gehabt) ==========
         const canvas = document.getElementById('bg-canvas');
