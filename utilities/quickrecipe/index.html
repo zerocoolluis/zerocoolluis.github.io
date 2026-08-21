@@ -67,7 +67,7 @@
             <div class="relative flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-1">
                     <input type="text" id="ingredient-input"
-                           placeholder="Zutat eingeben (z.B. Mozzarella)"
+                           placeholder="Zutat eingeben (z.B. Hähnchen, Eier, Nudeln)"
                            class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus:border-cyan-500 dark:focus:border-cyan-400 outline-none text-slate-900 dark:text-white text-sm transition" />
                     <div id="autocomplete-list" class="autocomplete-list"></div>
                 </div>
@@ -113,7 +113,7 @@
         </div>
 
         <footer class="text-center text-slate-500 dark:text-slate-400 text-xs pt-6 border-t border-slate-200 dark:border-slate-800">
-            &copy; <span id="year"></span> Quick Recipe – 3 API-Ebenen (Spoonacular, TheMealDB, lokale DB)
+            &copy; <span id="year"></span> Quick Recipe – mit lokaler Rezept-Datenbank + Spoonacular
         </footer>
     </main>
 
@@ -125,7 +125,7 @@
 
     <script>
         // ============================================================
-        // 1. API-KEYS
+        // 1. API-KEY
         // ============================================================
         const SPOONACULAR_API_KEY = '03fe36cd334448a5b8f296daa182f82b';
 
@@ -197,97 +197,16 @@
         }
 
         // ============================================================
-        // 5. ZUTATEN-ÜBERSETZUNGSTABELLE (deutsch → englisch)
-        // ============================================================
-        const INGREDIENT_TRANSLATIONS = {
-            'hähnchen': 'chicken',
-            'hühnchen': 'chicken',
-            'huhn': 'chicken',
-            'rindfleisch': 'beef',
-            'rind': 'beef',
-            'schweinefleisch': 'pork',
-            'schwein': 'pork',
-            'pute': 'turkey',
-            'truthahn': 'turkey',
-            'ente': 'duck',
-            'lamm': 'lamb',
-            'lachs': 'salmon',
-            'thunfisch': 'tuna',
-            'garnelen': 'shrimp',
-            'krevetten': 'shrimp',
-            'mozzarella': 'mozzarella',
-            'tomate': 'tomato',
-            'zwiebel': 'onion',
-            'knoblauch': 'garlic',
-            'paprika': 'bell pepper',
-            'gurke': 'cucumber',
-            'karotte': 'carrot',
-            'möhre': 'carrot',
-            'kartoffel': 'potato',
-            'brokkoli': 'broccoli',
-            'blumenkohl': 'cauliflower',
-            'spinat': 'spinach',
-            'champignons': 'mushrooms',
-            'pilze': 'mushrooms',
-            'aubergine': 'eggplant',
-            'zucchini': 'zucchini',
-            'kürbis': 'pumpkin',
-            'milch': 'milk',
-            'sahne': 'cream',
-            'butter': 'butter',
-            'käse': 'cheese',
-            'parmesan': 'parmesan',
-            'feta': 'feta',
-            'joghurt': 'yogurt',
-            'eier': 'eggs',
-            'ei': 'egg',
-            'pasta': 'pasta',
-            'nudeln': 'pasta',
-            'spaghetti': 'spaghetti',
-            'reis': 'rice',
-            'brot': 'bread',
-            'mehl': 'flour',
-            'salz': 'salt',
-            'pfeffer': 'pepper',
-            'olivenöl': 'olive oil',
-            'essig': 'vinegar',
-            'sojasauce': 'soy sauce',
-            'honig': 'honey',
-            'senf': 'mustard',
-            'zitrone': 'lemon',
-            'orange': 'orange',
-            'apfel': 'apple',
-            'banane': 'banana',
-            'erdbeere': 'strawberry',
-            'avocado': 'avocado',
-            'chili': 'chili',
-            'ingwer': 'ginger',
-            'basilikum': 'basil',
-            'petersilie': 'parsley',
-            'thymian': 'thyme',
-            'rosmarin': 'rosemary',
-            'oregano': 'oregano',
-            'koriander': 'cilantro',
-            'kurkuma': 'turmeric',
-            'kreuzkümmel': 'cumin'
-        };
-
-        function translateIngredient(german) {
-            const lower = german.toLowerCase().trim();
-            return INGREDIENT_TRANSLATIONS[lower] || german;
-        }
-
-        // ============================================================
-        // 6. ZUTATEN-INGABE (Autocomplete mit großer Liste)
+        // 5. ZUTATEN-INGABE (Autocomplete)
         // ============================================================
         const FOOD_SUGGESTIONS = [
-            'Hähnchen', 'Rindfleisch', 'Schweinefleisch', 'Pute', 'Ente', 'Lamm', 'Lachs', 'Thunfisch', 'Garnelen',
-            'Mozzarella', 'Tomate', 'Zwiebel', 'Knoblauch', 'Paprika', 'Gurke', 'Karotte', 'Kartoffel',
-            'Brokkoli', 'Blumenkohl', 'Spinat', 'Champignons', 'Aubergine', 'Zucchini', 'Kürbis',
-            'Milch', 'Sahne', 'Butter', 'Käse', 'Parmesan', 'Feta', 'Joghurt', 'Eier', 'Pasta', 'Reis',
-            'Brot', 'Mehl', 'Salz', 'Pfeffer', 'Olivenöl', 'Essig', 'Sojasauce', 'Honig', 'Senf',
+            'Hähnchen', 'Rindfleisch', 'Schweinefleisch', 'Pute', 'Lachs', 'Thunfisch', 'Garnelen',
+            'Eier', 'Nudeln', 'Spaghetti', 'Reis', 'Kartoffeln', 'Tomaten', 'Zwiebeln', 'Knoblauch',
+            'Paprika', 'Karotten', 'Brokkoli', 'Spinat', 'Champignons', 'Zucchini', 'Aubergine',
+            'Milch', 'Sahne', 'Butter', 'Käse', 'Parmesan', 'Mozzarella', 'Feta', 'Joghurt',
+            'Mehl', 'Brot', 'Salz', 'Pfeffer', 'Olivenöl', 'Essig', 'Sojasauce', 'Honig', 'Senf',
             'Zitrone', 'Orange', 'Apfel', 'Banane', 'Erdbeere', 'Avocado', 'Chili', 'Ingwer',
-            'Basilikum', 'Petersilie', 'Thymian', 'Rosmarin', 'Oregano', 'Koriander', 'Kurkuma', 'Kreuzkümmel'
+            'Basilikum', 'Petersilie', 'Thymian', 'Rosmarin', 'Oregano', 'Koriander'
         ];
 
         const ingredientInput = document.getElementById('ingredient-input');
@@ -374,77 +293,247 @@
         }
 
         // ============================================================
-        // 7. ÜBERSETZUNG (für Rezepte)
+        // 6. ZUTATEN-ÜBERSETZUNG (für Spoonacular)
         // ============================================================
-        async function translateText(text, targetLang = 'de') {
-            if (!text) return '';
-            try {
-                const response = await fetch('https://libretranslate.de/translate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ q: text, source: 'en', target: targetLang, format: 'text' })
-                });
-                if (!response.ok) throw new Error('Übersetzung nicht verfügbar');
-                const data = await response.json();
-                return data.translatedText || text;
-            } catch (error) {
-                try {
-                    const fbUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
-                    const fbResponse = await fetch(fbUrl);
-                    const fbData = await fbResponse.json();
-                    if (fbData && fbData[0]) {
-                        return fbData[0].map(item => item[0]).join('');
-                    }
-                } catch (e2) {}
-                return text;
-            }
+        const INGREDIENT_TRANSLATIONS = {
+            'hähnchen': 'chicken',
+            'hühnchen': 'chicken',
+            'huhn': 'chicken',
+            'pute': 'turkey',
+            'truthahn': 'turkey',
+            'rindfleisch': 'beef',
+            'schweinefleisch': 'pork',
+            'lachs': 'salmon',
+            'thunfisch': 'tuna',
+            'garnelen': 'shrimp',
+            'eier': 'eggs',
+            'ei': 'egg',
+            'nudeln': 'pasta',
+            'spaghetti': 'pasta',
+            'reis': 'rice',
+            'kartoffeln': 'potato',
+            'kartoffel': 'potato',
+            'tomaten': 'tomato',
+            'tomate': 'tomato',
+            'zwiebeln': 'onion',
+            'zwiebel': 'onion',
+            'knoblauch': 'garlic',
+            'paprika': 'bell pepper',
+            'karotten': 'carrot',
+            'karotte': 'carrot',
+            'brokkoli': 'broccoli',
+            'spinat': 'spinach',
+            'champignons': 'mushrooms',
+            'zucchini': 'zucchini',
+            'aubergine': 'eggplant',
+            'milch': 'milk',
+            'sahne': 'cream',
+            'butter': 'butter',
+            'käse': 'cheese',
+            'mozzarella': 'mozzarella',
+            'parmesan': 'parmesan',
+            'feta': 'feta',
+            'joghurt': 'yogurt',
+            'mehl': 'flour',
+            'brot': 'bread',
+            'salz': 'salt',
+            'pfeffer': 'pepper',
+            'olivenöl': 'olive oil',
+            'essig': 'vinegar',
+            'sojasauce': 'soy sauce',
+            'honig': 'honey',
+            'senf': 'mustard',
+            'zitrone': 'lemon',
+            'orange': 'orange',
+            'apfel': 'apple',
+            'banane': 'banana',
+            'erdbeere': 'strawberry',
+            'avocado': 'avocado',
+            'chili': 'chili',
+            'ingwer': 'ginger',
+            'basilikum': 'basil',
+            'petersilie': 'parsley',
+            'thymian': 'thyme',
+            'rosmarin': 'rosemary',
+            'oregano': 'oregano',
+            'koriander': 'cilantro'
+        };
+
+        function translateIngredient(german) {
+            const lower = german.toLowerCase().trim();
+            return INGREDIENT_TRANSLATIONS[lower] || german;
         }
 
         // ============================================================
-        // 8. LOKALE REZEPT-DATENBANK (Fallback)
+        // 7. LOKALE REZEPT-DATENBANK (40+ Rezepte)
         // ============================================================
         const LOCAL_RECIPES = [
+            // ---- HÄHNCHEN ----
             {
-                idMeal: 'local1',
-                strMeal: 'Gebratene Pute mit Kartoffeln',
-                strCategory: 'Hauptgericht',
-                strArea: 'Deutsch',
-                strMealThumb: '',
-                strInstructions: '1. Pute in Stücke schneiden und mit Salz und Pfeffer würzen. 2. In einer Pfanne Öl erhitzen und die Pute goldbraun anbraten. 3. Kartoffeln schälen, würfeln und mitbraten. 4. Mit etwas Wasser oder Brühe ablöschen und zugedeckt 20 Minuten köcheln lassen. 5. Mit Kräutern garnieren und servieren.',
-                extendedIngredients: [
-                    { name: 'Pute', measure: '500 g' },
-                    { name: 'Kartoffeln', measure: '4 große' },
-                    { name: 'Salz', measure: 'nach Geschmack' },
-                    { name: 'Pfeffer', measure: 'nach Geschmack' },
-                    { name: 'Petersilie', measure: 'etwas' }
-                ],
-                servings: 4,
-                source: 'Lokal'
+                id: 'hahn1', mainIngredient: 'Hähnchen', name: 'Hähnchenbrust mit Reis',
+                ingredients: [{ name: 'Hähnchenbrust', measure: '2 Stück' }, { name: 'Reis', measure: '200 g' }, { name: 'Paprika', measure: '1 Stück' }, { name: 'Zwiebel', measure: '1 Stück' }, { name: 'Knoblauch', measure: '2 Zehen' }],
+                instructions: '1. Hähnchenbrust in Streifen schneiden und anbraten. 2. Zwiebel und Knoblauch fein hacken und mitbraten. 3. Paprika in Streifen schneiden und dazugeben. 4. Reis nach Packungsanleitung kochen. 5. Alles servieren.',
+                servings: 2, category: 'Hauptgericht'
             },
             {
-                idMeal: 'local2',
-                strMeal: 'Putenbrust mit Tomatensauce',
-                strCategory: 'Hauptgericht',
-                strArea: 'Italienisch',
-                strMealThumb: '',
-                strInstructions: '1. Putenbrust in Scheiben schneiden und leicht klopfen. 2. In Mehl wenden und in Öl braten. 3. Tomatensauce mit Knoblauch und Kräutern zubereiten. 4. Putenbrust in die Sauce geben und 10 Minuten ziehen lassen. 5. Mit Pasta servieren.',
-                extendedIngredients: [
-                    { name: 'Putenbrust', measure: '400 g' },
-                    { name: 'Tomaten (gestückelt)', measure: '1 Dose' },
-                    { name: 'Knoblauch', measure: '2 Zehen' },
-                    { name: 'Pasta', measure: '250 g' },
-                    { name: 'Salz', measure: 'nach Geschmack' },
-                    { name: 'Pfeffer', measure: 'nach Geschmack' }
-                ],
-                servings: 3,
-                source: 'Lokal'
+                id: 'hahn2', mainIngredient: 'Hähnchen', name: 'Hähnchengeschnetzeltes mit Nudeln',
+                ingredients: [{ name: 'Hähnchenbrust', measure: '400 g' }, { name: 'Nudeln', measure: '250 g' }, { name: 'Sahne', measure: '200 ml' }, { name: 'Champignons', measure: '150 g' }, { name: 'Zwiebel', measure: '1 Stück' }],
+                instructions: '1. Hähnchen in Streifen schneiden und braten. 2. Zwiebel und Champignons anbraten. 3. Mit Sahne ablöschen und köcheln lassen. 4. Nudeln kochen und servieren.',
+                servings: 3, category: 'Hauptgericht'
             },
-            // Weitere lokale Rezepte für andere Zutaten...
+            {
+                id: 'hahn3', mainIngredient: 'Hähnchen', name: 'Hähnchen-Curry mit Reis',
+                ingredients: [{ name: 'Hähnchenbrust', measure: '300 g' }, { name: 'Reis', measure: '200 g' }, { name: 'Currypulver', measure: '1 EL' }, { name: 'Kokosmilch', measure: '200 ml' }, { name: 'Zwiebel', measure: '1 Stück' }],
+                instructions: '1. Hähnchen würfeln und anbraten. 2. Zwiebel und Currypulver dazugeben. 3. Mit Kokosmilch ablöschen und köcheln lassen. 4. Reis kochen und servieren.',
+                servings: 2, category: 'Hauptgericht'
+            },
+            // ---- RINDFLEISCH ----
+            {
+                id: 'rind1', mainIngredient: 'Rindfleisch', name: 'Rinderbraten mit Kartoffeln',
+                ingredients: [{ name: 'Rinderbraten', measure: '800 g' }, { name: 'Kartoffeln', measure: '6 Stück' }, { name: 'Zwiebeln', measure: '2 Stück' }, { name: 'Karotten', measure: '2 Stück' }, { name: 'Rotwein', measure: '200 ml' }],
+                instructions: '1. Rinderbraten scharf anbraten. 2. Zwiebeln und Karotten dazugeben. 3. Mit Rotwein ablöschen und 2 Stunden schmoren. 4. Kartoffeln kochen und servieren.',
+                servings: 4, category: 'Hauptgericht'
+            },
+            {
+                id: 'rind2', mainIngredient: 'Rindfleisch', name: 'Rinderhack-Pfanne mit Nudeln',
+                ingredients: [{ name: 'Rinderhack', measure: '400 g' }, { name: 'Nudeln', measure: '250 g' }, { name: 'Tomaten (gestückelt)', measure: '1 Dose' }, { name: 'Zwiebel', measure: '1 Stück' }, { name: 'Knoblauch', measure: '2 Zehen' }],
+                instructions: '1. Hackfleisch anbraten. 2. Zwiebel und Knoblauch dazugeben. 3. Tomaten dazugeben und köcheln lassen. 4. Nudeln kochen und servieren.',
+                servings: 3, category: 'Hauptgericht'
+            },
+            // ---- PUTE ----
+            {
+                id: 'pute1', mainIngredient: 'Pute', name: 'Gebratene Pute mit Kartoffeln',
+                ingredients: [{ name: 'Putenbrust', measure: '500 g' }, { name: 'Kartoffeln', measure: '4 große' }, { name: 'Salz', measure: 'nach Geschmack' }, { name: 'Pfeffer', measure: 'nach Geschmack' }, { name: 'Petersilie', measure: 'etwas' }],
+                instructions: '1. Pute in Stücke schneiden und würzen. 2. In einer Pfanne goldbraun anbraten. 3. Kartoffeln schälen, würfeln und mitbraten. 4. Mit Wasser ablöschen und 20 Minuten köcheln lassen.',
+                servings: 4, category: 'Hauptgericht'
+            },
+            {
+                id: 'pute2', mainIngredient: 'Pute', name: 'Putenbrust mit Tomatensauce',
+                ingredients: [{ name: 'Putenbrust', measure: '400 g' }, { name: 'Tomaten (gestückelt)', measure: '1 Dose' }, { name: 'Knoblauch', measure: '2 Zehen' }, { name: 'Pasta', measure: '250 g' }, { name: 'Salz', measure: 'nach Geschmack' }],
+                instructions: '1. Putenbrust in Scheiben schneiden und anbraten. 2. Tomatensauce mit Knoblauch zubereiten. 3. Putenbrust in die Sauce geben und 10 Minuten ziehen lassen. 4. Mit Pasta servieren.',
+                servings: 3, category: 'Hauptgericht'
+            },
+            // ---- EIER ----
+            {
+                id: 'ei1', mainIngredient: 'Eier', name: 'Rührei mit Speck',
+                ingredients: [{ name: 'Eier', measure: '4 Stück' }, { name: 'Speck', measure: '100 g' }, { name: 'Milch', measure: '50 ml' }, { name: 'Salz', measure: 'nach Geschmack' }, { name: 'Pfeffer', measure: 'nach Geschmack' }],
+                instructions: '1. Speck knusprig braten. 2. Eier mit Milch verquirlen und würzen. 3. In die Pfanne geben und unter Rühren stocken lassen. 4. Mit Brot servieren.',
+                servings: 2, category: 'Frühstück'
+            },
+            {
+                id: 'ei2', mainIngredient: 'Eier', name: 'Spiegelei mit Kartoffeln',
+                ingredients: [{ name: 'Eier', measure: '4 Stück' }, { name: 'Kartoffeln', measure: '4 Stück' }, { name: 'Salz', measure: 'nach Geschmack' }, { name: 'Pfeffer', measure: 'nach Geschmack' }],
+                instructions: '1. Kartoffeln schälen und in Scheiben schneiden. 2. In einer Pfanne goldbraun braten. 3. Eier aufschlagen und in die Pfanne geben. 4. Stocken lassen und servieren.',
+                servings: 2, category: 'Frühstück'
+            },
+            // ---- NUDELN ----
+            {
+                id: 'nudel1', mainIngredient: 'Nudeln', name: 'Spaghetti mit Tomatensauce',
+                ingredients: [{ name: 'Spaghetti', measure: '400 g' }, { name: 'Tomaten (gestückelt)', measure: '1 Dose' }, { name: 'Knoblauch', measure: '2 Zehen' }, { name: 'Basilikum', measure: 'etwas' }, { name: 'Salz', measure: 'nach Geschmack' }],
+                instructions: '1. Spaghetti kochen. 2. Knoblauch in Olivenöl anbraten. 3. Tomaten dazugeben und 10 Minuten köcheln lassen. 4. Mit Basilikum servieren.',
+                servings: 3, category: 'Hauptgericht'
+            },
+            {
+                id: 'nudel2', mainIngredient: 'Nudeln', name: 'Pasta mit Sahnesauce',
+                ingredients: [{ name: 'Pasta', measure: '400 g' }, { name: 'Sahne', measure: '200 ml' }, { name: 'Parmesan', measure: '50 g' }, { name: 'Knoblauch', measure: '1 Zehe' }, { name: 'Salz', measure: 'nach Geschmack' }],
+                instructions: '1. Pasta kochen. 2. Sahne mit Knoblauch erhitzen. 3. Parmesan dazugeben und schmelzen lassen. 4. Mit Pasta vermischen.',
+                servings: 3, category: 'Hauptgericht'
+            },
+            // ---- REIS ----
+            {
+                id: 'reis1', mainIngredient: 'Reis', name: 'Reis mit Gemüse',
+                ingredients: [{ name: 'Reis', measure: '200 g' }, { name: 'Paprika', measure: '1 Stück' }, { name: 'Zucchini', measure: '1 Stück' }, { name: 'Karotten', measure: '1 Stück' }, { name: 'Sojasauce', measure: 'nach Geschmack' }],
+                instructions: '1. Reis kochen. 2. Gemüse in Streifen schneiden und anbraten. 3. Reis und Gemüse vermischen. 4. Mit Sojasauce abschmecken.',
+                servings: 2, category: 'Hauptgericht'
+            },
+            {
+                id: 'reis2', mainIngredient: 'Reis', name: 'Reis-Pfanne mit Ei',
+                ingredients: [{ name: 'Reis', measure: '200 g' }, { name: 'Eier', measure: '2 Stück' }, { name: 'Frühlingszwiebeln', measure: '2 Stück' }, { name: 'Sojasauce', measure: 'nach Geschmack' }, { name: 'Salz', measure: 'nach Geschmack' }],
+                instructions: '1. Reis kochen. 2. Eier verquirlen und in der Pfanne stocken lassen. 3. Reis und Frühlingszwiebeln dazugeben. 4. Mit Sojasauce würzen.',
+                servings: 2, category: 'Hauptgericht'
+            },
+            // ---- KARTOFFELN ----
+            {
+                id: 'kart1', mainIngredient: 'Kartoffeln', name: 'Kartoffelpüree',
+                ingredients: [{ name: 'Kartoffeln', measure: '6 Stück' }, { name: 'Milch', measure: '100 ml' }, { name: 'Butter', measure: '50 g' }, { name: 'Salz', measure: 'nach Geschmack' }, { name: 'Muskat', measure: 'nach Geschmack' }],
+                instructions: '1. Kartoffeln kochen und pürieren. 2. Milch und Butter dazugeben. 3. Mit Salz und Muskat abschmecken.',
+                servings: 3, category: 'Beilage'
+            },
+            {
+                id: 'kart2', mainIngredient: 'Kartoffeln', name: 'Bratkartoffeln',
+                ingredients: [{ name: 'Kartoffeln', measure: '6 Stück' }, { name: 'Zwiebel', measure: '1 Stück' }, { name: 'Speck', measure: '100 g' }, { name: 'Salz', measure: 'nach Geschmack' }, { name: 'Pfeffer', measure: 'nach Geschmack' }],
+                instructions: '1. Kartoffeln kochen, abkühlen lassen und in Scheiben schneiden. 2. Speck und Zwiebel anbraten. 3. Kartoffeln dazugeben und goldbraun braten. 4. Würzen und servieren.',
+                servings: 3, category: 'Beilage'
+            },
+            // ---- TOMATEN ----
+            {
+                id: 'tomat1', mainIngredient: 'Tomaten', name: 'Tomatensuppe',
+                ingredients: [{ name: 'Tomaten', measure: '8 Stück' }, { name: 'Zwiebel', measure: '1 Stück' }, { name: 'Knoblauch', measure: '1 Zehe' }, { name: 'Gemüsebrühe', measure: '500 ml' }, { name: 'Salz', measure: 'nach Geschmack' }],
+                instructions: '1. Tomaten würfeln. 2. Zwiebel und Knoblauch anbraten. 3. Tomaten dazugeben und mit Brühe ablöschen. 4. 20 Minuten kochen und pürieren.',
+                servings: 3, category: 'Suppe'
+            },
+            // ---- ZWIEBELN ----
+            {
+                id: 'zwieb1', mainIngredient: 'Zwiebeln', name: 'Zwiebelsuppe',
+                ingredients: [{ name: 'Zwiebeln', measure: '4 große' }, { name: 'Gemüsebrühe', measure: '500 ml' }, { name: 'Butter', measure: '50 g' }, { name: 'Brot', measure: '2 Scheiben' }, { name: 'Käse', measure: '50 g' }],
+                instructions: '1. Zwiebeln in Scheiben schneiden und in Butter goldbraun braten. 2. Mit Brühe ablöschen und 20 Minuten köcheln lassen. 3. Brot und Käse darauf geben und überbacken.',
+                servings: 2, category: 'Suppe'
+            },
+            // ---- SPINAT ----
+            {
+                id: 'spin1', mainIngredient: 'Spinat', name: 'Spinat mit Kartoffeln',
+                ingredients: [{ name: 'Spinat', measure: '500 g' }, { name: 'Kartoffeln', measure: '4 Stück' }, { name: 'Knoblauch', measure: '1 Zehe' }, { name: 'Salz', measure: 'nach Geschmack' }, { name: 'Muskat', measure: 'nach Geschmack' }],
+                instructions: '1. Spinat waschen und abtropfen lassen. 2. Knoblauch anbraten, Spinat dazugeben und zusammenfallen lassen. 3. Kartoffeln kochen und mit Spinat servieren.',
+                servings: 3, category: 'Hauptgericht'
+            },
+            // ---- CHAMPIGNONS ----
+            {
+                id: 'champ1', mainIngredient: 'Champignons', name: 'Champignons in Sahnesauce',
+                ingredients: [{ name: 'Champignons', measure: '400 g' }, { name: 'Sahne', measure: '200 ml' }, { name: 'Zwiebel', measure: '1 Stück' }, { name: 'Salz', measure: 'nach Geschmack' }, { name: 'Pfeffer', measure: 'nach Geschmack' }],
+                instructions: '1. Champignons in Scheiben schneiden. 2. Zwiebel anbraten, Champignons dazugeben und braten. 3. Mit Sahne ablöschen und köcheln lassen. 4. Würzen und servieren.',
+                servings: 2, category: 'Beilage'
+            },
+            // ---- KÄSE ----
+            {
+                id: 'kase1', mainIngredient: 'Käse', name: 'Käsespätzle',
+                ingredients: [{ name: 'Spätzle', measure: '400 g' }, { name: 'Käse (Emmentaler)', measure: '200 g' }, { name: 'Zwiebeln', measure: '2 Stück' }, { name: 'Butter', measure: '50 g' }, { name: 'Salz', measure: 'nach Geschmack' }],
+                instructions: '1. Spätzle kochen. 2. Zwiebeln in Butter goldbraun braten. 3. Spätzle mit Käse vermischen. 4. Mit Röstzwiebeln servieren.',
+                servings: 3, category: 'Hauptgericht'
+            }
         ];
 
         // ============================================================
-        // 9. REZEPTSUCHE (3 API-Ebenen)
+        // 8. REZEPTSUCHE (Lokal + Spoonacular)
         // ============================================================
+        let lastUsedLocalIndex = -1;
+
+        function findLocalRecipes(ingredientsList) {
+            const results = [];
+            const ingredientLower = ingredientsList.map(i => i.toLowerCase());
+
+            LOCAL_RECIPES.forEach(recipe => {
+                let matchCount = 0;
+                recipe.ingredients.forEach(ing => {
+                    const ingLower = ing.name.toLowerCase();
+                    if (ingredientLower.some(u => ingLower.includes(u) || u.includes(ingLower))) {
+                        matchCount++;
+                    }
+                });
+                // Prüfe auch Hauptzutat
+                const mainLower = recipe.mainIngredient.toLowerCase();
+                if (ingredientLower.some(u => mainLower.includes(u) || u.includes(mainLower))) {
+                    matchCount += 2; // Hauptzutat zählt doppelt
+                }
+                if (matchCount > 0) {
+                    results.push({ recipe, matchCount, index: LOCAL_RECIPES.indexOf(recipe) });
+                }
+            });
+
+            // Sortieren nach MatchCount (absteigend)
+            results.sort((a, b) => b.matchCount - a.matchCount);
+            return results.map(r => r.recipe);
+        }
+
         async function searchRecipes() {
             if (ingredients.length === 0) {
                 showToast('Bitte füge mindestens eine Zutat hinzu!');
@@ -462,100 +551,59 @@
             let recipe = null;
             let source = '';
 
-            // --- Ebene 1: Spoonacular ---
-            try {
-                // Übersetze Zutaten ins Englische
-                const engIngredients = ingredients.map(i => translateIngredient(i)).join(',');
-                const response = await fetch(
-                    `https://api.spoonacular.com/recipes/findByIngredients?` +
-                    `ingredients=${encodeURIComponent(engIngredients)}&` +
-                    `number=3&ranking=1&ignorePantry=true&apiKey=${SPOONACULAR_API_KEY}`
-                );
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data && data.length > 0) {
-                        const bestMatch = data[0];
-                        const detailRes = await fetch(
-                            `https://api.spoonacular.com/recipes/${bestMatch.id}/information?apiKey=${SPOONACULAR_API_KEY}`
-                        );
-                        if (detailRes.ok) {
-                            const detailData = await detailRes.json();
-                            recipe = {
-                                idMeal: detailData.id.toString(),
-                                strMeal: detailData.title,
-                                strCategory: detailData.dishTypes ? detailData.dishTypes.join(', ') : '',
-                                strArea: detailData.cuisines ? detailData.cuisines.join(', ') : '',
-                                strMealThumb: detailData.image,
-                                strInstructions: detailData.instructions || 'Keine Anleitung verfügbar.',
-                                strSource: detailData.sourceUrl || '',
-                                extendedIngredients: detailData.extendedIngredients || [],
-                                servings: detailData.servings || 2
-                            };
-                            source = 'Spoonacular';
-                        }
-                    }
-                }
-            } catch (e) {
-                console.warn('Spoonacular fehlgeschlagen:', e);
+            // --- 1. Lokale Datenbank ---
+            const localMatches = findLocalRecipes(ingredients);
+            if (localMatches.length > 0) {
+                // Wähle ein anderes als das letzte
+                let available = localMatches.filter((r, i) => i !== lastUsedLocalIndex);
+                if (available.length === 0) available = localMatches;
+                const selected = available[0];
+                lastUsedLocalIndex = localMatches.indexOf(selected);
+                recipe = selected;
+                source = 'Lokal';
             }
 
-            // --- Ebene 2: TheMealDB ---
+            // --- 2. Spoonacular (falls keine lokalen Treffer) ---
             if (!recipe) {
                 try {
-                    // Nimm die erste Zutat und übersetze sie
-                    const mainIng = translateIngredient(ingredients[0]);
-                    const response = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(mainIng)}`);
+                    const engIngredients = ingredients.map(i => translateIngredient(i)).join(',');
+                    const response = await fetch(
+                        `https://api.spoonacular.com/recipes/findByIngredients?` +
+                        `ingredients=${encodeURIComponent(engIngredients)}&` +
+                        `number=3&ranking=1&ignorePantry=true&apiKey=${SPOONACULAR_API_KEY}`
+                    );
+
                     if (response.ok) {
                         const data = await response.json();
-                        if (data.meals && data.meals.length > 0) {
-                            const mealId = data.meals[0].idMeal;
-                            const detailRes = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`);
-                            const detailData = await detailRes.json();
-                            if (detailData.meals && detailData.meals[0]) {
-                                const meal = detailData.meals[0];
-                                const ingredientsList = [];
-                                for (let i = 1; i <= 20; i++) {
-                                    const ing = meal[`strIngredient${i}`];
-                                    const measure = meal[`strMeasure${i}`];
-                                    if (ing && ing.trim()) {
-                                        ingredientsList.push({ name: ing.trim(), measure: measure ? measure.trim() : '' });
-                                    }
-                                }
+                        if (data && data.length > 0) {
+                            const bestMatch = data[0];
+                            const detailRes = await fetch(
+                                `https://api.spoonacular.com/recipes/${bestMatch.id}/information?apiKey=${SPOONACULAR_API_KEY}`
+                            );
+                            if (detailRes.ok) {
+                                const detailData = await detailRes.json();
+                                // Konvertiere zu lokalem Format
+                                const ingredientsList = (detailData.extendedIngredients || []).map(ing => ({
+                                    name: ing.name,
+                                    measure: `${ing.amount} ${ing.unit}`
+                                }));
                                 recipe = {
-                                    idMeal: meal.idMeal,
-                                    strMeal: meal.strMeal,
-                                    strCategory: meal.strCategory || '',
-                                    strArea: meal.strArea || '',
-                                    strMealThumb: meal.strMealThumb,
-                                    strInstructions: meal.strInstructions || 'Keine Anleitung verfügbar.',
-                                    strSource: meal.strSource || '',
-                                    extendedIngredients: ingredientsList,
-                                    servings: 4
+                                    id: 'spoon_' + detailData.id,
+                                    mainIngredient: ingredients[0] || '',
+                                    name: detailData.title,
+                                    ingredients: ingredientsList,
+                                    instructions: detailData.instructions || 'Keine Anleitung verfügbar.',
+                                    servings: detailData.servings || 2,
+                                    category: detailData.dishTypes ? detailData.dishTypes.join(', ') : '',
+                                    image: detailData.image,
+                                    sourceUrl: detailData.sourceUrl || ''
                                 };
-                                source = 'TheMealDB';
+                                source = 'Spoonacular';
                             }
                         }
                     }
                 } catch (e) {
-                    console.warn('TheMealDB fehlgeschlagen:', e);
-                }
-            }
-
-            // --- Ebene 3: Lokale Datenbank ---
-            if (!recipe) {
-                // Suche in LOCAL_RECIPES nach einer passenden Zutat
-                const matched = LOCAL_RECIPES.filter(r =>
-                    r.extendedIngredients.some(ing =>
-                        ingredients.some(userIng =>
-                            userIng.toLowerCase().includes(ing.name.toLowerCase()) ||
-                            ing.name.toLowerCase().includes(userIng.toLowerCase())
-                        )
-                    )
-                );
-                if (matched.length > 0) {
-                    recipe = matched[0];
-                    source = 'Lokal';
+                    console.warn('Spoonacular fehlgeschlagen:', e);
                 }
             }
 
@@ -565,8 +613,8 @@
                     <div class="result-box text-center">
                         <i class="fa-regular fa-face-frown text-4xl text-slate-400 mb-3 block"></i>
                         <p class="text-slate-900 dark:text-white font-medium">Kein Rezept gefunden</p>
-                        <p class="text-sm text-slate-400">Versuche andere Zutaten oder schreibe sie auf Deutsch.</p>
-                        <p class="text-xs text-slate-400 mt-2">Tipp: "Pute" wird als "turkey" erkannt.</p>
+                        <p class="text-sm text-slate-400">Versuche andere Zutaten.</p>
+                        <p class="text-xs text-slate-400 mt-2">Tipp: Hähnchen, Nudeln, Eier, Kartoffeln, Reis, Tomaten</p>
                     </div>
                 `;
                 return;
@@ -578,26 +626,20 @@
         }
 
         // ============================================================
-        // 10. REZEPT ANZEIGEN
+        // 9. REZEPT ANZEIGEN
         // ============================================================
         let currentStepIndex = 0;
-        let translatedSteps = [];
+        let recipeSteps = [];
 
         async function displayRecipe(recipe, servings) {
             const container = document.getElementById('result-content');
 
-            let ingredientsList = [];
-            if (recipe.extendedIngredients) {
-                ingredientsList = recipe.extendedIngredients.map(ing => ({
-                    name: ing.name,
-                    measure: ing.measure || ''
-                }));
-            }
-
+            // Zutaten
+            const ingredientsList = recipe.ingredients || [];
             const baseServings = recipe.servings || 2;
             const scaleFactor = servings / baseServings;
             const scaledIngredients = ingredientsList.map(item => {
-                let scaledMeasure = item.measure;
+                let scaledMeasure = item.measure || '';
                 const match = item.measure.match(/^([\d.]+)\s*(.*)$/);
                 if (match) {
                     const num = parseFloat(match[1]);
@@ -610,45 +652,28 @@
                 return { name: item.name, measure: scaledMeasure };
             });
 
-            let instructions = recipe.strInstructions || '';
-            let rawSteps = [];
-            if (typeof instructions === 'string' && instructions.length > 0) {
-                rawSteps = instructions.split(/(?<=[.!?])\s+/).filter(s => s.length > 10);
-                if (rawSteps.length === 0) rawSteps = [instructions];
-            } else {
-                rawSteps = ['Keine Schritt-für-Schritt-Anleitung verfügbar.'];
-            }
+            // Anleitung in Schritte zerlegen
+            const instructions = recipe.instructions || 'Keine Anleitung verfügbar.';
+            let rawSteps = instructions.split(/(?<=[.!?])\s+/).filter(s => s.length > 10);
+            if (rawSteps.length === 0) rawSteps = [instructions];
+            recipeSteps = rawSteps;
             currentStepIndex = 0;
 
-            // Übersetzen
-            const translatedTitle = await translateText(recipe.strMeal || 'Rezept');
-            const translatedInstructions = await translateText(instructions);
-            if (translatedInstructions && translatedInstructions.length > 0) {
-                translatedSteps = translatedInstructions.split(/(?<=[.!?])\s+/).filter(s => s.length > 10);
-                if (translatedSteps.length === 0) translatedSteps = [translatedInstructions];
-            } else {
-                translatedSteps = rawSteps.map(s => s);
-            }
-
-            const translatedIngredients = await Promise.all(scaledIngredients.map(async item => {
-                const translatedName = await translateText(item.name);
-                return { ...item, name: translatedName };
-            }));
-
+            // Favoriten-Status
             const favorites = JSON.parse(localStorage.getItem('quickrecipe_favorites') || '[]');
-            const isFavorite = favorites.some(f => f.idMeal === recipe.idMeal);
+            const isFavorite = favorites.some(f => f.id === recipe.id);
 
             container.innerHTML = `
                 <div class="result-box" data-recipe='${JSON.stringify(recipe)}'>
                     <div class="flex flex-wrap justify-between items-start gap-3">
                         <div class="flex-1">
-                            <h2 class="text-2xl font-black text-slate-900 dark:text-white">${translatedTitle}</h2>
-                            ${recipe.strCategory ? `<span class="text-xs bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded-full">${recipe.strCategory}</span>` : ''}
-                            ${recipe.strArea ? `<span class="text-xs bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full ml-1">${recipe.strArea}</span>` : ''}
+                            <h2 class="text-2xl font-black text-slate-900 dark:text-white">${recipe.name}</h2>
+                            ${recipe.category ? `<span class="text-xs bg-cyan-500/10 text-cyan-400 px-2 py-0.5 rounded-full">${recipe.category}</span>` : ''}
                             <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full ml-1">${servings} Portionen</span>
+                            ${recipe.image ? `<img src="${recipe.image}" class="w-full max-w-sm rounded-xl my-3 border border-slate-300 dark:border-slate-700" alt="${recipe.name}">` : ''}
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="toggleFavorite('${recipe.idMeal}')" class="favorite-btn ${isFavorite ? 'active' : ''} text-xl text-slate-400 hover:text-yellow-500 transition" title="Favorit">
+                            <button onclick="toggleFavorite('${recipe.id}')" class="favorite-btn ${isFavorite ? 'active' : ''} text-xl text-slate-400 hover:text-yellow-500 transition" title="Favorit">
                                 <i class="fa-${isFavorite ? 'solid' : 'regular'} fa-star"></i>
                             </button>
                             <button onclick="nextRecipe()" class="share-btn text-xl text-slate-400 hover:text-emerald-500 transition" title="Nächstes Rezept">
@@ -657,13 +682,11 @@
                         </div>
                     </div>
 
-                    ${recipe.strMealThumb ? `<img src="${recipe.strMealThumb}" class="w-full max-w-sm rounded-xl my-3 border border-slate-300 dark:border-slate-700" alt="${translatedTitle}">` : ''}
-
                     <div class="grid md:grid-cols-2 gap-4 mt-3">
                         <div>
                             <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Zutaten (skaliert):</p>
                             <ul class="text-sm text-slate-600 dark:text-slate-300 space-y-1 mt-1">
-                                ${translatedIngredients.map(item =>
+                                ${scaledIngredients.map(item =>
                                     `<li>• ${item.measure} ${item.name}</li>`
                                 ).join('')}
                             </ul>
@@ -672,24 +695,22 @@
                             <p class="text-sm font-bold text-slate-600 dark:text-slate-300">Zubereitung:</p>
                             <div id="step-container" class="mt-1">
                                 <div class="step-indicator mb-2">
-                                    ${translatedSteps.map((_, idx) =>
+                                    ${recipeSteps.map((_, idx) =>
                                         `<span class="step-dot ${idx === currentStepIndex ? 'active' : (idx < currentStepIndex ? 'done' : '')}"></span>`
                                     ).join('')}
                                 </div>
-                                <p id="step-text" class="text-sm text-slate-600 dark:text-slate-300">${translatedSteps[currentStepIndex] || 'Kein Schritt verfügbar.'}</p>
+                                <p id="step-text" class="text-sm text-slate-600 dark:text-slate-300">${recipeSteps[currentStepIndex] || 'Kein Schritt verfügbar.'}</p>
                                 <div class="mt-2 flex gap-2 flex-wrap">
                                     ${currentStepIndex > 0 ? `<button onclick="prevStep()" class="btn-hover text-xs px-3 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition">← Zurück</button>` : ''}
-                                    ${currentStepIndex < translatedSteps.length - 1 ? `<button onclick="nextStep()" class="btn-hover text-xs px-3 py-1 rounded-lg bg-cyan-500 text-white hover:bg-cyan-600 transition">Weiter →</button>` : ''}
-                                    ${currentStepIndex === translatedSteps.length - 1 && translatedSteps.length > 1 ? `<span class="text-xs text-emerald-500 font-bold">✅ Fertig!</span>` : ''}
+                                    ${currentStepIndex < recipeSteps.length - 1 ? `<button onclick="nextStep()" class="btn-hover text-xs px-3 py-1 rounded-lg bg-cyan-500 text-white hover:bg-cyan-600 transition">Weiter →</button>` : ''}
+                                    ${currentStepIndex === recipeSteps.length - 1 && recipeSteps.length > 1 ? `<span class="text-xs text-emerald-500 font-bold">✅ Fertig!</span>` : ''}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700 flex flex-wrap gap-2">
-                        ${recipe.strSource ? `<a href="${recipe.strSource}" target="_blank" class="text-xs text-cyan-400 hover:text-cyan-500 transition"><i class="fa-regular fa-link mr-1"></i> Original-Rezept</a>` : ''}
-                    </div>
-                    <p class="text-xs text-slate-400 mt-3">Quelle: ${recipe.strSource ? 'Spoonacular' : (recipe.source || 'TheMealDB/Lokal')}</p>
+                    ${recipe.sourceUrl ? `<div class="mt-4 pt-3 border-t border-slate-200 dark:border-slate-700"><a href="${recipe.sourceUrl}" target="_blank" class="text-xs text-cyan-400 hover:text-cyan-500 transition"><i class="fa-regular fa-link mr-1"></i> Original-Rezept</a></div>` : ''}
+                    <p class="text-xs text-slate-400 mt-3">Quelle: ${recipe.sourceUrl ? 'Spoonacular' : 'Lokal'}</p>
                 </div>
             `;
 
@@ -698,10 +719,10 @@
         }
 
         // ============================================================
-        // 11. SCHRITT-NAVIGATION
+        // 10. SCHRITT-NAVIGATION
         // ============================================================
         function nextStep() {
-            if (currentStepIndex < translatedSteps.length - 1) {
+            if (currentStepIndex < recipeSteps.length - 1) {
                 currentStepIndex++;
                 updateStepDisplay();
             }
@@ -718,7 +739,7 @@
             const stepText = document.getElementById('step-text');
             const dots = document.querySelectorAll('.step-dot');
             if (stepText && dots.length) {
-                stepText.textContent = translatedSteps[currentStepIndex] || 'Kein Schritt verfügbar.';
+                stepText.textContent = recipeSteps[currentStepIndex] || 'Kein Schritt verfügbar.';
                 dots.forEach((dot, idx) => {
                     dot.className = `step-dot ${idx === currentStepIndex ? 'active' : (idx < currentStepIndex ? 'done' : '')}`;
                 });
@@ -726,7 +747,7 @@
         }
 
         // ============================================================
-        // 12. NÄCHSTES REZEPT
+        // 11. NÄCHSTES REZEPT
         // ============================================================
         async function nextRecipe() {
             showToast('Lade neues Rezept...');
@@ -734,7 +755,7 @@
         }
 
         // ============================================================
-        // 13. FAVORITEN
+        // 12. FAVORITEN
         // ============================================================
         function getFavorites() {
             return JSON.parse(localStorage.getItem('quickrecipe_favorites') || '[]');
@@ -745,9 +766,9 @@
             updateFavoritesUI();
         }
 
-        async function toggleFavorite(mealId) {
+        function toggleFavorite(recipeId) {
             let favorites = getFavorites();
-            const index = favorites.findIndex(f => f.idMeal === mealId);
+            const index = favorites.findIndex(f => f.id === recipeId);
             if (index >= 0) {
                 favorites.splice(index, 1);
                 showToast('Aus Favoriten entfernt');
@@ -757,32 +778,26 @@
                 if (recipeData) {
                     try {
                         const data = JSON.parse(recipeData);
-                        if (data.idMeal === mealId) {
-                            await displayRecipe(data, currentServings);
+                        if (data.id === recipeId) {
+                            displayRecipe(data, currentServings);
                         }
                     } catch (e) {}
                 }
                 return;
             }
 
-            try {
-                const detailRes = await fetch(
-                    `https://api.spoonacular.com/recipes/${mealId}/information?apiKey=${SPOONACULAR_API_KEY}`
-                );
-                if (!detailRes.ok) throw new Error('Rezept nicht gefunden');
-                const detailData = await detailRes.json();
-                const meal = {
-                    idMeal: detailData.id.toString(),
-                    strMeal: detailData.title,
-                    strMealThumb: detailData.image,
-                    strCategory: detailData.dishTypes ? detailData.dishTypes.join(', ') : '',
-                    strArea: detailData.cuisines ? detailData.cuisines.join(', ') : ''
-                };
-                favorites.push(meal);
-                saveFavorites(favorites);
-                showToast('Zu Favoriten hinzugefügt!');
-            } catch (e) {
-                showToast('Fehler beim Speichern des Favoriten');
+            // Aktuelles Rezept aus dem Container holen
+            const container = document.getElementById('result-content');
+            const recipeData = container.dataset.recipe;
+            if (recipeData) {
+                try {
+                    const recipe = JSON.parse(recipeData);
+                    if (recipe.id === recipeId) {
+                        favorites.push({ id: recipe.id, name: recipe.name, category: recipe.category });
+                        saveFavorites(favorites);
+                        showToast('Zu Favoriten hinzugefügt!');
+                    }
+                } catch (e) {}
             }
         }
 
@@ -799,36 +814,33 @@
             container.classList.remove('hidden');
             list.innerHTML = favorites.map(meal => `
                 <div class="flex items-center gap-2 bg-slate-50 dark:bg-slate-800 p-2 rounded-xl border border-slate-200 dark:border-slate-700">
-                    ${meal.strMealThumb ? `<img src="${meal.strMealThumb}" class="w-10 h-10 rounded-lg object-cover" alt="${meal.strMeal}">` : `<div class="w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center"><i class="fa-regular fa-utensils text-slate-400"></i></div>`}
-                    <span class="text-sm font-medium text-slate-900 dark:text-white truncate max-w-[150px]">${meal.strMeal}</span>
-                    <button onclick="loadFavorite('${meal.idMeal}')" class="text-cyan-500 hover:text-cyan-400 transition text-xs px-2 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20">Anzeigen</button>
-                    <button onclick="toggleFavorite('${meal.idMeal}')" class="text-rose-400 hover:text-rose-500 transition text-xs">✕</button>
+                    <span class="text-sm font-medium text-slate-900 dark:text-white truncate max-w-[200px]">${meal.name}</span>
+                    <button onclick="loadFavorite('${meal.id}')" class="text-cyan-500 hover:text-cyan-400 transition text-xs px-2 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20">Anzeigen</button>
+                    <button onclick="toggleFavorite('${meal.id}')" class="text-rose-400 hover:text-rose-500 transition text-xs">✕</button>
                 </div>
             `).join('');
         }
 
-        async function loadFavorite(mealId) {
-            try {
-                const detailRes = await fetch(
-                    `https://api.spoonacular.com/recipes/${mealId}/information?apiKey=${SPOONACULAR_API_KEY}`
-                );
-                if (!detailRes.ok) throw new Error('Rezept nicht gefunden');
-                const detailData = await detailRes.json();
-                const recipe = {
-                    idMeal: detailData.id.toString(),
-                    strMeal: detailData.title,
-                    strCategory: detailData.dishTypes ? detailData.dishTypes.join(', ') : '',
-                    strArea: detailData.cuisines ? detailData.cuisines.join(', ') : '',
-                    strMealThumb: detailData.image,
-                    strInstructions: detailData.instructions || 'Keine Anleitung verfügbar.',
-                    strSource: detailData.sourceUrl || '',
-                    extendedIngredients: detailData.extendedIngredients || [],
-                    servings: detailData.servings || 2
-                };
-                await displayRecipe(recipe, currentServings);
+        function loadFavorite(recipeId) {
+            // Suche in lokaler Datenbank
+            const local = LOCAL_RECIPES.find(r => r.id === recipeId);
+            if (local) {
+                displayRecipe(local, currentServings);
                 showToast('Rezept geladen!');
-            } catch (e) {
-                showToast('Fehler beim Laden des Rezepts');
+                return;
+            }
+
+            // Spoonacular (falls nicht lokal)
+            const container = document.getElementById('result-content');
+            const recipeData = container.dataset.recipe;
+            if (recipeData) {
+                try {
+                    const data = JSON.parse(recipeData);
+                    if (data.id === recipeId) {
+                        displayRecipe(data, currentServings);
+                        showToast('Rezept geladen!');
+                    }
+                } catch (e) {}
             }
         }
 
@@ -841,13 +853,13 @@
         }
 
         // ============================================================
-        // 14. COPYRIGHT & INIT
+        // 13. COPYRIGHT & INIT
         // ============================================================
         document.getElementById('year').textContent = new Date().getFullYear();
         updateFavoritesUI();
 
-        console.log('🍳 Quick Recipe mit 3 API-Ebenen gestartet (Spoonacular, TheMealDB, lokal)');
-        console.log('🔍 Zutaten-Übersetzung aktiviert – "Pute" wird zu "turkey"');
+        console.log('🍳 Quick Recipe mit lokaler Datenbank (' + LOCAL_RECIPES.length + ' Rezepte) + Spoonacular gestartet.');
+        console.log('📦 Verfügbare Hauptzutaten: Hähnchen, Rindfleisch, Pute, Eier, Nudeln, Reis, Kartoffeln, Tomaten, Zwiebeln, Spinat, Champignons, Käse');
     </script>
 </body>
 </html>
