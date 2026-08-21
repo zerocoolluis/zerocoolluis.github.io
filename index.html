@@ -162,7 +162,7 @@
             text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
         }
 
-        /* Cleane Infobox statt Fiktiv-Leiste */
+        /* Schlichter, sauberer Info-Bereich oben */
         .info-bar {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -174,13 +174,13 @@
             align-items: center;
             backdrop-filter: blur(15px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--text-muted);
         }
 
-        .info-bar strong {
-            color: var(--neon-cyan);
-            font-family: 'Orbitron', sans-serif;
+        .info-bar span:first-child {
+            color: var(--text-color);
+            font-weight: 600;
         }
 
         .section-box {
@@ -274,7 +274,7 @@
             margin-bottom: 60px;
         }
 
-        /* Over-Hover Karten & Icon Effekte */
+        /* Basis-Karte */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -290,24 +290,10 @@
             display: block;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-        }
-
         .card:hover {
-            transform: translateY(-12px) scale(1.02);
+            transform: translateY(-10px);
             border-color: var(--neon-cyan);
-            box-shadow: 0 20px 50px rgba(0, 240, 255, 0.3), inset 0 0 15px rgba(0, 240, 255, 0.1);
-        }
-
-        .card:hover::before {
-            opacity: 1;
+            box-shadow: 0 20px 40px rgba(0, 240, 255, 0.2);
         }
 
         .card-icon-container {
@@ -316,13 +302,32 @@
             height: 70px;
             display: flex;
             align-items: center;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Überarbeiteter Over-Hover Effekt für die Icons */
-        .card:hover .card-icon-container {
-            transform: scale(1.2) translateY(-5px);
-            filter: drop-shadow(0 0 15px var(--neon-cyan));
+        /* 1. SPEZIFISCHER HOVER: Filmklappe klappt "zu" (kleine Drehung / Skalierung) */
+        .card:hover .fa-clapperboard {
+            transform: rotate(-10deg) scale(1.1);
+            transition: transform 0.3s ease;
+        }
+
+        /* 2. SPEZIFISCHER HOVER: Lampe schaltet sich an (wird dunkel und leuchtet plötzlich hell gelb/weiß) */
+        .card .fa-lightbulb {
+            color: #444444 !important; /* Standard: Ausgeschaltet (gedimmt) */
+            transition: all 0.3s ease;
+        }
+        .card:hover .fa-lightbulb {
+            color: #FFD700 !important; /* Eingeschaltet: Leuchtet */
+            filter: drop-shadow(0 0 15px #FFD700);
+            transform: scale(1.15);
+        }
+
+        /* 3. SPEZIFISCHER HOVER: Zahnräder fangen an sich zu drehen */
+        .card:hover .fa-gears {
+            animation: spinGears 1.5s linear infinite;
+        }
+        @keyframes spinGears {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .card-title {
@@ -414,10 +419,10 @@
             <div class="creator-tag">by Zerocoolluis</div>
         </header>
 
-        <!-- Cleane Info-Bar (Kein Sci-Fi-Kram) -->
+        <!-- Neutraler, echter Willkommens-Hinweis -->
         <div class="info-bar">
-            <span><strong>WILLKOMMEN:</strong> Alle Kategorien sind einsatzbereit.</span>
-            <span>Wähle deinen Bereich unten aus.</span>
+            <span>Zentrale Anlaufstelle für Tools und Medien.</span>
+            <span>Wähle eine Kategorie, um fortzufahren.</span>
         </div>
 
         <!-- Über Mich Sektion -->
@@ -432,7 +437,7 @@
             <h2 class="tool-menu-title" id="toolMenuTitle">TOOL MENU</h2>
         </div>
 
-        <!-- Die 3 Hauptkarten mit starkem Over-Hover Effekt -->
+        <!-- Die 3 Hauptkarten mit den exakten Icon-Animationen -->
         <div class="grid">
             <a href="entertainment/" class="card">
                 <div class="card-icon-container"><i class="fa-solid fa-clapperboard" style="color: var(--neon-pink);"></i></div>
@@ -440,7 +445,7 @@
                 <div class="card-desc">Öffnet den Entertainment-Bereich mit unterhaltsamen Tools und Medien.</div>
             </a>
             <a href="school/" class="card">
-                <div class="card-icon-container"><i class="fa-solid fa-lightbulb" style="color: #FFD700;"></i></div>
+                <div class="card-icon-container"><i class="fa-solid fa-lightbulb"></i></div>
                 <div class="card-title">School Bereich</div>
                 <div class="card-desc">Öffnet den School-Hauptbereich mit allen Unterkategorien.</div>
             </a>
@@ -457,11 +462,11 @@
             <ul class="changelog-list">
                 <li class="changelog-item">
                     <span class="changelog-date">HEUTE</span>
-                    <span class="changelog-text">Entertainment-Symbol auf eine Filmklappe geändert und Over-Hover-Effekte für Icons optimiert.</span>
+                    <span class="changelog-text">Exakte Icon-Effekte integriert (Lampe schaltet ein, Zahnräder drehen sich, Klappe reagiert).</span>
                 </li>
                 <li class="changelog-item">
                     <span class="changelog-date">UPDATE</span>
-                    <span class="changelog-text">Fiktive Status-Anzeigen entfernt und durch eine saubere, moderne Infoleiste ersetzt.</span>
+                    <span class="changelog-text">Unnötigen Fiktiv-Text entfernt und durch eine reale Beschreibung ersetzt.</span>
                 </li>
                 <li class="changelog-item">
                     <span class="changelog-date">START</span>
