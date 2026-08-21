@@ -3,128 +3,150 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZERO'S TOOL HUB // Ultimate Edition</title>
-    <meta name="description" content="Zentrale Anlaufstelle für Tools und Medien – entwickelt von Zerocoolluis." />
-    <meta property="og:title" content="ZERO'S TOOL HUB" />
-    <meta property="og:description" content="Moderne Tools, Entertainment und Utilities in einer Cyberpunk-Oberfläche." />
-    <meta property="og:type" content="website" />
-
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <title>ZERO'S TOOL HUB // modern</title>
+    <meta name="description" content="Deine zentrale Anlaufstelle für clevere Tools und Medien." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
     <style>
-        /* ===== NEUES FARBSCHEMA – edel & gedämpft ===== */
+        /* ===== HELLES, MODERNES FARBSCHEMA ===== */
         :root {
-            --bg-color: #0a0e1a;
-            --card-bg: rgba(18, 25, 45, 0.8);
-            --border-color: rgba(91, 154, 255, 0.2);
-            --primary: #5b9aff;
-            --primary-glow: rgba(91, 154, 255, 0.3);
-            --accent-gold: #f0c27f;
-            --accent-pink: #ff6b6b;
-            --text-color: #eef2f8;
-            --text-muted: #9aa8c7;
+            --bg: #f4f6fa;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --border-color: rgba(0, 0, 0, 0.06);
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-glow: rgba(37, 99, 235, 0.15);
+            --accent-gold: #d4a373;
+            --accent-soft: #f0f2f5;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --shadow-sm: 0 8px 30px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.08);
+            --radius: 20px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            scroll-behavior: smooth;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background: var(--bg);
             font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            position: relative;
+            color: var(--text-dark);
             min-height: 100vh;
+            padding: 30px 20px 60px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
 
-        a:focus-visible,
-        button:focus-visible,
-        .menu-toggle:focus-visible {
-            outline: 3px solid var(--primary);
-            outline-offset: 4px;
-            border-radius: 8px;
-        }
-
-        /* ===== CANVAS ===== */
-        #bg-canvas {
+        /* ===== LEICHTER HINTERGRUND ===== */
+        .bg-shapes {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .bg-shapes span {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(37, 99, 235, 0.04);
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        .bg-shapes span:nth-child(1) {
+            width: 500px;
+            height: 500px;
+            top: -200px;
+            right: -100px;
+            animation-duration: 25s;
+        }
+        .bg-shapes span:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            bottom: -100px;
+            left: -50px;
+            animation-duration: 18s;
+            animation-delay: -5s;
+        }
+        .bg-shapes span:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            top: 40%;
+            left: 60%;
+            animation-duration: 22s;
+            animation-delay: -10s;
+            background: rgba(212, 163, 115, 0.04);
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(60px, -60px) scale(1.1); }
         }
 
         /* ===== CONTAINER ===== */
         .container {
             position: relative;
-            z-index: 2;
+            z-index: 1;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: pageEntrance 0.8s ease forwards;
         }
 
-        @keyframes pageEntrance {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== TOP-BAR ===== */
+        /* ===== TOP-BAR (Menü) ===== */
         .top-bar {
             display: flex;
             justify-content: flex-end;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             position: relative;
-            z-index: 100;
+            z-index: 10;
         }
 
         .menu-toggle {
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--border-color);
-            color: var(--primary);
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+            color: var(--text-dark);
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
         }
         .menu-toggle:hover {
             border-color: var(--primary);
-            box-shadow: 0 0 25px var(--primary-glow);
-            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 0 0 4px var(--primary-glow);
+            transform: scale(1.05) rotate(90deg);
         }
 
         .dropdown-menu {
             position: absolute;
-            top: 65px;
+            top: 60px;
             right: 0;
-            width: 240px;
-            background: rgba(10, 14, 26, 0.95);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
+            width: 230px;
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(20px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
             overflow: hidden;
             opacity: 0;
-            transform: translateY(-10px);
+            transform: translateY(-8px);
             pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: var(--transition);
         }
         .dropdown-menu.active {
             opacity: 1;
@@ -133,248 +155,211 @@
         }
 
         .dropdown-item {
-            padding: 15px 20px;
-            color: var(--text-color);
+            padding: 14px 20px;
+            color: var(--text-dark);
             text-decoration: none;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .dropdown-item:hover {
+            background: var(--primary-glow);
+            color: var(--primary);
+            padding-left: 26px;
+        }
+
+        /* ===== HEADER (ohne altmodischen Text) ===== */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #1e293b 0%, #2563eb 60%, #d4a373 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+            line-height: 1.1;
+        }
+
+        .creator-tag {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* ===== NEUE WILLKOMMENSZEILE (minimalistisch) ===== */
+        .welcome-mini {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            padding: 16px 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .welcome-mini span {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* ===== ÜBER DAS PROJEKT (modernisiert) ===== */
+        .section-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 36px 40px;
+            margin-bottom: 50px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        .section-box:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        .section-box h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        .dropdown-item:last-child { border-bottom: none; }
-        .dropdown-item:hover,
-        .dropdown-item:focus-visible {
-            background: rgba(91, 154, 255, 0.15);
+        .section-box h2 i {
             color: var(--primary);
-            padding-left: 25px;
-            text-shadow: 0 0 10px var(--primary-glow);
-        }
-
-        /* ===== HEADER ===== */
-        header {
-            text-align: center;
-            margin: 40px 0 50px 0;
-            padding-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        /* ===== SANFTER FARBWECHSEL (ERSATZ FÜR GLITCH) ===== */
-        .main-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 4rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            border-right: 3px solid var(--primary);
-            display: inline-block;
-            padding-right: 5px;
-            /* Sanfter Farbwechsel + weiches Leuchten */
-            background: linear-gradient(135deg, #5b9aff 0%, #f0c27f 50%, #5b9aff 100%);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: smoothGradient 6s ease-in-out infinite alternate;
-            filter: drop-shadow(0 0 20px rgba(91, 154, 255, 0.15));
-        }
-
-        @keyframes smoothGradient {
-            0% { background-position: 0% 50%; filter: drop-shadow(0 0 15px rgba(91, 154, 255, 0.1)); }
-            50% { background-position: 100% 50%; filter: drop-shadow(0 0 25px rgba(240, 194, 127, 0.15)); }
-            100% { background-position: 0% 50%; filter: drop-shadow(0 0 15px rgba(91, 154, 255, 0.1)); }
-        }
-
-        /* Cursor beim Typing – verschwindet nach Fertigstellung */
-        .main-title.typing-done {
-            border-right: none;
-        }
-
-        .creator-tag {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            color: var(--accent-gold);
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(240, 194, 127, 0.3);
-        }
-
-        /* ===== INFO-BAR ===== */
-        .info-bar {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 18px 25px;
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-        .info-bar span:first-child {
-            color: var(--text-color);
-            font-weight: 600;
-        }
-
-        /* ===== SEKTIONEN ===== */
-        .section-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 40px;
-            margin-bottom: 50px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
-        }
-        .section-box:hover {
-            border-color: rgba(91, 154, 255, 0.4);
-            box-shadow: 0 15px 40px var(--primary-glow);
-        }
-        .section-box h2 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
         .section-box p {
             color: var(--text-muted);
             font-size: 1.05rem;
             line-height: 1.8;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+        }
+
+        /* ===== TOOL MENU TITEL ===== */
+        .tool-menu-section {
+            text-align: center;
+            margin: 40px 0 30px 0;
+        }
+        .tool-menu-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: font-size 0.2s ease;
+        }
+
+        /* ===== KARTEN-GRID ===== */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 36px 28px;
+            text-decoration: none;
+            color: var(--text-dark);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+        }
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent-gold));
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .card:hover::after {
+            opacity: 1;
+        }
+
+        .card-icon-container {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
         }
 
         /* ===== CHANGELOG ===== */
-        .changelog-list { list-style: none; }
+        .changelog-list {
+            list-style: none;
+        }
         .changelog-item {
             display: flex;
             align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
         }
         .changelog-item:last-child {
             border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
         }
         .changelog-date {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
-            color: var(--accent-pink);
-            background: rgba(255, 107, 107, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 107, 107, 0.3);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--primary);
+            background: var(--primary-glow);
+            padding: 4px 12px;
+            border-radius: 30px;
             white-space: nowrap;
         }
         .changelog-text {
             color: var(--text-muted);
             font-size: 0.95rem;
-        }
-
-        /* ===== TOOL MENU ===== */
-        .tool-menu-section {
-            text-align: center;
-            margin: 50px 0 30px 0;
-        }
-        .tool-menu-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            color: var(--primary);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            transition: font-size 0.2s ease;
-            display: inline-block;
-        }
-
-        /* ===== GRID ===== */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-
-        /* ===== KARTEN ===== */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 40px 30px;
-            text-decoration: none;
-            color: var(--text-color);
-            position: relative;
-            overflow: hidden;
-            transition: box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1),
-                        border-color 0.3s ease;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            display: block;
-            transform-style: preserve-3d;
-            perspective: 600px;
-            will-change: transform;
-        }
-        .card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 20px 40px var(--primary-glow);
-        }
-
-        .card-inner {
-            transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
-        }
-
-        .card-icon-container {
-            font-size: 3rem;
-            margin-bottom: 25px;
-            height: 70px;
-            display: flex;
-            align-items: center;
-        }
-
-        .card .fa-clapperboard { color: var(--accent-gold) !important; }
-        .card .fa-lightbulb { color: #f0c27f !important; transition: all 0.3s ease; }
-        .card .fa-gears { color: var(--primary) !important; }
-
-        .card:hover .fa-clapperboard {
-            transform: rotate(-10deg) scale(1.1);
-            transition: transform 0.3s ease;
-        }
-        .card:hover .fa-lightbulb {
-            color: #ffd93d !important;
-            filter: drop-shadow(0 0 15px #ffd93d);
-            transform: scale(1.15);
-        }
-        .card:hover .fa-gears {
-            animation: spinGears 1.5s linear infinite;
-        }
-        @keyframes spinGears {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .card-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            color: #fff;
-        }
-        .card-desc {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.6;
         }
 
         /* ===== BACK-TO-TOP ===== */
@@ -385,9 +370,10 @@
             width: 50px;
             height: 50px;
             background: var(--card-bg);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--border-color);
-            color: var(--primary);
-            border-radius: 12px;
+            color: var(--text-dark);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -397,9 +383,8 @@
             opacity: 0;
             transform: translateY(20px);
             pointer-events: none;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
             text-decoration: none;
         }
         .back-to-top.visible {
@@ -409,137 +394,149 @@
         }
         .back-to-top:hover {
             background: var(--primary);
-            color: var(--bg-color);
+            color: #fff;
             border-color: var(--primary);
-            box-shadow: 0 0 30px var(--primary-glow);
-            transform: translateY(-5px);
+            box-shadow: 0 0 0 6px var(--primary-glow);
+            transform: translateY(-4px);
         }
 
-        /* ===== TERMINAL ===== */
+        /* ===== FOOTER ===== */
+        footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ===== TERMINAL (unverändert, aber mit hellem Stil) ===== */
         .terminal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 9999;
             padding: 20px;
         }
-        .terminal-overlay.open { display: flex; }
+        .terminal-overlay.open {
+            display: flex;
+        }
         .terminal-box {
-            background: #0e1324;
-            border: 2px solid var(--primary);
-            border-radius: 16px;
+            background: #fff;
+            border-radius: var(--radius);
             width: 100%;
-            max-width: 700px;
-            padding: 30px;
-            box-shadow: 0 0 60px var(--primary-glow);
-            font-family: 'Courier New', monospace;
-            color: var(--primary);
+            max-width: 650px;
+            padding: 32px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+            font-family: 'Inter', monospace;
+            color: var(--text-dark);
         }
         .terminal-box h3 {
-            font-family: 'Orbitron', sans-serif;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
             font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: var(--accent-gold);
+            margin-bottom: 16px;
+            color: var(--primary);
         }
         .terminal-output {
-            background: #080c18;
-            border-radius: 8px;
-            padding: 15px;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 16px;
             min-height: 100px;
-            max-height: 300px;
+            max-height: 260px;
             overflow-y: auto;
             font-size: 0.95rem;
             line-height: 1.6;
-            margin-bottom: 15px;
-            white-space: pre-wrap;
+            margin-bottom: 16px;
             color: var(--text-muted);
+            font-family: 'Inter', monospace;
         }
-        .terminal-output .prompt { color: var(--primary); }
+        .terminal-output .prompt {
+            color: var(--primary);
+            font-weight: 600;
+        }
         .terminal-input-line {
             display: flex;
             gap: 10px;
             align-items: center;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 0 16px;
         }
         .terminal-input-line span {
+            font-weight: 600;
             color: var(--primary);
-            font-weight: bold;
         }
         .terminal-input-line input {
             flex: 1;
             background: transparent;
             border: none;
-            border-bottom: 1px solid var(--border-color);
-            color: #fff;
-            font-family: 'Courier New', monospace;
+            padding: 14px 0;
+            font-family: 'Inter', monospace;
             font-size: 1rem;
-            padding: 8px 0;
             outline: none;
-        }
-        .terminal-input-line input:focus {
-            border-bottom-color: var(--primary);
+            color: var(--text-dark);
         }
         .terminal-close {
-            margin-top: 20px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
+            margin-top: 16px;
+            background: var(--bg);
+            border: none;
             color: var(--text-muted);
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
+            font-weight: 500;
+            transition: var(--transition);
         }
         .terminal-close:hover {
-            background: var(--accent-pink);
+            background: var(--primary);
             color: #fff;
-            border-color: var(--accent-pink);
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            text-align: center;
-            padding: 40px 0;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 40px;
         }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .main-title {
-                font-size: 2.3rem;
-                white-space: normal;
-                border-right: none;
-                background-size: 200% 200%;
+                font-size: 2.4rem;
             }
-            .info-bar {
-                flex-direction: column;
-                gap: 8px;
-                text-align: center;
+            .welcome-mini {
+                font-size: 0.95rem;
+                padding: 12px 18px;
+                width: 100%;
+            }
+            .section-box {
+                padding: 28px 20px;
+            }
+            .grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- CANVAS -->
-    <canvas id="bg-canvas"></canvas>
 
-    <!-- TERMINAL -->
+    <!-- DEKORATIVE HINTERGRUND-FORMEN -->
+    <div class="bg-shapes">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- TERMINAL-OVERLAY (Easter Egg) -->
     <div class="terminal-overlay" id="terminalOverlay">
         <div class="terminal-box">
-            <h3>⬢ ZERO TERMINAL v1.0</h3>
+            <h3>⬢ ZERO TERMINAL</h3>
             <div class="terminal-output" id="terminalOutput">
                 <span class="prompt">></span> Willkommen im Zero-Terminal.<br />
-                <span class="prompt">></span> Verfügbare Befehle: <span style="color:var(--primary);">help, ls, open [entertainment|school|utilities], clear, exit</span><br />
+                <span class="prompt">></span> Befehle: <strong>help, ls, open [entertainment|school|utilities], clear, exit</strong>
             </div>
             <div class="terminal-input-line">
                 <span>$</span>
@@ -549,83 +546,83 @@
         </div>
     </div>
 
-    <!-- CONTAINER -->
     <div class="container">
-        <nav class="top-bar" aria-label="Hauptnavigation">
-            <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen" aria-expanded="false">
-                <i class="fa-solid fa-bars"></i>
-            </button>
+        <!-- TOP-BAR -->
+        <div class="top-bar">
+            <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen"><i class="fa-solid fa-bars"></i></button>
             <div class="dropdown-menu" id="dropdownMenu" role="menu">
-                <a href="entertainment/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-clapperboard" style="color: var(--accent-gold);"></i> Entertainment</a>
-                <a href="school/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-lightbulb" style="color: #f0c27f;"></i> School</a>
+                <a href="entertainment/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-clapperboard" style="color: #d4a373;"></i> Entertainment</a>
+                <a href="school/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-lightbulb" style="color: #d4a373;"></i> School</a>
                 <a href="utilities/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-gears" style="color: var(--primary);"></i> Utilities</a>
             </div>
-        </nav>
+        </div>
 
+        <!-- HEADER -->
         <header>
-            <h1 class="main-title" id="mainTitle">ZERO'S TOOL HUB</h1>
+            <h1 class="main-title">ZERO'S TOOL HUB</h1>
             <div class="creator-tag">by Zerocoolluis</div>
         </header>
 
-        <div class="info-bar">
-            <span>Zentrale Anlaufstelle für Tools und Medien.</span>
-            <span>Wähle eine Kategorie, um fortzufahren.</span>
+        <!-- MODERNE, MINIMALISTISCHE WILLKOMMENSZEILE (ersetzt die alte Info-Bar) -->
+        <div style="display: flex; justify-content: center;">
+            <div class="welcome-mini">
+                <i class="fa-regular fa-hand-peace" style="margin-right: 8px; color: var(--primary);"></i>
+                Willkommen bei deinem <span>digitalen Werkzeugkasten</span>
+            </div>
         </div>
 
+        <!-- ÜBER DAS PROJEKT (straffer, moderner) -->
         <section class="section-box">
-            <h2><i class="fa-solid fa-terminal" style="color: var(--primary);">// Über das Projekt</i></h2>
-            <p>Willkommen auf der offiziellen Zentrale von Zero's Tool Hub! Diese Plattform wurde entwickelt, um nützliche Tools, Medien und coole Features an einem zentralen, schnellen Ort zu bündeln. Alles ist sauber programmiert und modern gestaltet.</p>
-            <p>Nutze das Menü oben rechts oder die Kacheln weiter unten, um direkt in die Bereiche einzutauchen.</p>
+            <h2><i class="fa-regular fa-compass"></i> // Über das Projekt</h2>
+            <p>Hier entsteht eine Sammlung nützlicher Tools, Medien und kleiner Helfer – alle an einem Ort, sauber und mit Liebe zum Detail programmiert.</p>
+            <p>Nutze das Menü oben rechts oder die Kacheln unten, um in die Bereiche einzutauchen.</p>
         </section>
 
+        <!-- TOOL MENU -->
         <div class="tool-menu-section">
-            <h2 class="tool-menu-title" id="toolMenuTitle">TOOL MENU</h2>
+            <h2 class="tool-menu-title" id="toolMenuTitle">Tool Menu</h2>
         </div>
 
+        <!-- KARTEN -->
         <main class="grid" role="main">
-            <a href="entertainment/" class="card" id="card1">
-                <div class="card-inner">
-                    <div class="card-icon-container"><i class="fa-solid fa-clapperboard"></i></div>
-                    <div class="card-title">Entertainment</div>
-                    <div class="card-desc">Öffnet den Entertainment-Bereich mit unterhaltsamen Tools und Medien.</div>
-                </div>
+            <a href="entertainment/" class="card">
+                <div class="card-icon-container"><i class="fa-solid fa-clapperboard"></i></div>
+                <div class="card-title">Entertainment</div>
+                <div class="card-desc">Unterhaltsame Tools und Medien für deine Freizeit.</div>
             </a>
-            <a href="school/" class="card" id="card2">
-                <div class="card-inner">
-                    <div class="card-icon-container"><i class="fa-solid fa-lightbulb"></i></div>
-                    <div class="card-title">School Bereich</div>
-                    <div class="card-desc">Öffnet den School-Hauptbereich mit allen Unterkategorien.</div>
-                </div>
+            <a href="school/" class="card">
+                <div class="card-icon-container"><i class="fa-regular fa-lightbulb"></i></div>
+                <div class="card-title">School</div>
+                <div class="card-desc">Lernhilfen und praktische Tools für den Schulalltag.</div>
             </a>
-            <a href="utilities/" class="card" id="card3">
-                <div class="card-inner">
-                    <div class="card-icon-container"><i class="fa-solid fa-gears"></i></div>
-                    <div class="card-title">Utilities Bereich</div>
-                    <div class="card-desc">Öffnet den Utilities-Hauptbereich mit allen Unterkategorien.</div>
-                </div>
+            <a href="utilities/" class="card">
+                <div class="card-icon-container"><i class="fa-solid fa-gears"></i></div>
+                <div class="card-title">Utilities</div>
+                <div class="card-desc">Nützliche Alltagshelfer – aktuell mit ColorForge.</div>
             </a>
         </main>
 
+        <!-- CHANGELOG -->
         <section class="section-box">
-            <h2><i class="fa-solid fa-code-branch" style="color: var(--accent-gold);">// Changelog & Updates</i></h2>
+            <h2><i class="fa-regular fa-clock"></i> // Changelog</h2>
             <ul class="changelog-list">
                 <li class="changelog-item">
                     <span class="changelog-date">HEUTE</span>
-                    <span class="changelog-text">Glitch entfernt – stattdessen sanfter Farbverlauf für die Überschrift.</span>
+                    <span class="changelog-text">Komplettes Redesign – hell, modern, frisch.</span>
                 </li>
                 <li class="changelog-item">
                     <span class="changelog-date">UPDATE</span>
-                    <span class="changelog-text">Back‑to‑Top ohne Tooltip, dafür leuchtender Hover.</span>
+                    <span class="changelog-text">Alte Info‑Bar entfernt, minimalistische Willkommenszeile.</span>
                 </li>
                 <li class="changelog-item">
                     <span class="changelog-date">START</span>
-                    <span class="changelog-text">Erfolgreicher Launch der Landing Page von Zero's Tool Hub.</span>
+                    <span class="changelog-text">Launch der Landing Page von Zero's Tool Hub.</span>
                 </li>
             </ul>
         </section>
 
         <footer>
-            &copy; <span id="year"></span> Zero's Tool Hub // Entwickelt von Zerocoolluis
+            &copy; <span id="year"></span> Zero's Tool Hub // entwickelt von Zerocoolluis
         </footer>
     </div>
 
@@ -633,151 +630,43 @@
     <a href="#" class="back-to-top" id="backToTop" aria-label="Nach oben scrollen"><i class="fa-solid fa-arrow-up"></i></a>
 
     <script>
-        // ============================================================
-        // 1. PARTIKEL
-        // ============================================================
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        let animFrameId = null;
-        let isTabActive = true;
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        for (let i = 0; i < 45; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: Math.random() * 2 + 1,
-                speedX: (Math.random() - 0.5) * 0.4,
-                speedY: (Math.random() - 0.5) * 0.4
-            });
-        }
-
-        function animateParticles() {
-            if (!isTabActive) {
-                animFrameId = requestAnimationFrame(animateParticles);
-                return;
-            }
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'rgba(91, 154, 255, 0.12)';
-            particles.forEach(p => {
-                p.x += p.speedX;
-                p.y += p.speedY;
-                if (p.x < 0) p.x = canvas.width;
-                if (p.x > canvas.width) p.x = 0;
-                if (p.y < 0) p.y = canvas.height;
-                if (p.y > canvas.height) p.y = 0;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            animFrameId = requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        document.addEventListener('visibilitychange', () => {
-            isTabActive = !document.hidden;
-        });
-
-        // ============================================================
-        // 2. DROPDOWN
-        // ============================================================
+        // ===== DROPDOWN =====
         const menuToggle = document.getElementById('menuToggle');
         const dropdownMenu = document.getElementById('dropdownMenu');
 
         menuToggle.addEventListener('click', (e) => {
             e.stopPropagation();
-            const expanded = menuToggle.getAttribute('aria-expanded') === 'true' ? false : true;
-            menuToggle.setAttribute('aria-expanded', expanded);
             dropdownMenu.classList.toggle('active');
         });
-
         window.addEventListener('click', () => {
             dropdownMenu.classList.remove('active');
-            menuToggle.setAttribute('aria-expanded', 'false');
         });
 
-        // ============================================================
-        // 3. TYPING-EFFEKT (ohne Glitch)
-        // ============================================================
-        const titleElement = document.getElementById('mainTitle');
-        const fullText = "ZERO'S TOOL HUB";
-        let charIndex = 0;
-
-        function typeTitle() {
-            if (charIndex < fullText.length) {
-                titleElement.textContent = fullText.substring(0, charIndex + 1) + '|';
-                charIndex++;
-                setTimeout(typeTitle, 80);
-            } else {
-                titleElement.textContent = fullText;
-                titleElement.classList.add('typing-done');
-                // Nach dem Tippen startet der sanfte Farbverlauf automatisch (via CSS)
-            }
-        }
-
-        window.addEventListener('load', () => {
-            typeTitle();
-        });
-
-        // ============================================================
-        // 4. 3D-KARTEN
-        // ============================================================
-        const cards = document.querySelectorAll('.card');
-
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -10;
-                const rotateY = ((x - centerX) / centerX) * 10;
-                const inner = card.querySelector('.card-inner');
-                inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            });
-
-            card.addEventListener('mouseleave', () => {
-                const inner = card.querySelector('.card-inner');
-                inner.style.transform = 'rotateX(0deg) rotateY(0deg)';
-            });
-        });
-
-        // ============================================================
-        // 5. SCROLL (Tool Menu + Back-to-Top)
-        // ============================================================
-        const backToTopBtn = document.getElementById('backToTop');
-        const toolTitle = document.getElementById('toolMenuTitle');
-
+        // ===== BACK-TO-TOP =====
+        const backToTop = document.getElementById('backToTop');
         window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            let newSize = 1.5 + (scrollY * 0.015);
-            if (newSize > 2.8) newSize = 2.8;
-            if (newSize < 1.5) newSize = 1.5;
-            toolTitle.style.fontSize = newSize + 'rem';
-
-            if (scrollY > 400) {
-                backToTopBtn.classList.add('visible');
+            if (window.scrollY > 400) {
+                backToTop.classList.add('visible');
             } else {
-                backToTopBtn.classList.remove('visible');
+                backToTop.classList.remove('visible');
             }
         });
-
-        backToTopBtn.addEventListener('click', (e) => {
+        backToTop.addEventListener('click', (e) => {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
-        // ============================================================
-        // 6. TERMINAL EASTER EGG
-        // ============================================================
+        // ===== TOOL MENU GRÖSSE (Scroll-Effekt) =====
+        const toolTitle = document.getElementById('toolMenuTitle');
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            let size = 1.6 + scrollY * 0.012;
+            if (size > 2.6) size = 2.6;
+            if (size < 1.6) size = 1.6;
+            toolTitle.style.fontSize = size + 'rem';
+        });
+
+        // ===== TERMINAL EASTER EGG (5x auf Titel klicken) =====
         let clickCount = 0;
         let clickTimer = null;
         const terminalOverlay = document.getElementById('terminalOverlay');
@@ -785,18 +674,13 @@
         const terminalInput = document.getElementById('terminalInput');
         const terminalClose = document.getElementById('terminalClose');
 
-        // Klick auf die Überschrift zählt für Easter Egg
-        titleElement.addEventListener('click', () => {
+        document.querySelector('.main-title').addEventListener('click', () => {
             clearTimeout(clickTimer);
             clickCount++;
             if (clickCount >= 5) {
                 terminalOverlay.classList.add('open');
                 terminalInput.focus();
                 clickCount = 0;
-                if (terminalOutput.children.length === 0) {
-                    appendTerminalLine('> Willkommen im Zero-Terminal.', '');
-                    appendTerminalLine('> Verfügbare Befehle: help, ls, open [entertainment|school|utilities], clear, exit', '');
-                }
             } else {
                 clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
             }
@@ -815,26 +699,24 @@
 
         function processCommand(cmd) {
             const trimmed = cmd.trim().toLowerCase();
-            if (trimmed === '') return;
-
+            if (!trimmed) return;
             appendTerminalLine(trimmed, 'input');
-
             let response = '';
             switch (trimmed) {
                 case 'help':
-                    response = 'Verfügbare Befehle: help, ls, open [entertainment|school|utilities], clear, exit';
+                    response = 'Befehle: help, ls, open [entertainment|school|utilities], clear, exit';
                     break;
                 case 'ls':
                     response = 'Verzeichnisse: entertainment/  school/  utilities/';
                     break;
                 case 'open entertainment':
-                    response = 'Öffne Entertainment-Bereich...';
+                    response = 'Öffne Entertainment...';
                     break;
                 case 'open school':
-                    response = 'Öffne School-Bereich...';
+                    response = 'Öffne School...';
                     break;
                 case 'open utilities':
-                    response = 'Öffne Utilities-Bereich...';
+                    response = 'Öffne Utilities...';
                     break;
                 case 'clear':
                     terminalOutput.innerHTML = '';
@@ -844,13 +726,12 @@
                     terminalInput.value = '';
                     return;
                 default:
-                    response = `Unbekannter Befehl: "${trimmed}". Tippe "help".`;
+                    response = `Unbekannt: "${trimmed}". Tippe "help".`;
             }
-
             if (response) {
-                const respLine = document.createElement('div');
-                respLine.textContent = response;
-                terminalOutput.appendChild(respLine);
+                const line = document.createElement('div');
+                line.textContent = response;
+                terminalOutput.appendChild(line);
                 terminalOutput.scrollTop = terminalOutput.scrollHeight;
             }
         }
@@ -875,9 +756,7 @@
             }
         });
 
-        // ============================================================
-        // 7. COPYRIGHT
-        // ============================================================
+        // ===== COPYRIGHT JAHR =====
         document.getElementById('year').textContent = new Date().getFullYear();
     </script>
 </body>
