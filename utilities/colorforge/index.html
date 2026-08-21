@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ColorForge - Universal Hybrid Engine v8</title>
+    <title>ColorForge - Universal Hybrid Engine v9</title>
     <!-- Tailwind CSS Play CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -27,7 +27,7 @@
         <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-slate-300 dark:border-slate-800">
             <div>
                 <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v8.0</span>
+                    ColorForge <span class="text-cyan-600 dark:text-cyan-400 text-lg">Universal v9.0</span>
                 </h1>
                 <p id="db-status" class="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium">
                     <i class="fa-solid fa-spinner fa-spin text-cyan-500"></i> Lade kombinierte Farbdatenbanken (RAL + DE + EN)...
@@ -119,10 +119,18 @@
 
         <!-- Verlauf & Historie -->
         <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-md border border-slate-200 dark:border-slate-800 space-y-5">
+            <!-- Farbverlauf mit Regler -->
             <div>
-                <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2 block">Dynamischer Farbverlauf der aktiven Farbe</label>
-                <div id="active-gradient" class="h-12 rounded-2xl shadow-inner border border-slate-300 dark:border-slate-700 transition-all duration-300"></div>
+                <div class="flex justify-between items-center mb-2">
+                    <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Farbverlauf & Helligkeits-Regler</label>
+                    <span id="slider-val-label" class="text-xs font-mono font-bold text-cyan-600 dark:text-cyan-400">50% (Original)</span>
+                </div>
+                <div id="active-gradient" class="h-12 rounded-2xl shadow-inner border border-slate-300 dark:border-slate-700 transition-all duration-300 mb-3"></div>
+                <input type="range" id="gradient-slider" min="0" max="100" value="50" 
+                       class="w-full accent-cyan-500 cursor-pointer h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none">
             </div>
+
+            <!-- Historie (Zuletzt verwendet) -->
             <div>
                 <div class="flex justify-between items-center mb-3">
                     <label class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">Zuletzt verwendet</label>
@@ -143,6 +151,7 @@
     <!-- JavaScript Logik -->
     <script>
         let globalColorCatalog = [];
+        let baseColorHex = '#06B6D4'; // Die Ausgangsfarbe für den Verlauf
 
         const htmlRoot = document.documentElement;
         const themeIcon = document.getElementById('theme-icon');
@@ -154,6 +163,8 @@
         const nameDisplay = document.getElementById('color-name-display');
         const catDisplay = document.getElementById('color-cat-display');
         const activeGradient = document.getElementById('active-gradient');
+        const gradientSlider = document.getElementById('gradient-slider');
+        const sliderLabel = document.getElementById('slider-val-label');
         const histContainer = document.getElementById('history-container');
         const dbStatus = document.getElementById('db-status');
         const toast = document.getElementById('toast');
@@ -178,6 +189,36 @@
             htmlRoot.classList.remove('dark');
             themeIcon.className = "fa-solid fa-moon text-indigo-600 text-base";
             themeText.innerText = "Dunkler Modus";
+        }
+
+        // Hilfsfunktionen für Farbberechnung
+        function hexToRgb(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+            let num = parseInt(hex, 16);
+            return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+
+        function interpolateColor(color1, color2, factor) {
+            let c1 = hexToRgb(color1);
+            let c2 = hexToRgb(color2);
+            let r = Math.round(c1.r + factor * (c2.r - c1.r));
+            let g = Math.round(c1.g + factor * (c2.g - c1.g));
+            let b = Math.round(c1.b + factor * (c2.b - c1.b));
+            return rgbToHex(r, g, b);
+        }
+
+        function getGradientColor(val) {
+            if (val == 50) return baseColorHex;
+            if (val < 50) {
+                return interpolateColor("#FFFFFF", baseColorHex, val / 50);
+            } else {
+                return interpolateColor(baseColorHex, "#000000", (val - 50) / 50);
+            }
         }
 
         // Datenbanken Laden & Mergen
@@ -217,7 +258,7 @@
             dbStatus.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-500"></i> ${globalColorCatalog.length.toLocaleString()} Farben durchsuchbar`;
         }
 
-        // Smarte Sortierung für exakte Treffer
+        // Sortierung für exakte Treffer
         function getSortedMatches(query) {
             const matches = globalColorCatalog.filter(c => 
                 c.search.includes(query) || c.hex.toLowerCase().includes(query)
@@ -227,28 +268,39 @@
                 const aSearch = a.search;
                 const bSearch = b.search;
 
-                // 1. Exakter Treffer kommt IMMER zuerst (z.B. "emerald" vor "black emerald")
                 if (aSearch === query && bSearch !== query) return -1;
                 if (bSearch === query && aSearch !== query) return 1;
 
-                // 2. Beginnt mit dem Suchbegriff
                 const aStarts = aSearch.startsWith(query);
                 const bStarts = bSearch.startsWith(query);
                 if (aStarts && !bStarts) return -1;
                 if (!aStarts && bStarts) return 1;
 
-                // 3. Kürzere Namen bevorzugen (weniger Zusatzwörter)
                 return aSearch.length - bSearch.length;
             });
         }
 
-        // Farbwert Update & API
-        async function updateColor(hex, customName = "", customCat = "", save = true) {
+        // Farbwert Update & API (isBaseUpdate bestimmt, ob die Hauptfarbe neu gesetzt wird)
+        async function updateColor(hex, customName = "", customCat = "", save = true, isBaseUpdate = true) {
             hex = hex.toUpperCase();
+
+            // Bei neuer Farbauswahl den Verlauf-Basiswert und Regler zurücksetzen
+            if (isBaseUpdate) {
+                baseColorHex = hex;
+                if (gradientSlider) gradientSlider.value = 50;
+                if (sliderLabel) sliderLabel.innerText = "50% (Original)";
+            }
+
+            // Alle früheren grünen Haken wieder in normale Kopier-Icons zurücksetzen
+            document.querySelectorAll('.copy-icon').forEach(icon => {
+                icon.className = "copy-icon fa-regular fa-copy text-slate-400 group-hover:text-cyan-500 transition";
+            });
+
             hexDisplay.innerText = hex;
             picker.value = hex;
 
-            activeGradient.style.background = `linear-gradient(90deg, #FFFFFF 0%, ${hex} 50%, #000000 100%)`;
+            // Farbverlauf basiert immer auf der Basis-Farbe
+            activeGradient.style.background = `linear-gradient(90deg, #FFFFFF 0%, ${baseColorHex} 50%, #000000 100%)`;
 
             if (customName) {
                 nameDisplay.innerText = customName;
@@ -274,6 +326,20 @@
 
             if (save) saveHistory(hex);
         }
+
+        // Regler für Farbverlauf Listener
+        gradientSlider.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            if (val < 50) {
+                sliderLabel.innerText = `${val * 2}% (Heller)`;
+            } else if (val > 50) {
+                sliderLabel.innerText = `${(100 - val) * 2}% (Dunkler)`;
+            } else {
+                sliderLabel.innerText = "50% (Original)";
+            }
+            const newHex = getGradientColor(val);
+            updateColor(newHex, "", "Nuance / Farbverlauf", false, false);
+        });
 
         // Live Suche + Smarte ENTER Funktion
         searchInput.addEventListener('input', handleSearch);
@@ -345,7 +411,7 @@
 
         picker.addEventListener('input', (e) => updateColor(e.target.value));
 
-        // Copy to Clipboard + Häkchen-Animation
+        // Copy to Clipboard (Der grüne Haken BLEIBT stehen bis zur Farbänderung)
         function copyText(elementId, label, iconElement) {
             const textToCopy = document.getElementById(elementId).innerText;
             if(textToCopy === '--') return;
@@ -353,13 +419,9 @@
             navigator.clipboard.writeText(textToCopy).then(() => {
                 showToast(`${label} kopiert: ${textToCopy}`);
                 
-                // Icon temporär zu einem grünen Häkchen ändern
+                // Grünes Häkchen setzen (wird erst bei updateColor wieder gelöscht)
                 if (iconElement) {
-                    const originalClass = iconElement.className;
                     iconElement.className = "copy-icon fa-solid fa-check text-emerald-500 font-bold transition scale-110";
-                    setTimeout(() => {
-                        iconElement.className = originalClass;
-                    }, 1500);
                 }
             }).catch(err => {
                 console.error("Fehler beim Kopieren: ", err);
@@ -381,17 +443,17 @@
 
         // History Management
         function saveHistory(hex) {
-            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v8') || '[]');
+            let hist = JSON.parse(localStorage.getItem('colorforge_hist_v9') || '[]');
             if (!hist.includes(hex)) {
                 hist.unshift(hex);
-                localStorage.setItem('colorforge_hist_v8', JSON.stringify(hist.slice(0, 12)));
+                localStorage.setItem('colorforge_hist_v9', JSON.stringify(hist.slice(0, 12)));
                 renderHistory();
             }
         }
 
         function renderHistory() {
             histContainer.innerHTML = '';
-            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v8') || '[]');
+            const hist = JSON.parse(localStorage.getItem('colorforge_hist_v9') || '[]');
             hist.forEach(hex => {
                 const div = document.createElement('div');
                 div.className = "w-10 h-10 rounded-xl cursor-pointer hover:scale-110 transition shadow-sm border border-slate-300 dark:border-slate-700 flex-shrink-0";
@@ -403,7 +465,7 @@
         }
 
         function clearHistory() {
-            localStorage.removeItem('colorforge_hist_v8');
+            localStorage.removeItem('colorforge_hist_v9');
             renderHistory();
         }
 
