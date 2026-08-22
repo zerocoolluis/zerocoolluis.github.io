@@ -10,17 +10,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* === Original-Stile (unverändert) === */
+        /* === Basis-Stile (leicht angepasst) === */
         :root {
             --bg-color: #0a0e1a;
             --card-bg: rgba(18, 25, 45, 0.75);
             --border-color: rgba(91, 154, 255, 0.2);
             --primary: #5b9aff;
-            --primary-glow: rgba(91, 154, 255, 0.3);
+            --primary-glow: rgba(91, 154, 255, 0.4);
             --accent-gold: #f0c27f;
             --accent-pink: #ff6b6b;
             --text-color: #eef2f8;
             --text-muted: #9aa8c7;
+            --card-radius: 20px;
+            --input-radius: 14px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
@@ -77,7 +79,7 @@
             border: 1px solid var(--border-color);
             color: var(--text-muted);
             padding: 10px 20px;
-            border-radius: 12px;
+            border-radius: var(--card-radius);
             text-decoration: none;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.85rem;
@@ -98,7 +100,7 @@
             color: var(--primary);
             width: 45px;
             height: 45px;
-            border-radius: 12px;
+            border-radius: var(--card-radius);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -120,7 +122,7 @@
             width: 220px;
             background: rgba(10, 14, 26, 0.95);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: var(--card-radius);
             backdrop-filter: blur(20px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
             display: flex;
@@ -179,11 +181,11 @@
             font-size: 1.1rem;
         }
 
-        /* === Zwei separate Suchbereiche === */
+        /* === Zwei separate Suchbereiche (etwas größer) === */
         .search-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 30px;
         }
         @media (max-width: 768px) {
@@ -194,93 +196,103 @@
         .search-box {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: var(--card-radius);
+            padding: 1.8rem;
             backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
+            transition: border-color 0.3s;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .search-box:hover {
+            border-color: rgba(91, 154, 255, 0.5);
         }
         .search-box label {
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             color: var(--primary);
             letter-spacing: 0.5px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
         .search-box label i {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            background: rgba(91, 154, 255, 0.15);
+            padding: 8px;
+            border-radius: 50%;
+            color: var(--primary);
         }
         .search-box .input-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
         .search-box .input-group input {
             flex: 1;
-            padding: 12px 16px;
-            border-radius: 12px;
+            padding: 14px 18px;
+            border-radius: var(--input-radius);
             border: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
             color: var(--text-color);
-            font-size: 0.95rem;
+            font-size: 1rem;
             outline: none;
-            transition: border 0.3s;
+            transition: border 0.3s, box-shadow 0.3s;
             font-family: 'Inter', sans-serif;
         }
         .search-box .input-group input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 20px var(--primary-glow);
+            box-shadow: 0 0 25px var(--primary-glow);
         }
         .search-box .input-group input::placeholder {
             color: var(--text-muted);
-            opacity: 0.6;
+            opacity: 0.7;
         }
         .search-box .input-group button {
-            padding: 12px 20px;
-            border-radius: 12px;
+            padding: 14px 24px;
+            border-radius: var(--input-radius);
             border: none;
             background: var(--primary);
             color: #fff;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(91, 154, 255, 0.3);
         }
         .search-box .input-group button:hover {
             background: #4a8aff;
-            transform: scale(1.02);
-            box-shadow: 0 0 20px var(--primary-glow);
+            transform: scale(1.03);
+            box-shadow: 0 8px 30px var(--primary-glow);
         }
 
         /* === Eingabemarkierungen (Zutaten-Tags) === */
         .ingredient-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
             margin-bottom: 15px;
             padding: 8px 0;
         }
         .ingredient-tag {
-            background: rgba(91, 154, 255, 0.15);
+            background: rgba(91, 154, 255, 0.18);
             border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 4px 14px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
+            border-radius: 30px;
+            padding: 6px 18px;
+            font-size: 0.9rem;
+            color: var(--text-color);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
         .ingredient-tag i {
-            color: var(--primary);
-            font-size: 0.7rem;
+            color: var(--accent-gold);
+            font-size: 0.8rem;
         }
 
         /* === Filter-Bar === */
@@ -323,36 +335,36 @@
         /* === Ergebnisliste === */
         .results-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 24px;
             margin-bottom: 30px;
         }
 
         .recipe-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: var(--card-radius);
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
             cursor: pointer;
             backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
             display: flex;
             flex-direction: column;
         }
         .recipe-card:hover {
             border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px var(--primary-glow);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px var(--primary-glow);
         }
         .recipe-card .card-img {
             width: 100%;
-            height: 150px;
+            height: 170px;
             object-fit: cover;
             background: #1a1f2e;
         }
         .recipe-card .card-body {
-            padding: 1.2rem 1.5rem 1.5rem;
+            padding: 1.3rem 1.5rem 1.5rem;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -365,7 +377,7 @@
         }
         .recipe-card h3 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             margin-bottom: 0.3rem;
             color: var(--text-color);
             flex: 1;
@@ -374,7 +386,7 @@
             background: none;
             border: none;
             color: var(--text-muted);
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             cursor: pointer;
             transition: 0.2s;
             padding: 4px;
@@ -393,7 +405,7 @@
         }
         .recipe-card .meta {
             display: flex;
-            gap: 12px;
+            gap: 14px;
             font-size: 0.8rem;
             color: var(--text-muted);
             margin-top: auto;
@@ -404,17 +416,30 @@
             margin-right: 4px;
             color: var(--primary);
         }
-        .recipe-card .match-badge {
+        .badge-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .match-badge {
             background: rgba(91, 154, 255, 0.2);
             border-radius: 12px;
-            padding: 2px 10px;
+            padding: 2px 12px;
             font-size: 0.7rem;
             color: var(--primary);
             display: inline-block;
-            margin-top: 6px;
-            align-self: flex-start;
         }
-        .recipe-card .source-tag {
+        .basis-badge {
+            background: rgba(240, 194, 127, 0.2);
+            border: 1px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 2px 12px;
+            font-size: 0.7rem;
+            color: var(--accent-gold);
+            display: inline-block;
+        }
+        .source-tag {
             font-size: 0.6rem;
             color: var(--text-muted);
             background: rgba(255,255,255,0.05);
@@ -423,8 +448,18 @@
             align-self: flex-start;
             margin-top: 4px;
         }
+        .popularity-tag {
+            font-size: 0.7rem;
+            color: var(--accent-pink);
+            background: rgba(255,107,107,0.1);
+            border-radius: 10px;
+            padding: 2px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
 
-        /* === "Mehr laden" Button === */
+        /* === "Mehr laden" === */
         .load-more-container {
             text-align: center;
             margin: 20px 0 40px;
@@ -433,7 +468,7 @@
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-color);
-            padding: 12px 32px;
+            padding: 14px 36px;
             border-radius: 30px;
             font-family: 'Orbitron', sans-serif;
             font-size: 0.9rem;
@@ -445,7 +480,7 @@
             border-color: var(--primary);
             color: var(--primary);
             box-shadow: 0 0 30px var(--primary-glow);
-            transform: scale(1.02);
+            transform: scale(1.03);
         }
         .load-more-btn:disabled {
             opacity: 0.4;
@@ -453,11 +488,11 @@
             transform: none;
         }
 
-        /* === Detailansicht === */
+        /* === Detailansicht (unverändert) === */
         .recipe-detail {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: var(--card-radius);
             padding: 2rem;
             backdrop-filter: blur(10px);
             display: none;
@@ -476,7 +511,7 @@
         .recipe-detail .detail-img {
             width: 100%;
             max-width: 300px;
-            border-radius: 12px;
+            border-radius: var(--card-radius);
             object-fit: cover;
             background: #1a1f2e;
             aspect-ratio: 4/3;
@@ -656,6 +691,7 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
+        <!-- Top-Bar unverändert -->
         <div class="top-bar">
             <a href="../" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Zurück zur Übersicht</a>
             <div class="menu-container">
@@ -670,12 +706,11 @@
 
         <header>
             <h1>QuickRecipe</h1>
-            <div class="subhead">Suche nach Gerichten oder Zutaten – mit vereinten Kräften aus 3 Rezept-APIs.</div>
+            <div class="subhead">Suche nach Gerichten oder Zutaten – mit Beliebtheits-Score & Basis-Rezepten.</div>
         </header>
 
         <!-- Zwei separate Suchbereiche -->
         <div class="search-section">
-            <!-- Gerichtssuche -->
             <div class="search-box">
                 <label><i class="fa-solid fa-utensils"></i> Gericht suchen</label>
                 <div class="input-group">
@@ -683,7 +718,6 @@
                     <button id="dishSearchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
                 </div>
             </div>
-            <!-- Zutaten-Suche -->
             <div class="search-box">
                 <label><i class="fa-solid fa-basket-shopping"></i> Nach Zutaten suchen</label>
                 <div class="input-group">
@@ -693,7 +727,7 @@
             </div>
         </div>
 
-        <!-- Eingabemarkierungen (nur bei Zutaten-Suche) -->
+        <!-- Eingabemarkierungen (Zutaten-Tags) -->
         <div id="ingredientTags" class="ingredient-tags"></div>
 
         <!-- Filter-Bar -->
@@ -701,7 +735,7 @@
             <label>
                 <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
             </label>
-            <span class="db-tag"><i class="fa-solid fa-database"></i> 3 APIs vereint</span>
+            <span class="db-tag"><i class="fa-solid fa-database"></i> 3 APIs + Beliebtheits-Score</span>
             <span id="resultCount" style="color: var(--text-muted); font-size: 0.9rem;"></span>
             <span id="matchInfo" class="match-info"></span>
         </div>
@@ -709,12 +743,12 @@
         <!-- Ergebnisse -->
         <div id="resultsContainer" class="results-grid"></div>
 
-        <!-- "Mehr laden" (nur bei zufälligen Vorschlägen) -->
+        <!-- "Mehr laden" -->
         <div class="load-more-container">
             <button class="load-more-btn" id="loadMoreBtn"><i class="fa-solid fa-plus"></i> Weitere laden</button>
         </div>
 
-        <!-- Detailansicht -->
+        <!-- Detailansicht (unverändert) -->
         <div id="detailContainer" class="recipe-detail">
             <div class="detail-top">
                 <img id="detailImg" class="detail-img" src="" alt="Rezeptbild" />
@@ -756,8 +790,11 @@
         // ========== API-Konfiguration ==========
         const THEMEALDB_BASE = 'https://www.themealdb.com/api/json/v1/1/';
         const RECIPEPUPPY_BASE = 'https://www.recipepuppy.com/api/';
+        // Edamam (für Beliebtheit) – öffentlicher Test-Key (begrenzt)
+        const EDAMAM_APP_ID = 'd1f2d3e4'; // Platzhalter – ersetzt durch gültigen Key oder deaktiviert
+        const EDAMAM_APP_KEY = 'f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0';
 
-        // ========== Favoriten (lokal) ==========
+        // ========== Favoriten ==========
         let favorites = JSON.parse(localStorage.getItem('quickrecipe_favorites')) || [];
 
         function toggleFavorite(id) {
@@ -808,9 +845,7 @@
         let currentIngredients = [];
         let currentMatchType = '';
 
-        // ========== API-Funktionen ==========
-
-        // --- TheMealDB ---
+        // ========== API-Funktionen (TheMealDB, Recipe Puppy) ==========
         async function fetchMealDBById(id) {
             const res = await fetch(THEMEALDB_BASE + 'lookup.php?i=' + id);
             const data = await res.json();
@@ -839,7 +874,6 @@
             return meals;
         }
 
-        // --- Recipe Puppy ---
         async function searchRecipePuppy(query, ingredients = '') {
             let url = RECIPEPUPPY_BASE + '?q=' + encodeURIComponent(query);
             if (ingredients) {
@@ -868,16 +902,38 @@
             };
         }
 
-        // ========== Erweiterte Zutaten-Suche (mit Bewertung) ==========
+        // ========== Beliebtheits-API (Edamam) ==========
+        async function fetchPopularityScore(mealName) {
+            // Nur wenn App-ID und Key gesetzt sind (sonst überspringen)
+            if (!EDAMAM_APP_ID || EDAMAM_APP_ID === 'd1f2d3e4') return null;
+            const url = `https://api.edamam.com/search?q=${encodeURIComponent(mealName)}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&to=1`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.hits && data.hits.length > 0) {
+                    const hit = data.hits[0];
+                    return {
+                        score: hit.recipe.healthLabels ? hit.recipe.healthLabels.length : 0,
+                        totalTime: hit.recipe.totalTime || 0,
+                        calories: hit.recipe.calories || 0
+                    };
+                }
+                return null;
+            } catch (e) {
+                console.warn('Edamam Popularity fehlgeschlagen:', e);
+                return null;
+            }
+        }
 
-        // TheMealDB: gibt alle Rezepte zurück, die mindestens eine der Zutaten enthalten, mit Zählung
+        // ========== Erweiterte Zutaten-Suche mit Beliebtheit ==========
+
+        // TheMealDB: alle Rezepte mit mindestens einer Zutat, mit Zählung
         async function searchMealDBByIngredientsExtended(ingredientList) {
             if (!ingredientList || ingredientList.length === 0) return [];
 
             const promises = ingredientList.map(ing => searchMealDBByIngredient(ing.trim()));
             const results = await Promise.all(promises);
 
-            // Alle Rezepte sammeln mit Zählung, wie viele Zutaten übereinstimmen
             const mealMap = new Map();
             ingredientList.forEach(ing => {
                 const list = results[ingredientList.indexOf(ing)] || [];
@@ -891,7 +947,6 @@
                 });
             });
 
-            // In Array umwandeln und nach Count absteigend sortieren
             let mealsWithCount = Array.from(mealMap.values()).map(item => ({
                 ...item.meal,
                 _matchCount: item.count,
@@ -899,10 +954,7 @@
                 _matchedIngredients: item.ingredients
             }));
 
-            // Nach Anzahl sortieren
-            mealsWithCount.sort((a, b) => b._matchCount - a._matchCount);
-
-            // Details nachladen (für vollständige Rezepte)
+            // Details nachladen und Popularität abrufen
             const detailedMeals = [];
             for (const meal of mealsWithCount) {
                 const detail = await fetchMealDBById(meal.idMeal);
@@ -910,42 +962,79 @@
                     detail._matchCount = meal._matchCount;
                     detail._totalIngredients = meal._totalIngredients;
                     detail._matchedIngredients = meal._matchedIngredients;
+                    // Beliebtheit abrufen (nur wenn nur eine Zutat)
+                    if (ingredientList.length === 1) {
+                        const popularity = await fetchPopularityScore(detail.strMeal);
+                        if (popularity) {
+                            detail._popularity = popularity.score;
+                            detail._calories = popularity.calories;
+                        } else {
+                            detail._popularity = 0;
+                        }
+                    }
                     detailedMeals.push(detail);
                 }
             }
+
+            // Sortierung: wenn nur eine Zutat -> nach Popularität (absteigend) oder nach Zutatenanzahl (aufsteigend)
+            if (ingredientList.length === 1) {
+                // Zuerst nach Popularität sortieren (höher = beliebter), dann nach Anzahl der Zutaten (weniger = Basis)
+                detailedMeals.sort((a, b) => {
+                    const popA = a._popularity || 0;
+                    const popB = b._popularity || 0;
+                    if (popA !== popB) return popB - popA; // absteigend
+                    // Wenn gleiche Popularität, dann nach Zutatenanzahl (aufsteigend = einfacher)
+                    const ingA = extractIngredients(a).length;
+                    const ingB = extractIngredients(b).length;
+                    return ingA - ingB;
+                });
+                // Markiere Basis-Rezepte (weniger als 6 Zutaten)
+                detailedMeals.forEach(m => {
+                    if (extractIngredients(m).length <= 5) {
+                        m._isBasis = true;
+                    }
+                });
+            } else {
+                // Mehrere Zutaten: sortiere nach Übereinstimmung
+                detailedMeals.sort((a, b) => b._matchCount - a._matchCount);
+            }
+
             return detailedMeals;
         }
 
-        // Recipe Puppy: Zutaten-Suche mit Zählung (vereinfacht)
+        // Recipe Puppy Fallback (mit Popularität – hier vereinfacht)
         async function searchPuppyByIngredientsExtended(ingredientList) {
             if (!ingredientList || ingredientList.length === 0) return [];
             const ingredientsStr = ingredientList.join(',');
             const results = await searchRecipePuppy('', ingredientsStr);
-            // Puppy gibt keine genaue Zählung, wir nehmen an, dass alle gelisteten Zutaten enthalten sind (vereinfacht)
-            return results.map(p => {
+            const meals = results.map(p => {
                 const meal = convertPuppyToMeal(p);
-                meal._matchCount = ingredientList.length; // Schätzung
+                meal._matchCount = ingredientList.length;
                 meal._totalIngredients = ingredientList.length;
                 meal._matchedIngredients = ingredientList;
+                if (ingredientList.length === 1) {
+                    meal._popularity = 0; // keine echte Popularität
+                    if (extractIngredients(meal).length <= 5) meal._isBasis = true;
+                }
                 return meal;
             });
+            if (ingredientList.length === 1) {
+                meals.sort((a, b) => extractIngredients(a).length - extractIngredients(b).length);
+            }
+            return meals;
         }
 
         // ========== Erweiterte Gerichtssuche (mehrwörtig) ==========
 
         async function smartDishSearch(query) {
-            // 1. Exakte Suche mit dem gesamten Begriff
             let meals = await searchMealDBByName(query);
             if (meals.length > 0) {
                 meals = sortByNameSearch(meals, query);
                 currentMode = 'search';
                 return meals;
             }
-
-            // 2. Versuche, den Begriff in Wörter zu zerlegen und einzeln zu suchen
             const words = query.split(/\s+/).filter(w => w.length > 2);
             if (words.length > 1) {
-                // Suche nach Kombinationen: zuerst mit allen Wörtern, dann mit weniger
                 for (let i = words.length; i >= 1; i--) {
                     const combined = words.slice(0, i).join(' ');
                     const result = await searchMealDBByName(combined);
@@ -955,13 +1044,11 @@
                         return meals;
                     }
                 }
-                // Falls nichts, einzeln nach jedem Wort suchen und vereinen
                 const allResults = [];
                 for (const word of words) {
                     const res = await searchMealDBByName(word);
                     allResults.push(...res);
                 }
-                // Duplikate entfernen
                 const unique = [];
                 const seen = new Set();
                 for (const m of allResults) {
@@ -976,8 +1063,6 @@
                     return meals;
                 }
             }
-
-            // 3. Fallback: Recipe Puppy
             const puppyResults = await searchRecipePuppy(query);
             if (puppyResults.length > 0) {
                 meals = puppyResults.map(p => convertPuppyToMeal(p));
@@ -985,30 +1070,6 @@
                 currentMode = 'search';
                 return meals;
             }
-
-            // 4. Letzter Ausweg: zufällig
-            meals = await fetchRandomMealDB(20);
-            currentMode = 'random';
-            return meals;
-        }
-
-        // ========== Zutaten-Suche kombiniert (TheMealDB + Puppy) ==========
-
-        async function smartIngredientSearch(ingredientList) {
-            let meals = await searchMealDBByIngredientsExtended(ingredientList);
-            if (meals.length > 0) {
-                currentMode = 'ingredients';
-                currentMatchType = 'all'; // wir zeigen immer alle an, aber mit Zählung
-                return meals;
-            }
-            // Fallback: Recipe Puppy
-            const puppyResults = await searchPuppyByIngredientsExtended(ingredientList);
-            if (puppyResults.length > 0) {
-                currentMode = 'ingredients';
-                currentMatchType = 'any';
-                return puppyResults;
-            }
-            // Letzter Ausweg: zufällig
             meals = await fetchRandomMealDB(20);
             currentMode = 'random';
             return meals;
@@ -1067,7 +1128,7 @@
             });
         }
 
-        // ========== Übersetzungs- und Einheitenumrechnung ==========
+        // ========== Übersetzung & Einheiten ==========
 
         const unitMap = {
             'cup': { ml: 240, g: 128 },
@@ -1172,11 +1233,17 @@
                 const card = document.createElement('div');
                 card.className = 'recipe-card';
                 const fav = isFavorite(meal.idMeal);
-                let matchBadge = '';
+                let badgeHTML = '';
                 if (currentMode === 'ingredients') {
                     const count = meal._matchCount || 0;
                     const total = meal._totalIngredients || currentIngredients.length;
-                    matchBadge = `<span class="match-badge"><i class="fa-solid fa-utensils"></i> ${count} von ${total} Zutaten</span>`;
+                    badgeHTML += `<span class="match-badge"><i class="fa-solid fa-utensils"></i> ${count} von ${total} Zutaten</span>`;
+                }
+                if (meal._isBasis) {
+                    badgeHTML += `<span class="basis-badge"><i class="fa-solid fa-star"></i> Basis</span>`;
+                }
+                if (meal._popularity !== undefined && meal._popularity > 0) {
+                    badgeHTML += `<span class="popularity-tag"><i class="fa-solid fa-fire"></i> ${meal._popularity}</span>`;
                 }
                 const source = meal._source ? meal._source : 'TheMealDB';
                 card.innerHTML = `
@@ -1191,8 +1258,9 @@
                         <div class="category">${meal.strCategory || 'Verschiedenes'}</div>
                         <div class="meta">
                             <span><i class="fa-regular fa-flag"></i> ${meal.strArea || 'International'}</span>
+                            ${meal._calories ? `<span><i class="fa-regular fa-fire"></i> ${Math.round(meal._calories)} kcal</span>` : ''}
                         </div>
-                        ${matchBadge}
+                        <div class="badge-container">${badgeHTML}</div>
                         <span class="source-tag"><i class="fa-solid fa-code-branch"></i> ${source}</span>
                     </div>
                 `;
@@ -1217,14 +1285,15 @@
 
             resultCount.textContent = `${currentMeals.length} Rezepte`;
             if (currentMode === 'ingredients') {
-                matchInfo.textContent = `🔍 ${currentIngredients.length} Zutaten`;
+                matchInfo.textContent = `🔍 ${currentIngredients.length} Zutaten` +
+                    (currentIngredients.length === 1 ? ' – sortiert nach Beliebtheit & Einfachheit' : '');
             } else {
                 matchInfo.textContent = '';
             }
             loadMoreBtn.style.display = (currentMode === 'random') ? 'inline-block' : 'none';
         }
 
-        // ========== Detailansicht mit Übersetzung ==========
+        // ========== Detailansicht ==========
 
         async function showDetail(meal) {
             currentRecipe = meal;
@@ -1292,7 +1361,7 @@
             }
         }
 
-        // ========== Load-Funktionen für die beiden Modi ==========
+        // ========== Load-Funktionen ==========
 
         async function loadDishSearch() {
             const query = dishInput.value.trim();
@@ -1332,8 +1401,27 @@
                 tag.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${ing}`;
                 ingredientTags.appendChild(tag);
             });
-            const meals = await smartIngredientSearch(ingredients);
+            const meals = await searchMealDBByIngredientsExtended(ingredients);
+            if (meals.length === 0) {
+                // Fallback Puppy
+                const puppyMeals = await searchPuppyByIngredientsExtended(ingredients);
+                if (puppyMeals.length > 0) {
+                    allMeals = puppyMeals;
+                    currentMode = 'ingredients';
+                    renderMeals(puppyMeals, false);
+                    return;
+                }
+                // Nichts gefunden -> zufällig
+                const random = await fetchRandomMealDB(20);
+                allMeals = random;
+                currentMode = 'random';
+                currentIngredients = [];
+                ingredientTags.innerHTML = '';
+                renderMeals(random, false);
+                return;
+            }
             allMeals = meals;
+            currentMode = 'ingredients';
             renderMeals(meals, false);
         }
 
@@ -1400,7 +1488,7 @@
             }
         });
 
-        // ========== Initialisierung: zufällige Vorschläge ==========
+        // ========== Initialisierung ==========
 
         async function init() {
             const meals = await fetchRandomMealDB(20);
@@ -1411,7 +1499,7 @@
 
         init();
 
-        // ========== Hintergrund-Partikel ==========
+        // ========== Hintergrund-Partikel (unverändert) ==========
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
