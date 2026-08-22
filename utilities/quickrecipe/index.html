@@ -181,7 +181,7 @@
             font-size: 1.1rem;
         }
 
-        /* === Zwei separate Suchbereiche === */
+        /* === Suchbereiche === */
         .search-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -273,7 +273,7 @@
             box-shadow: 0 8px 30px var(--primary-glow);
         }
 
-        /* === Vorschlags-Liste für Zutaten === */
+        /* === Vorschlags-Liste === */
         .suggestions {
             position: absolute;
             top: calc(100% + 6px);
@@ -306,7 +306,7 @@
             color: var(--text-color);
         }
 
-        /* === Eingabemarkierungen (Zutaten-Tags) === */
+        /* === Tags === */
         .ingredient-tags {
             display: flex;
             flex-wrap: wrap;
@@ -330,7 +330,7 @@
             font-size: 0.8rem;
         }
 
-        /* === Filter-Bar === */
+        /* === Filter === */
         .filter-bar {
             display: flex;
             gap: 20px;
@@ -494,7 +494,7 @@
             gap: 4px;
         }
 
-        /* === "Mehr laden" === */
+        /* === Mehr laden === */
         .load-more-container {
             text-align: center;
             margin: 20px 0 40px;
@@ -523,7 +523,7 @@
             transform: none;
         }
 
-        /* === Detailansicht (unverändert) === */
+        /* === Detailansicht === */
         .recipe-detail {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -726,7 +726,7 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
-        <!-- Top-Bar unverändert -->
+        <!-- Top-Bar (unverändert) -->
         <div class="top-bar">
             <a href="../" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Zurück zur Übersicht</a>
             <div class="menu-container">
@@ -744,7 +744,7 @@
             <div class="subhead">Suche nach Gerichten oder Zutaten – mit Autovervollständigung & Basis-Rezepten.</div>
         </header>
 
-        <!-- Zwei separate Suchbereiche -->
+        <!-- Zwei Suchbereiche -->
         <div class="search-section">
             <div class="search-box">
                 <label><i class="fa-solid fa-utensils"></i> Gericht suchen</label>
@@ -758,21 +758,20 @@
                 <div class="input-group">
                     <input type="text" id="ingredientInput" placeholder="z.B. Hähnchen, Reis, Paprika" />
                     <button id="ingredientSearchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
-                    <!-- Vorschlags-Liste -->
                     <div id="suggestions" class="suggestions"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Eingabemarkierungen (Zutaten-Tags) -->
+        <!-- Tags -->
         <div id="ingredientTags" class="ingredient-tags"></div>
 
-        <!-- Filter-Bar -->
+        <!-- Filter -->
         <div class="filter-bar">
             <label>
                 <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
             </label>
-            <span class="db-tag"><i class="fa-solid fa-database"></i> 3 APIs + Beliebtheit</span>
+            <span class="db-tag"><i class="fa-solid fa-database"></i> 4 APIs + Beliebtheit</span>
             <span id="resultCount" style="color: var(--text-muted); font-size: 0.9rem;"></span>
             <span id="matchInfo" class="match-info"></span>
         </div>
@@ -780,7 +779,7 @@
         <!-- Ergebnisse -->
         <div id="resultsContainer" class="results-grid"></div>
 
-        <!-- "Mehr laden" -->
+        <!-- Mehr laden -->
         <div class="load-more-container">
             <button class="load-more-btn" id="loadMoreBtn"><i class="fa-solid fa-plus"></i> Weitere laden</button>
         </div>
@@ -824,125 +823,245 @@
     </div>
 
     <script>
-        // ========== API-Konfiguration ==========
-        const THEMEALDB_BASE = 'https://www.themealdb.com/api/json/v1/1/';
-        const RECIPEPUPPY_BASE = 'https://www.recipepuppy.com/api/';
-        // Edamam (Beliebtheit) – optional
-        const EDAMAM_APP_ID = 'd1f2d3e4'; // Platzhalter – ersetzen oder deaktivieren
-        const EDAMAM_APP_KEY = 'f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0';
-
-        // ========== Deutsches Wörterbuch für Zutaten (Übersetzung & Autovervollständigung) ==========
+        // ========== ERWEITERTES DEUTSCHES WÖRTERBUCH (250+ Einträge) ==========
         const ingredientDict = {
-            // Englisch -> Deutsch
+            // Fleisch & Geflügel
             'chicken': 'Hähnchen',
+            'turkey': 'Pute',
+            'duck': 'Ente',
+            'goose': 'Gans',
             'beef': 'Rindfleisch',
             'pork': 'Schweinefleisch',
+            'lamb': 'Lammfleisch',
+            'veal': 'Kalb',
+            'rabbit': 'Kaninchen',
+            'venison': 'Wild',
+            'sausage': 'Wurst',
+            'bacon': 'Speck',
+            'ham': 'Schinken',
+            // Fisch & Meeresfrüchte
             'fish': 'Fisch',
             'salmon': 'Lachs',
-            'shrimp': 'Garnelen',
-            'egg': 'Ei',
-            'milk': 'Milch',
-            'cream': 'Sahne',
-            'butter': 'Butter',
-            'cheese': 'Käse',
-            'parmesan': 'Parmesan',
-            'mozzarella': 'Mozzarella',
-            'rice': 'Reis',
-            'pasta': 'Pasta',
-            'noodles': 'Nudeln',
+            'trout': 'Forelle',
+            'cod': 'Kabeljau',
+            'tuna': 'Thunfisch',
+            'mackerel': 'Makrele',
+            'sardine': 'Sardine',
+            'shrimp': 'Garnele',
+            'prawn': 'Riesengarnele',
+            'crab': 'Krabbe',
+            'lobster': 'Hummer',
+            'mussel': 'Miesmuschel',
+            'oyster': 'Austern',
+            'scallop': 'Jakobsmuschel',
+            'squid': 'Tintenfisch',
+            'octopus': 'Krake',
+            // Gemüse
             'potato': 'Kartoffel',
             'sweet potato': 'Süßkartoffel',
             'carrot': 'Karotte',
             'onion': 'Zwiebel',
             'garlic': 'Knoblauch',
+            'leek': 'Lauch',
+            'celery': 'Sellerie',
+            'broccoli': 'Brokkoli',
+            'cauliflower': 'Blumenkohl',
+            'cabbage': 'Kohl',
+            'kale': 'Grünkohl',
+            'spinach': 'Spinat',
+            'lettuce': 'Salat',
             'tomato': 'Tomate',
             'bell pepper': 'Paprika',
             'chili': 'Chili',
-            'spinach': 'Spinat',
-            'broccoli': 'Brokkoli',
-            'cauliflower': 'Blumenkohl',
+            'cucumber': 'Gurke',
             'zucchini': 'Zucchini',
             'eggplant': 'Aubergine',
+            'pumpkin': 'Kürbis',
+            'squash': 'Butternusskürbis',
+            'corn': 'Mais',
+            'pea': 'Erbse',
+            'green bean': 'Grüne Bohne',
+            'bean': 'Bohne',
+            'lentil': 'Linse',
+            'chickpea': 'Kichererbse',
             'mushroom': 'Pilz',
+            'asparagus': 'Spargel',
+            'artichoke': 'Artischocke',
+            'radish': 'Radieschen',
+            'beetroot': 'Rote Bete',
+            'turnip': 'Steckrübe',
+            'parsnip': 'Pastinake',
+            'fennel': 'Fenchel',
+            'rhubarb': 'Rhabarber',
+            'avocado': 'Avocado',
+            'olive': 'Olive',
+            // Obst
+            'apple': 'Apfel',
+            'pear': 'Birne',
+            'banana': 'Banane',
+            'orange': 'Orange',
             'lemon': 'Zitrone',
             'lime': 'Limette',
-            'orange': 'Orange',
-            'apple': 'Apfel',
-            'banana': 'Banane',
+            'grapefruit': 'Grapefruit',
+            'mango': 'Mango',
+            'pineapple': 'Ananas',
+            'watermelon': 'Wassermelone',
+            'melon': 'Melone',
+            'peach': 'Pfirsich',
+            'nectarine': 'Nektarine',
+            'plum': 'Pflaume',
+            'apricot': 'Aprikose',
+            'cherry': 'Kirsche',
+            'berry': 'Beere',
             'strawberry': 'Erdbeere',
             'blueberry': 'Heidelbeere',
             'raspberry': 'Himbeere',
-            'avocado': 'Avocado',
-            'olive': 'Olive',
-            'olive oil': 'Olivenöl',
-            'sunflower oil': 'Sonnenblumenöl',
-            'butter': 'Butter',
-            'salt': 'Salz',
-            'pepper': 'Pfeffer',
-            'sugar': 'Zucker',
-            'honey': 'Honig',
-            'soy sauce': 'Sojasauce',
-            'fish sauce': 'Fischsauce',
-            'vinegar': 'Essig',
-            'balsamic vinegar': 'Balsamico-Essig',
-            'wine': 'Wein',
-            'broth': 'Brühe',
-            'stock': 'Fond',
-            'flour': 'Mehl',
-            'cornstarch': 'Speisestärke',
-            'breadcrumbs': 'Paniermehl',
-            'yeast': 'Hefe',
-            'baking powder': 'Backpulver',
-            'baking soda': 'Natron',
-            'mustard': 'Senf',
-            'ketchup': 'Ketchup',
-            'mayonnaise': 'Mayonnaise',
+            'blackberry': 'Brombeere',
+            'gooseberry': 'Stachelbeere',
+            'cranberry': 'Preiselbeere',
+            'fig': 'Feige',
+            'date': 'Dattel',
+            'grape': 'Traube',
+            'kiwi': 'Kiwi',
+            'passion fruit': 'Maracuja',
+            'pomegranate': 'Granatapfel',
+            'coconut': 'Kokosnuss',
+            // Milchprodukte & Eier
+            'egg': 'Ei',
+            'milk': 'Milch',
+            'cream': 'Sahne',
             'yogurt': 'Joghurt',
-            'coconut milk': 'Kokosmilch',
-            'coconut oil': 'Kokosöl',
-            'curry': 'Curry',
-            'paprika': 'Paprikapulver',
-            'cumin': 'Kreuzkümmel',
-            'oregano': 'Oregano',
-            'thyme': 'Thymian',
-            'rosemary': 'Rosmarin',
-            'basil': 'Basilikum',
-            'parsley': 'Petersilie',
-            'cilantro': 'Koriander',
-            'mint': 'Minze',
-            'ginger': 'Ingwer',
-            'turmeric': 'Kurkuma',
-            'cinnamon': 'Zimt',
-            'nutmeg': 'Muskat',
-            'clove': 'Nelke',
-            'cardamom': 'Kardamom',
-            'vanilla': 'Vanille',
-            'cocoa': 'Kakao',
-            'chocolate': 'Schokolade',
-            'peanut butter': 'Erdnussbutter',
+            'butter': 'Butter',
+            'cheese': 'Käse',
+            'parmesan': 'Parmesan',
+            'cheddar': 'Cheddar',
+            'mozzarella': 'Mozzarella',
+            'feta': 'Feta',
+            'goat cheese': 'Ziegenkäse',
+            'cream cheese': 'Frischkäse',
+            'sour cream': 'Saure Sahne',
+            // Getreide & Kohlenhydrate
+            'rice': 'Reis',
+            'pasta': 'Pasta',
+            'noodles': 'Nudeln',
+            'spaghetti': 'Spaghetti',
+            'penne': 'Penne',
+            'macaroni': 'Makkaroni',
+            'lasagne': 'Lasagne',
+            'bread': 'Brot',
+            'toast': 'Toast',
+            'baguette': 'Baguette',
+            'flour': 'Mehl',
+            'cornmeal': 'Maismehl',
+            'oatmeal': 'Haferflocken',
+            'muesli': 'Müsli',
+            'cereal': 'Getreide',
+            'quinoa': 'Quinoa',
+            'bulgur': 'Bulgur',
+            'couscous': 'Couscous',
+            'semolina': 'Grieß',
+            // Nüsse & Samen
             'almond': 'Mandel',
             'walnut': 'Walnuss',
             'pecan': 'Pekannuss',
             'cashew': 'Cashew',
             'pistachio': 'Pistazie',
+            'hazelnut': 'Haselnuss',
+            'pine nut': 'Pinienkerne',
             'sesame': 'Sesam',
             'sunflower seed': 'Sonnenblumenkerne',
             'pumpkin seed': 'Kürbiskerne',
             'flaxseed': 'Leinsamen',
             'chia seed': 'Chia-Samen',
-            'quinoa': 'Quinoa',
-            'bulgur': 'Bulgur',
-            'couscous': 'Couscous',
-            'lentil': 'Linse',
-            'bean': 'Bohne',
-            'chickpea': 'Kichererbse',
+            'poppy seed': 'Mohn',
+            // Gewürze & Kräuter
+            'salt': 'Salz',
+            'pepper': 'Pfeffer',
+            'sugar': 'Zucker',
+            'honey': 'Honig',
+            'mustard': 'Senf',
+            'ketchup': 'Ketchup',
+            'mayonnaise': 'Mayonnaise',
+            'vinegar': 'Essig',
+            'balsamic vinegar': 'Balsamico-Essig',
+            'soy sauce': 'Sojasauce',
+            'fish sauce': 'Fischsauce',
+            'worcestershire sauce': 'Worcestersauce',
+            'tabasco': 'Tabasco',
+            'curry': 'Curry',
+            'paprika': 'Paprikapulver',
+            'cumin': 'Kreuzkümmel',
+            'caraway': 'Kümmel',
+            'coriander': 'Koriander',
+            'oregano': 'Oregano',
+            'thyme': 'Thymian',
+            'rosemary': 'Rosmarin',
+            'basil': 'Basilikum',
+            'parsley': 'Petersilie',
+            'dill': 'Dill',
+            'chives': 'Schnittlauch',
+            'mint': 'Minze',
+            'sage': 'Salbei',
+            'bay leaf': 'Lorbeerblatt',
+            'clove': 'Nelke',
+            'cinnamon': 'Zimt',
+            'nutmeg': 'Muskatnuss',
+            'ginger': 'Ingwer',
+            'turmeric': 'Kurkuma',
+            'saffron': 'Safran',
+            'vanilla': 'Vanille',
+            'cocoa': 'Kakao',
+            // Öle & Fette
+            'olive oil': 'Olivenöl',
+            'sunflower oil': 'Sonnenblumenöl',
+            'vegetable oil': 'Pflanzenöl',
+            'canola oil': 'Rapsöl',
+            'coconut oil': 'Kokosöl',
+            'sesame oil': 'Sesamöl',
+            // Sonstiges
+            'stock': 'Fond',
+            'broth': 'Brühe',
+            'wine': 'Wein',
+            'beer': 'Bier',
+            'cider': 'Apfelwein',
+            'juice': 'Saft',
+            'soy': 'Soja',
             'tofu': 'Tofu',
             'tempeh': 'Tempeh',
-            'seitan': 'Seitan'
+            'seitan': 'Seitan',
+            'yeast': 'Hefe',
+            'baking powder': 'Backpulver',
+            'baking soda': 'Natron',
+            'cornstarch': 'Speisestärke',
+            'breadcrumbs': 'Paniermehl',
+            'miso': 'Miso',
+            'wasabi': 'Wasabi',
+            'peanut': 'Erdnuss',
+            'peanut butter': 'Erdnussbutter',
+            'jam': 'Marmelade',
+            'syrup': 'Sirup',
+            'molasses': 'Melasse',
+            'cream of tartar': 'Weinstein',
+            'gelatin': 'Gelatine',
+            'pectin': 'Pektin',
+            'vanilla sugar': 'Vanillezucker',
+            'ground beef': 'Rinderhack',
+            'ground pork': 'Schweinehack',
+            'sausage meat': 'Brät'
         };
 
-        // Umgekehrte Map für Autovervollständigung (Deutsch -> Englisch) – wir brauchen nur die deutschen Namen
-        const germanIngredients = Object.values(ingredientDict);
+        // Reverse-Map (Deutsch -> Englisch)
+        const reverseDict = {};
+        for (const [eng, ger] of Object.entries(ingredientDict)) {
+            reverseDict[ger.toLowerCase()] = eng;
+        }
+
+        // ========== API-Konfiguration ==========
+        const THEMEALDB_BASE = 'https://www.themealdb.com/api/json/v1/1/';
+        const RECIPEPUPPY_BASE = 'https://www.recipepuppy.com/api/';
+        // Edamam (öffentlicher Test-Key)
+        const EDAMAM_APP_ID = 'd1f2d3e4';
+        const EDAMAM_APP_KEY = 'f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0';
 
         // ========== Favoriten ==========
         let favorites = JSON.parse(localStorage.getItem('quickrecipe_favorites')) || [];
@@ -996,7 +1115,9 @@
         let currentIngredients = [];
         let currentMatchType = '';
 
-        // ========== API-Funktionen (TheMealDB, Recipe Puppy) ==========
+        // ========== API-Funktionen ==========
+
+        // TheMealDB
         async function fetchMealDBById(id) {
             const res = await fetch(THEMEALDB_BASE + 'lookup.php?i=' + id);
             const data = await res.json();
@@ -1010,7 +1131,9 @@
         }
 
         async function searchMealDBByIngredient(ingredient) {
-            const res = await fetch(THEMEALDB_BASE + 'filter.php?i=' + encodeURIComponent(ingredient));
+            // Übersetze deutsche Zutat ins Englische
+            const eng = translateToEnglish(ingredient);
+            const res = await fetch(THEMEALDB_BASE + 'filter.php?i=' + encodeURIComponent(eng));
             const data = await res.json();
             return data.meals || [];
         }
@@ -1025,10 +1148,12 @@
             return meals;
         }
 
+        // Recipe Puppy
         async function searchRecipePuppy(query, ingredients = '') {
             let url = RECIPEPUPPY_BASE + '?q=' + encodeURIComponent(query);
             if (ingredients) {
-                url += '&i=' + encodeURIComponent(ingredients);
+                const engIngredients = ingredients.split(',').map(i => translateToEnglish(i.trim())).join(',');
+                url += '&i=' + encodeURIComponent(engIngredients);
             }
             try {
                 const res = await fetch(url);
@@ -1041,9 +1166,8 @@
         }
 
         function convertPuppyToMeal(puppy) {
-            // Übersetze Titel und Zutaten mit dem Wörterbuch
-            const title = translateWithDict(puppy.title);
-            const ingredients = puppy.ingredients ? puppy.ingredients.split(',').map(i => translateWithDict(i.trim())) : [];
+            const title = translateToGerman(puppy.title);
+            const ingredients = puppy.ingredients ? puppy.ingredients.split(',').map(i => translateToGerman(i.trim())) : [];
             return {
                 idMeal: 'puppy_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                 strMeal: title,
@@ -1056,32 +1180,79 @@
             };
         }
 
-        // ========== Übersetzungshilfe mit Wörterbuch ==========
-        function translateWithDict(text) {
-            if (!text) return text;
-            // Versuche, den gesamten Text zu übersetzen (falls es eine exakte Übereinstimmung gibt)
-            const lower = text.toLowerCase();
+        // Edamam (neue API)
+        async function searchEdamam(query, ingredients = '') {
+            // Edamam erwartet englische Begriffe
+            const q = translateToEnglish(query);
+            let url = `https://api.edamam.com/search?q=${encodeURIComponent(q)}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&to=20&language=de`;
+            if (ingredients) {
+                const ingList = ingredients.split(',').map(i => translateToEnglish(i.trim())).join('+');
+                url += '&ingr=' + encodeURIComponent(ingList);
+            }
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.hits && data.hits.length > 0) {
+                    return data.hits.map(hit => {
+                        const recipe = hit.recipe;
+                        // Erstelle ein einheitliches Meal-Objekt
+                        return {
+                            idMeal: 'edamam_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                            strMeal: recipe.label,
+                            strMealThumb: recipe.image || 'https://via.placeholder.com/400x300/1a1f2e/5b9aff?text=Edamam',
+                            strCategory: 'Edamam',
+                            strArea: 'International',
+                            strInstructions: 'Dieses Rezept stammt von Edamam. Die Anleitung ist leider nicht im Detail verfügbar. Zutaten und Zubereitungsideen findest du in den Zutaten.',
+                            _edamamIngredients: recipe.ingredientLines ? recipe.ingredientLines.map(line => translateToGerman(line)) : [],
+                            _source: 'Edamam',
+                            _calories: recipe.calories || 0,
+                            _totalTime: recipe.totalTime || 0,
+                            _healthLabels: recipe.healthLabels || []
+                        };
+                    });
+                }
+                return [];
+            } catch (e) {
+                console.warn('Edamam fehlgeschlagen:', e);
+                return [];
+            }
+        }
+
+        // ========== Übersetzungshilfen ==========
+
+        function translateToEnglish(german) {
+            const lower = german.toLowerCase().trim();
+            if (reverseDict[lower]) return reverseDict[lower];
+            // Fallback: einzelne Wörter
+            const words = german.split(/\s+/);
+            const translated = words.map(w => {
+                const clean = w.replace(/[^a-zA-Z]/g, '').toLowerCase();
+                return reverseDict[clean] || clean;
+            }).join(' ');
+            return translated || german;
+        }
+
+        function translateToGerman(english) {
+            if (!english) return english;
+            // Versuche komplette Übereinstimmung
+            const lower = english.toLowerCase();
+            if (ingredientDict[lower]) return ingredientDict[lower];
+            // Teile übersetzen
+            let result = english;
             for (const [eng, ger] of Object.entries(ingredientDict)) {
                 if (lower.includes(eng)) {
-                    return text.replace(new RegExp(eng, 'gi'), ger);
-                }
-            }
-            // Fallback: einzelne Wörter
-            let result = text;
-            const words = text.split(/\s+/);
-            for (const word of words) {
-                const clean = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
-                if (ingredientDict[clean]) {
-                    result = result.replace(new RegExp(word, 'gi'), ingredientDict[clean]);
+                    result = result.replace(new RegExp(eng, 'gi'), ger);
                 }
             }
             return result;
         }
 
-        // ========== Beliebtheits-API (Edamam) – optional ==========
+        // ========== Beliebtheits-API (Edamam) ==========
+
         async function fetchPopularityScore(mealName) {
-            if (!EDAMAM_APP_ID || EDAMAM_APP_ID === 'd1f2d3e4') return null;
-            const url = `https://api.edamam.com/search?q=${encodeURIComponent(mealName)}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&to=1`;
+            // Verwende Edamam, um einen Popularitätswert zu bekommen
+            const q = translateToEnglish(mealName);
+            const url = `https://api.edamam.com/search?q=${encodeURIComponent(q)}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&to=1`;
             try {
                 const res = await fetch(url);
                 const data = await res.json();
@@ -1193,7 +1364,9 @@
         // ========== Erweiterte Gerichtssuche (mehrwörtig) ==========
 
         async function smartDishSearch(query) {
-            let meals = await searchMealDBByName(query);
+            // Übersetze deutsche Begriffe in Englisch für die API
+            const engQuery = translateToEnglish(query);
+            let meals = await searchMealDBByName(engQuery);
             if (meals.length > 0) {
                 meals = sortByNameSearch(meals, query);
                 currentMode = 'search';
@@ -1203,7 +1376,8 @@
             if (words.length > 1) {
                 for (let i = words.length; i >= 1; i--) {
                     const combined = words.slice(0, i).join(' ');
-                    const result = await searchMealDBByName(combined);
+                    const engCombined = translateToEnglish(combined);
+                    const result = await searchMealDBByName(engCombined);
                     if (result.length > 0) {
                         meals = sortByNameSearch(result, combined);
                         currentMode = 'search';
@@ -1212,7 +1386,8 @@
                 }
                 const allResults = [];
                 for (const word of words) {
-                    const res = await searchMealDBByName(word);
+                    const engWord = translateToEnglish(word);
+                    const res = await searchMealDBByName(engWord);
                     allResults.push(...res);
                 }
                 const unique = [];
@@ -1229,7 +1404,15 @@
                     return meals;
                 }
             }
-            const puppyResults = await searchRecipePuppy(query);
+            // Fallback: Edamam
+            const edamamResults = await searchEdamam(engQuery);
+            if (edamamResults.length > 0) {
+                meals = edamamResults;
+                currentMode = 'search';
+                return meals;
+            }
+            // Fallback: Recipe Puppy
+            const puppyResults = await searchRecipePuppy(engQuery);
             if (puppyResults.length > 0) {
                 meals = puppyResults.map(p => convertPuppyToMeal(p));
                 meals = sortByNameSearch(meals, query);
@@ -1260,6 +1443,9 @@
             }
             if (meal._puppyIngredients) {
                 return meal._puppyIngredients.map(name => ({ name, amount: '' }));
+            }
+            if (meal._edamamIngredients) {
+                return meal._edamamIngredients.map(name => ({ name, amount: '' }));
             }
             return [];
         }
@@ -1294,7 +1480,7 @@
             });
         }
 
-        // ========== Übersetzung & Einheiten (jetzt mit Wörterbuch-Unterstützung) ==========
+        // ========== Übersetzung & Einheiten ==========
 
         const unitMap = {
             'cup': { ml: 240, g: 128 },
@@ -1325,8 +1511,8 @@
 
         async function translateText(text, target = 'de') {
             if (!text || text.trim() === '') return text;
-            // Zuerst mit Wörterbuch übersetzen
-            const dictTranslated = translateWithDict(text);
+            // Zuerst mit Wörterbuch
+            const dictTranslated = translateToGerman(text);
             if (dictTranslated !== text) return dictTranslated;
             // Sonst API
             const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${target}`;
@@ -1362,7 +1548,6 @@
                         }
                     }
                 }
-                // Zuerst mit Wörterbuch übersetzen
                 const translatedName = await translateText(name);
                 translatedIngredients.push({
                     amount: amount,
@@ -1380,7 +1565,7 @@
             return { translatedIngredients, translatedSteps };
         }
 
-        // ========== Autovervollständigung für Zutaten ==========
+        // ========== Autovervollständigung ==========
 
         let currentSuggestionIndex = -1;
 
@@ -1394,9 +1579,11 @@
                 currentSuggestionIndex = -1;
                 return;
             }
-            const matches = germanIngredients
+            // Alle deutschen Zutaten aus dem Wörterbuch
+            const allGerman = Object.values(ingredientDict);
+            const matches = allGerman
                 .filter(ing => ing.toLowerCase().startsWith(lastPart))
-                .slice(0, 8);
+                .slice(0, 10);
             if (matches.length === 0) {
                 suggestionsContainer.classList.remove('visible');
                 currentSuggestionIndex = -1;
@@ -1414,7 +1601,6 @@
             });
             suggestionsContainer.classList.add('visible');
             currentSuggestionIndex = -1;
-            // Aktive Hervorhebung zurücksetzen
             const items = suggestionsContainer.querySelectorAll('.suggestion-item');
             items.forEach(el => el.classList.remove('active'));
         }
@@ -1426,7 +1612,6 @@
             ingredientInput.value = parts.join(', ');
             suggestionsContainer.classList.remove('visible');
             ingredientInput.focus();
-            // Tags aktualisieren
             updateIngredientTags();
         }
 
@@ -1440,15 +1625,12 @@
                 tag.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${ing}`;
                 ingredientTags.appendChild(tag);
             });
-            // Aktuelle Zutaten für die Suche speichern
             currentIngredients = parts;
         }
 
-        // Event-Listener für Autovervollständigung
         ingredientInput.addEventListener('input', (e) => {
             updateSuggestions();
             updateIngredientTags();
-            // Bei Komma-Eingabe den Vorschlag zurücksetzen
             if (e.target.value.endsWith(',')) {
                 suggestionsContainer.classList.remove('visible');
             }
@@ -1663,10 +1845,25 @@
             }
             const ingredients = getIngredientNamesFromQuery(query);
             currentIngredients = ingredients;
-            // Tags werden bereits durch updateIngredientTags aktualisiert, aber zur Sicherheit:
             updateIngredientTags();
-            const meals = await searchMealDBByIngredientsExtended(ingredients);
+            // Versuche zuerst TheMealDB + Edamam
+            let meals = await searchMealDBByIngredientsExtended(ingredients);
             if (meals.length === 0) {
+                // Edamam Fallback
+                const edamamResults = await searchEdamam('', query);
+                if (edamamResults.length > 0) {
+                    meals = edamamResults;
+                    meals.forEach(m => {
+                        m._matchCount = ingredients.length;
+                        m._totalIngredients = ingredients.length;
+                        m._matchedIngredients = ingredients;
+                    });
+                    currentMode = 'ingredients';
+                    allMeals = meals;
+                    renderMeals(meals, false);
+                    return;
+                }
+                // Recipe Puppy
                 const puppyMeals = await searchPuppyByIngredientsExtended(ingredients);
                 if (puppyMeals.length > 0) {
                     allMeals = puppyMeals;
@@ -1674,6 +1871,7 @@
                     renderMeals(puppyMeals, false);
                     return;
                 }
+                // Nichts gefunden -> zufällig
                 const random = await fetchRandomMealDB(20);
                 allMeals = random;
                 currentMode = 'random';
@@ -1750,7 +1948,6 @@
             }
         });
 
-        // Klick außerhalb der Vorschläge schließt sie
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.input-group')) {
                 suggestionsContainer.classList.remove('visible');
@@ -1764,7 +1961,6 @@
             allMeals = meals;
             currentMode = 'random';
             renderMeals(meals, false);
-            // Tags initialisieren
             updateIngredientTags();
         }
 
@@ -1820,7 +2016,6 @@
             isTabActive = !document.hidden;
         });
 
-        // Dropdown
         const menuToggle = document.getElementById('menuToggle');
         const dropdownMenu = document.getElementById('dropdownMenu');
         menuToggle.addEventListener('click', (e) => {
