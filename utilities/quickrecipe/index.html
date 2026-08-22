@@ -679,7 +679,7 @@
             <div class="search-box">
                 <label><i class="fa-solid fa-utensils"></i> Gericht suchen</label>
                 <div class="input-group">
-                    <input type="text" id="dishInput" placeholder="z.B. Steak, Pasta, Schnitzel" />
+                    <input type="text" id="dishInput" placeholder="z.B. Spaghetti Carbonara, Steak" />
                     <button id="dishSearchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
                 </div>
             </div>
@@ -845,14 +845,17 @@
             if (ingredients) {
                 url += '&i=' + encodeURIComponent(ingredients);
             }
-            const res = await fetch(url);
-            const data = await res.json();
-            return data.results || [];
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                return data.results || [];
+            } catch (e) {
+                console.warn('Recipe Puppy fehlgeschlagen:', e);
+                return [];
+            }
         }
 
-        // Konvertiere Recipe Puppy-Ergebnisse in das gleiche Format wie TheMealDB
         function convertPuppyToMeal(puppy) {
-            // Erstelle eine pseudo-Meal-Struktur
             return {
                 idMeal: 'puppy_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                 strMeal: puppy.title,
@@ -860,68 +863,160 @@
                 strCategory: 'Rezept von Recipe Puppy',
                 strArea: 'International',
                 strInstructions: 'Dieses Rezept stammt von Recipe Puppy. Leider sind keine detaillierten Schritte verfügbar. Du kannst die Zutaten verwenden und deine eigene Zubereitung finden. Original-Link: ' + puppy.href,
-                strIngredients: puppy.ingredients.split(',').map(i => i.trim()),
-                // Wir speichern die Zutaten als Array, aber TheMealDB hat einzelne strIngredient-Felder.
-                // Wir erweitern das Objekt später beim Rendern.
-                _puppyIngredients: puppy.ingredients.split(',').map(i => i.trim()),
+                _puppyIngredients: puppy.ingredients ? puppy.ingredients.split(',').map(i => i.trim()) : [],
                 _source: 'Recipe Puppy'
             };
         }
 
-        // Hole Details für Recipe Puppy (keine weiteren Details, aber wir haben bereits alles)
-        // Wir brauchen keine ID-Funktion, da wir das Objekt direkt haben.
+        // ========== Erweiterte Zutaten-Suche (mit Bewertung) ==========
 
-        // ========== Zutaten-basierte Suche mit mehreren APIs ==========
-
-        // TheMealDB: Schnittmenge
-        async function searchMealDBByIngredients(ingredientList) {
+        // TheMealDB: gibt alle Rezepte zurück, die mindestens eine der Zutaten enthalten, mit Zählung
+        async function searchMealDBByIngredientsExtended(ingredientList) {
             if (!ingredientList || ingredientList.length === 0) return [];
 
             const promises = ingredientList.map(ing => searchMealDBByIngredient(ing.trim()));
             const results = await Promise.all(promises);
 
-            const idSets = results.map(list => new Set(list.map(m => m.idMeal)));
-            let commonIds = new Set();
-            if (idSets.length > 0) {
-                commonIds = new Set(idSets[0]);
-                for (let i = 1; i < idSets.length; i++) {
-                    commonIds = new Set([...commonIds].filter(id => idSets[i].has(id)));
-                }
-            }
+            // Alle Rezepte sammeln mit Zählung, wie viele Zutaten übereinstimmen
+            const mealMap = new Map();
+            ingredientList.forEach(ing => {
+                const list = results[ingredientList.indexOf(ing)] || [];
+                list.forEach(meal => {
+                    const id = meal.idMeal;
+                    if (!mealMap.has(id)) {
+                        mealMap.set(id, { meal, count: 0, ingredients: [] });
+                    }
+                    mealMap.get(id).count++;
+                    mealMap.get(id).ingredients.push(ing);
+                });
+            });
 
-            let meals = [];
-            if (commonIds.size > 0) {
-                const detailPromises = [...commonIds].map(id => fetchMealDBById(id));
-                meals = await Promise.all(detailPromises);
-                meals = meals.filter(m => m !== null);
-                currentMatchType = 'all';
-            } else {
-                const allIds = new Set();
-                idSets.forEach(set => set.forEach(id => allIds.add(id)));
-                if (allIds.size > 0) {
-                    const detailPromises = [...allIds].map(id => fetchMealDBById(id));
-                    meals = await Promise.all(detailPromises);
-                    meals = meals.filter(m => m !== null);
-                    currentMatchType = 'any';
-                } else {
-                    meals = [];
+            // In Array umwandeln und nach Count absteigend sortieren
+            let mealsWithCount = Array.from(mealMap.values()).map(item => ({
+                ...item.meal,
+                _matchCount: item.count,
+                _totalIngredients: ingredientList.length,
+                _matchedIngredients: item.ingredients
+            }));
+
+            // Nach Anzahl sortieren
+            mealsWithCount.sort((a, b) => b._matchCount - a._matchCount);
+
+            // Details nachladen (für vollständige Rezepte)
+            const detailedMeals = [];
+            for (const meal of mealsWithCount) {
+                const detail = await fetchMealDBById(meal.idMeal);
+                if (detail) {
+                    detail._matchCount = meal._matchCount;
+                    detail._totalIngredients = meal._totalIngredients;
+                    detail._matchedIngredients = meal._matchedIngredients;
+                    detailedMeals.push(detail);
                 }
             }
-            return meals;
+            return detailedMeals;
         }
 
-        // Recipe Puppy: Zutaten-Suche
-        async function searchPuppyByIngredients(ingredientList) {
+        // Recipe Puppy: Zutaten-Suche mit Zählung (vereinfacht)
+        async function searchPuppyByIngredientsExtended(ingredientList) {
             if (!ingredientList || ingredientList.length === 0) return [];
             const ingredientsStr = ingredientList.join(',');
             const results = await searchRecipePuppy('', ingredientsStr);
-            return results.map(p => convertPuppyToMeal(p));
+            // Puppy gibt keine genaue Zählung, wir nehmen an, dass alle gelisteten Zutaten enthalten sind (vereinfacht)
+            return results.map(p => {
+                const meal = convertPuppyToMeal(p);
+                meal._matchCount = ingredientList.length; // Schätzung
+                meal._totalIngredients = ingredientList.length;
+                meal._matchedIngredients = ingredientList;
+                return meal;
+            });
+        }
+
+        // ========== Erweiterte Gerichtssuche (mehrwörtig) ==========
+
+        async function smartDishSearch(query) {
+            // 1. Exakte Suche mit dem gesamten Begriff
+            let meals = await searchMealDBByName(query);
+            if (meals.length > 0) {
+                meals = sortByNameSearch(meals, query);
+                currentMode = 'search';
+                return meals;
+            }
+
+            // 2. Versuche, den Begriff in Wörter zu zerlegen und einzeln zu suchen
+            const words = query.split(/\s+/).filter(w => w.length > 2);
+            if (words.length > 1) {
+                // Suche nach Kombinationen: zuerst mit allen Wörtern, dann mit weniger
+                for (let i = words.length; i >= 1; i--) {
+                    const combined = words.slice(0, i).join(' ');
+                    const result = await searchMealDBByName(combined);
+                    if (result.length > 0) {
+                        meals = sortByNameSearch(result, combined);
+                        currentMode = 'search';
+                        return meals;
+                    }
+                }
+                // Falls nichts, einzeln nach jedem Wort suchen und vereinen
+                const allResults = [];
+                for (const word of words) {
+                    const res = await searchMealDBByName(word);
+                    allResults.push(...res);
+                }
+                // Duplikate entfernen
+                const unique = [];
+                const seen = new Set();
+                for (const m of allResults) {
+                    if (!seen.has(m.idMeal)) {
+                        seen.add(m.idMeal);
+                        unique.push(m);
+                    }
+                }
+                if (unique.length > 0) {
+                    meals = sortByNameSearch(unique, query);
+                    currentMode = 'search';
+                    return meals;
+                }
+            }
+
+            // 3. Fallback: Recipe Puppy
+            const puppyResults = await searchRecipePuppy(query);
+            if (puppyResults.length > 0) {
+                meals = puppyResults.map(p => convertPuppyToMeal(p));
+                meals = sortByNameSearch(meals, query);
+                currentMode = 'search';
+                return meals;
+            }
+
+            // 4. Letzter Ausweg: zufällig
+            meals = await fetchRandomMealDB(20);
+            currentMode = 'random';
+            return meals;
+        }
+
+        // ========== Zutaten-Suche kombiniert (TheMealDB + Puppy) ==========
+
+        async function smartIngredientSearch(ingredientList) {
+            let meals = await searchMealDBByIngredientsExtended(ingredientList);
+            if (meals.length > 0) {
+                currentMode = 'ingredients';
+                currentMatchType = 'all'; // wir zeigen immer alle an, aber mit Zählung
+                return meals;
+            }
+            // Fallback: Recipe Puppy
+            const puppyResults = await searchPuppyByIngredientsExtended(ingredientList);
+            if (puppyResults.length > 0) {
+                currentMode = 'ingredients';
+                currentMatchType = 'any';
+                return puppyResults;
+            }
+            // Letzter Ausweg: zufällig
+            meals = await fetchRandomMealDB(20);
+            currentMode = 'random';
+            return meals;
         }
 
         // ========== Hilfsfunktionen ==========
 
         function extractIngredients(meal) {
-            // Für TheMealDB
             if (meal.strIngredient1) {
                 const ingredients = [];
                 for (let i = 1; i <= 20; i++) {
@@ -936,7 +1031,6 @@
                 }
                 return ingredients;
             }
-            // Für Recipe Puppy
             if (meal._puppyIngredients) {
                 return meal._puppyIngredients.map(name => ({ name, amount: '' }));
             }
@@ -958,6 +1052,19 @@
 
         function getIngredientNamesFromQuery(query) {
             return query.split(',').map(s => s.trim()).filter(s => s.length > 0);
+        }
+
+        function sortByNameSearch(meals, query) {
+            const q = query.toLowerCase();
+            return meals.sort((a, b) => {
+                const aName = a.strMeal.toLowerCase();
+                const bName = b.strMeal.toLowerCase();
+                if (aName === q) return -1;
+                if (bName === q) return 1;
+                if (aName.startsWith(q) && !bName.startsWith(q)) return -1;
+                if (!aName.startsWith(q) && bName.startsWith(q)) return 1;
+                return aName.localeCompare(bName);
+            });
         }
 
         // ========== Übersetzungs- und Einheitenumrechnung ==========
@@ -1066,10 +1173,10 @@
                 card.className = 'recipe-card';
                 const fav = isFavorite(meal.idMeal);
                 let matchBadge = '';
-                if (currentMode === 'ingredients' && currentMatchType === 'all') {
-                    matchBadge = `<span class="match-badge"><i class="fa-solid fa-check"></i> Alle Zutaten</span>`;
-                } else if (currentMode === 'ingredients' && currentMatchType === 'any') {
-                    matchBadge = `<span class="match-badge"><i class="fa-solid fa-arrow-right"></i> Enthält mind. eine Zutat</span>`;
+                if (currentMode === 'ingredients') {
+                    const count = meal._matchCount || 0;
+                    const total = meal._totalIngredients || currentIngredients.length;
+                    matchBadge = `<span class="match-badge"><i class="fa-solid fa-utensils"></i> ${count} von ${total} Zutaten</span>`;
                 }
                 const source = meal._source ? meal._source : 'TheMealDB';
                 card.innerHTML = `
@@ -1092,7 +1199,6 @@
                 card.addEventListener('click', (e) => {
                     if (e.target.closest('.fav-btn')) return;
                     if (!meal.strInstructions) {
-                        // Für Recipe Puppy haben wir keine zusätzlichen Details, aber wir haben bereits alles.
                         showDetail(meal);
                     } else {
                         showDetail(meal);
@@ -1111,11 +1217,7 @@
 
             resultCount.textContent = `${currentMeals.length} Rezepte`;
             if (currentMode === 'ingredients') {
-                if (currentMatchType === 'all') {
-                    matchInfo.textContent = `✅ Alle ${currentIngredients.length} Zutaten enthalten`;
-                } else {
-                    matchInfo.textContent = `⚠️ Mindestens eine der ${currentIngredients.length} Zutaten enthalten`;
-                }
+                matchInfo.textContent = `🔍 ${currentIngredients.length} Zutaten`;
             } else {
                 matchInfo.textContent = '';
             }
@@ -1188,77 +1290,6 @@
             } else {
                 renderMeals(allMeals, false);
             }
-        }
-
-        function sortByNameSearch(meals, query) {
-            const q = query.toLowerCase();
-            return meals.sort((a, b) => {
-                const aName = a.strMeal.toLowerCase();
-                const bName = b.strMeal.toLowerCase();
-                if (aName === q) return -1;
-                if (bName === q) return 1;
-                if (aName.startsWith(q) && !bName.startsWith(q)) return -1;
-                if (!aName.startsWith(q) && bName.startsWith(q)) return 1;
-                return aName.localeCompare(bName);
-            });
-        }
-
-        function sortByIngredientMatch(meals, ingredients) {
-            const ingSet = new Set(ingredients.map(i => i.toLowerCase()));
-            return meals.sort((a, b) => {
-                const aIngredients = extractIngredients(a).map(i => i.name.toLowerCase());
-                const bIngredients = extractIngredients(b).map(i => i.name.toLowerCase());
-                const aMatch = aIngredients.filter(i => ingSet.has(i)).length;
-                const bMatch = bIngredients.filter(i => ingSet.has(i)).length;
-                return bMatch - aMatch;
-            });
-        }
-
-        // ========== Intelligente Suche mit mehreren APIs ==========
-
-        // Gerichtssuche: zuerst TheMealDB, dann Recipe Puppy, dann zufällig
-        async function smartDishSearch(query) {
-            let meals = await searchMealDBByName(query);
-            if (meals.length > 0) {
-                meals = sortByNameSearch(meals, query);
-                currentMode = 'search';
-                return meals;
-            }
-            // Fallback: Recipe Puppy
-            const puppyResults = await searchRecipePuppy(query);
-            if (puppyResults.length > 0) {
-                meals = puppyResults.map(p => convertPuppyToMeal(p));
-                meals = sortByNameSearch(meals, query);
-                currentMode = 'search';
-                return meals;
-            }
-            // Letzter Ausweg: zufällig
-            meals = await fetchRandomMealDB(20);
-            currentMode = 'random';
-            return meals;
-        }
-
-        // Zutaten-Suche: TheMealDB Schnittmenge → Recipe Puppy → zufällig
-        async function smartIngredientSearch(ingredientList) {
-            let meals = await searchMealDBByIngredients(ingredientList);
-            if (meals.length > 0) {
-                meals = sortByIngredientMatch(meals, ingredientList);
-                currentMode = 'ingredients';
-                currentMatchType = (currentMatchType === 'all') ? 'all' : 'any';
-                return meals;
-            }
-            // Fallback: Recipe Puppy
-            const puppyResults = await searchPuppyByIngredients(ingredientList);
-            if (puppyResults.length > 0) {
-                meals = sortByIngredientMatch(puppyResults, ingredientList);
-                currentMode = 'ingredients';
-                currentMatchType = 'any'; // bei Puppy immer "mindestens eine"
-                return meals;
-            }
-            // Letzter Ausweg: zufällig
-            meals = await fetchRandomMealDB(20);
-            currentMode = 'random';
-            return meals;
         }
 
         // ========== Load-Funktionen für die beiden Modi ==========
