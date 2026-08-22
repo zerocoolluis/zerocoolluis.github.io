@@ -179,7 +179,7 @@
             font-size: 1.1rem;
         }
 
-        /* === Suchbereich (ohne Kategorie) === */
+        /* === Suchbereich === */
         .search-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -259,7 +259,7 @@
             font-size: 0.7rem;
         }
 
-        /* === Filter-Bar (nur Favoriten + Infos) === */
+        /* === Filter-Bar === */
         .filter-bar {
             display: flex;
             gap: 20px;
@@ -640,16 +640,16 @@
             <div class="subhead">Durchstöbere tausende Rezepte – nach Gericht oder mehreren Zutaten (automatisch übersetzt).</div>
         </header>
 
-        <!-- Suche (ohne Kategorie) -->
+        <!-- Suche -->
         <div class="search-section">
-            <input type="text" id="searchInput" placeholder="z.B. kad kra pao  oder  Hähnchen, Reis, Paprika" />
+            <input type="text" id="searchInput" placeholder="z.B. Hähnchen, Reis, Paprika  oder  Pasta, Tomaten" />
             <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
         </div>
 
         <!-- Eingabemarkierungen (Zutaten-Tags) -->
         <div id="ingredientTags" class="ingredient-tags"></div>
 
-        <!-- Filter-Bar (nur Favoriten + Infos) -->
+        <!-- Filter-Bar -->
         <div class="filter-bar">
             <label>
                 <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
@@ -861,9 +861,8 @@
 
         // ========== Übersetzungs- und Einheitenumrechnung ==========
 
-        // Einheiten-Mapping für Umrechnung
         const unitMap = {
-            'cup': { ml: 240, g: 128 }, // für Flüssigkeiten und Mehl/Zucker unterschiedlich, aber wir nehmen ml als Standard
+            'cup': { ml: 240, g: 128 },
             'oz': { g: 28.35 },
             'lb': { g: 453.6 },
             'tbsp': { ml: 15 },
@@ -875,7 +874,6 @@
         };
 
         function convertUnit(amount, unit) {
-            // versuche Einheit zu erkennen
             const lower = unit.toLowerCase();
             for (const [key, val] of Object.entries(unitMap)) {
                 if (lower.includes(key)) {
@@ -887,11 +885,9 @@
                     break;
                 }
             }
-            // Fallback: Einheit nicht erkannt
             return amount + ' ' + unit;
         }
 
-        // Übersetzungsfunktion mit MyMemory-API
         async function translateText(text, target = 'de') {
             if (!text || text.trim() === '') return text;
             const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${target}`;
@@ -908,17 +904,13 @@
             }
         }
 
-        // Übersetzt Zutatenliste (Namen und Mengen) und Schritte
         async function translateRecipe(meal) {
-            // Zutaten übersetzen
             const ingredients = extractIngredients(meal);
             const translatedIngredients = [];
             for (const ing of ingredients) {
                 let name = ing.name;
                 let amount = ing.amount;
-                // Einheiten umrechnen
                 if (amount) {
-                    // versuche, Menge und Einheit zu trennen
                     const parts = amount.match(/([\d.]+)\s*(.*)/);
                     if (parts) {
                         const num = parts[1];
@@ -931,7 +923,6 @@
                         }
                     }
                 }
-                // Zutatennamen übersetzen
                 const translatedName = await translateText(name);
                 translatedIngredients.push({
                     amount: amount,
@@ -939,7 +930,6 @@
                 });
             }
 
-            // Schritte übersetzen
             const steps = splitInstructions(meal.strInstructions);
             const translatedSteps = [];
             for (const step of steps) {
@@ -1047,15 +1037,12 @@
             detailServings.textContent = meal.strServings || '2-4';
             detailCategory.textContent = meal.strCategory || 'Verschiedenes';
 
-            // Übersetzung und Einheitenumrechnung starten
             const translated = await translateRecipe(meal);
 
-            // Zutaten anzeigen (übersetzt und mit umgerechneten Einheiten)
             detailIngredients.innerHTML = translated.translatedIngredients.map(ing =>
                 `<li>${ing.amount ? ing.amount + ' ' : ''}${ing.name}</li>`
             ).join('');
 
-            // Schritte speichern (übersetzt)
             const steps = translated.translatedSteps;
             meal._steps = steps;
             currentRecipe._steps = steps;
@@ -1101,26 +1088,19 @@
             }
         }
 
-        // Sortierfunktion für Namenssuche
         function sortByNameSearch(meals, query) {
             const q = query.toLowerCase();
             return meals.sort((a, b) => {
                 const aName = a.strMeal.toLowerCase();
                 const bName = b.strMeal.toLowerCase();
-                // Exakte Übereinstimmung zuerst
                 if (aName === q) return -1;
                 if (bName === q) return 1;
-                // Beginnt mit Suchbegriff
-                const aStarts = aName.startsWith(q);
-                const bStarts = bName.startsWith(q);
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
-                // Sonst alphabetisch
+                if (aName.startsWith(q) && !bName.startsWith(q)) return -1;
+                if (!aName.startsWith(q) && bName.startsWith(q)) return 1;
                 return aName.localeCompare(bName);
             });
         }
 
-        // Sortierfunktion für Zutaten-Suche (meiste Übereinstimmungen zuerst)
         function sortByIngredientMatch(meals, ingredients) {
             const ingSet = new Set(ingredients.map(i => i.toLowerCase()));
             return meals.sort((a, b) => {
@@ -1130,6 +1110,34 @@
                 const bMatch = bIngredients.filter(i => ingSet.has(i)).length;
                 return bMatch - aMatch;
             });
+        }
+
+        // Erweiterte Suche: zuerst Name, dann Zutaten, dann zufällig
+        async function smartSearch(query) {
+            let meals = [];
+            // 1. Namenssuche
+            meals = await searchByName(query);
+            if (meals.length > 0) {
+                meals = sortByNameSearch(meals, query);
+                currentMode = 'search';
+                return meals;
+            }
+            // 2. Zutaten-Suche (nur wenn keine Kommas, sonst wurde schon extrahiert)
+            if (!query.includes(',')) {
+                const ingredients = [query];
+                const result = await searchByIngredients(ingredients);
+                if (result.length > 0) {
+                    meals = sortByIngredientMatch(result, ingredients);
+                    currentMode = 'ingredients';
+                    currentIngredients = ingredients;
+                    currentMatchType = (currentMatchType === 'all') ? 'all' : 'any';
+                    return meals;
+                }
+            }
+            // 3. Fallback: zufällige Vorschläge
+            meals = await fetchRandomRecipes(20);
+            currentMode = 'random';
+            return meals;
         }
 
         async function loadRecipes(mode, query = '') {
@@ -1143,13 +1151,11 @@
                 meals = await fetchRandomRecipes(20);
                 currentIngredients = [];
             } else if (mode === 'search') {
-                meals = await searchByName(query);
+                meals = await smartSearch(query);
+                // Wenn keine Treffer, bleiben wir bei random
                 if (meals.length === 0) {
                     meals = await fetchRandomRecipes(20);
-                    mode = 'random';
-                } else {
-                    // Sortieren
-                    meals = sortByNameSearch(meals, query);
+                    currentMode = 'random';
                 }
                 currentIngredients = [];
             } else if (mode === 'ingredients') {
@@ -1164,11 +1170,10 @@
                 meals = await searchByIngredients(ingredients);
                 if (meals.length === 0) {
                     meals = await fetchRandomRecipes(20);
-                    mode = 'random';
+                    currentMode = 'random';
                     currentIngredients = [];
                     ingredientTags.innerHTML = '';
                 } else {
-                    // Sortieren nach Übereinstimmung
                     meals = sortByIngredientMatch(meals, ingredients);
                 }
             }
