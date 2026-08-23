@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style id="themeStyle">
-        /* === Basis (Default Dark) === */
+        /* === Basis (Dark) === */
         :root {
             --bg-color: #0a0e1a;
             --card-bg: rgba(18, 25, 45, 0.85);
@@ -27,7 +27,6 @@
             --bg-canvas-opacity: 0.12;
         }
 
-        /* Light Theme */
         [data-theme="light"] {
             --bg-color: #e8edf5;
             --card-bg: rgba(255, 255, 255, 0.85);
@@ -112,6 +111,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            position: relative;
         }
 
         .settings-btn {
@@ -137,7 +137,7 @@
 
         .settings-dropdown {
             position: absolute;
-            top: 60px;
+            top: 55px;
             right: 0;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -145,22 +145,20 @@
             backdrop-filter: blur(20px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
             padding: 16px 20px;
-            min-width: 180px;
+            min-width: 190px;
             display: none;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
             z-index: 200;
         }
-        .settings-dropdown.visible {
-            display: flex;
-        }
+        .settings-dropdown.visible { display: flex; }
         .settings-dropdown .setting-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
             color: var(--text-color);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
         .settings-dropdown .setting-item select,
         .settings-dropdown .setting-item button {
@@ -169,7 +167,7 @@
             border-radius: var(--input-radius);
             color: var(--text-color);
             padding: 6px 12px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
             cursor: pointer;
         }
@@ -185,7 +183,7 @@
             padding: 6px 12px;
             color: var(--text-color);
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             transition: 0.3s;
         }
         .theme-toggle:hover {
@@ -257,12 +255,6 @@
             padding-left: 26px;
         }
 
-        /* === Rest des Styles (unverändert, aber anpassbar durch CSS-Variablen) === */
-        /* ... (der Rest bleibt gleich, ich werde ihn aus Platzgründen nicht wiederholen, sondern alles in einem Block posten) */
-    </style>
-
-    <style id="additionalStyles">
-        /* Die restlichen Styles – ich füge sie hier in einem einzigen Block ein */
         header {
             margin-bottom: 30px;
             border-bottom: 1px solid var(--border-color);
@@ -286,6 +278,7 @@
             font-size: 1.2rem;
         }
 
+        /* === Suche === */
         .search-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -354,6 +347,7 @@
             background: rgba(255,255,255,0.18);
         }
 
+        /* === Autocomplete === */
         .autocomplete-list {
             position: absolute;
             top: calc(100% + 8px);
@@ -383,6 +377,7 @@
             color: var(--text-color);
         }
 
+        /* === Favoriten === */
         .favorites-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -441,6 +436,7 @@
             font-size: 0.95rem;
         }
 
+        /* === Geo-Fehler === */
         .geo-error {
             background: rgba(255,107,107,0.1);
             border: 1px solid var(--accent-pink);
@@ -452,9 +448,7 @@
             gap: 14px;
             flex-wrap: wrap;
         }
-        .geo-error.visible {
-            display: flex;
-        }
+        .geo-error.visible { display: flex; }
         .geo-error i {
             color: var(--accent-pink);
             font-size: 1.3rem;
@@ -489,6 +483,7 @@
             background: rgba(255,255,255,0.2);
         }
 
+        /* === Wetter-Hauptkarte === */
         .weather-main {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -541,6 +536,7 @@
             font-size: 1.2rem;
         }
 
+        /* === Kacheln mit Font Awesome === */
         .kacheln-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -568,6 +564,8 @@
             box-shadow: 0 10px 30px var(--primary-glow);
         }
         .kachel .kachel-icon {
+            font-size: 1.6rem;
+            color: var(--primary);
             height: 36px;
             display: flex;
             align-items: center;
@@ -591,7 +589,8 @@
             font-size: 0.7rem;
         }
 
-        .wind-icon {
+        /* === Animierte Wind-Icons === */
+        .wind-icon-container {
             position: relative;
             width: 32px;
             height: 28px;
@@ -600,22 +599,22 @@
             justify-content: center;
             gap: 4px;
         }
-        .wind-icon .wind-line {
+        .wind-icon-container .wind-line {
             height: 3px;
             background: var(--primary);
             border-radius: 4px;
             opacity: 0.7;
             animation: windMove 1.5s ease-in-out infinite alternate;
         }
-        .wind-icon .wind-line:nth-child(1) { width: 70%; animation-delay: 0s; }
-        .wind-icon .wind-line:nth-child(2) { width: 100%; animation-delay: 0.3s; }
-        .wind-icon .wind-line:nth-child(3) { width: 50%; animation-delay: 0.6s; }
+        .wind-icon-container .wind-line:nth-child(1) { width: 70%; animation-delay: 0s; }
+        .wind-icon-container .wind-line:nth-child(2) { width: 100%; animation-delay: 0.3s; }
+        .wind-icon-container .wind-line:nth-child(3) { width: 50%; animation-delay: 0.6s; }
         @keyframes windMove {
             0% { transform: translateX(-5px) scaleX(0.8); opacity: 0.4; }
             100% { transform: translateX(5px) scaleX(1.2); opacity: 1; }
         }
 
-        .gust-icon {
+        .gust-icon-container {
             position: relative;
             width: 32px;
             height: 28px;
@@ -624,22 +623,23 @@
             justify-content: center;
             gap: 4px;
         }
-        .gust-icon .gust-line {
+        .gust-icon-container .gust-line {
             height: 4px;
             background: var(--accent-gold);
             border-radius: 4px;
             opacity: 0.8;
             animation: gustMove 0.8s ease-in-out infinite alternate;
         }
-        .gust-icon .gust-line:nth-child(1) { width: 80%; animation-delay: 0s; }
-        .gust-icon .gust-line:nth-child(2) { width: 60%; animation-delay: 0.2s; }
-        .gust-icon .gust-line:nth-child(3) { width: 100%; animation-delay: 0.4s; }
+        .gust-icon-container .gust-line:nth-child(1) { width: 80%; animation-delay: 0s; }
+        .gust-icon-container .gust-line:nth-child(2) { width: 60%; animation-delay: 0.2s; }
+        .gust-icon-container .gust-line:nth-child(3) { width: 100%; animation-delay: 0.4s; }
         @keyframes gustMove {
             0% { transform: translateX(-6px) scaleX(0.7); opacity: 0.5; }
             100% { transform: translateX(6px) scaleX(1.3); opacity: 1; }
         }
 
-        .sunrise-icon {
+        /* === Sonnenauf-/untergang als CSS === */
+        .sunrise-icon, .sunset-icon {
             position: relative;
             width: 32px;
             height: 32px;
@@ -671,11 +671,6 @@
         .sunrise-icon .sun-ray:nth-child(4) { transform: translateX(-50%) rotate(-60deg); }
         .sunrise-icon .sun-ray:nth-child(5) { transform: translateX(-50%) rotate(60deg); }
 
-        .sunset-icon {
-            position: relative;
-            width: 32px;
-            height: 32px;
-        }
         .sunset-icon .sun-body {
             position: absolute;
             top: 0;
@@ -703,27 +698,7 @@
         .sunset-icon .sun-ray:nth-child(4) { transform: translateX(-50%) rotate(-60deg); }
         .sunset-icon .sun-ray:nth-child(5) { transform: translateX(-50%) rotate(60deg); }
 
-        .icon-thermometer::before {
-            content: "🌡";
-            font-size: 1.6rem;
-        }
-        .icon-humidity::before {
-            content: "💧";
-            font-size: 1.6rem;
-        }
-        .icon-pressure::before {
-            content: "📊";
-            font-size: 1.6rem;
-        }
-        .icon-uv::before {
-            content: "☀️";
-            font-size: 1.6rem;
-        }
-        .icon-visibility::before {
-            content: "👁️";
-            font-size: 1.6rem;
-        }
-
+        /* === Vorhersage === */
         .forecast-section {
             margin-top: 30px;
             border-top: 1px solid var(--border-color);
@@ -789,6 +764,7 @@
             gap: 12px;
         }
 
+        /* === Loading === */
         .loading {
             text-align: center;
             color: var(--text-muted);
@@ -803,6 +779,61 @@
             to { transform: rotate(360deg); }
         }
 
+        /* === Overlay für Einstellungen-Hilfe === */
+        .settings-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .settings-overlay.visible { display: flex; }
+        .settings-overlay .overlay-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .settings-overlay .overlay-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 12px;
+            color: var(--accent-gold);
+        }
+        .settings-overlay .overlay-content p {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .settings-overlay .overlay-content .browser-path {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: var(--input-radius);
+            font-family: monospace;
+            color: var(--text-color);
+            margin: 6px 0;
+        }
+        .settings-overlay .overlay-content .btn-close-overlay {
+            margin-top: 16px;
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: var(--input-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .settings-overlay .overlay-content .btn-close-overlay:hover {
+            background: #4a8aff;
+        }
+
+        /* === Footer === */
         footer {
             margin-top: 60px;
             padding-top: 30px;
@@ -812,6 +843,7 @@
             font-size: 0.95rem;
         }
 
+        /* === Responsive === */
         @media (max-width: 768px) {
             body { padding: 20px 15px 40px; }
             .container { max-width: 100%; }
@@ -840,11 +872,10 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
-        <!-- Top-Bar mit Einstellungen -->
+        <!-- Top-Bar -->
         <div class="top-bar">
             <a href="../" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Zurück zur Übersicht</a>
             <div class="top-right">
-                <!-- Einstellungen-Button -->
                 <div style="position: relative;">
                     <button class="settings-btn" id="settingsToggle"><i class="fa-solid fa-sliders"></i></button>
                     <div class="settings-dropdown" id="settingsDropdown">
@@ -861,13 +892,12 @@
                         </div>
                     </div>
                 </div>
-                <!-- Menü -->
                 <div class="menu-container">
-                    <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen"><i class="fa-solid fa-bars"></i></button>
-                    <div class="dropdown-menu" id="dropdownMenu" role="menu">
-                        <a href="../../entertainment/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-clapperboard" style="color: var(--accent-pink);"></i> Entertainment</a>
-                        <a href="../../school/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-lightbulb" style="color: var(--accent-gold);"></i> School</a>
-                        <a href="../../utilities/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-gears" style="color: var(--primary);"></i> Utilities</a>
+                    <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="../../entertainment/" class="dropdown-item"><i class="fa-solid fa-clapperboard" style="color: var(--accent-pink);"></i> Entertainment</a>
+                        <a href="../../school/" class="dropdown-item"><i class="fa-solid fa-lightbulb" style="color: var(--accent-gold);"></i> School</a>
+                        <a href="../../utilities/" class="dropdown-item"><i class="fa-solid fa-gears" style="color: var(--primary);"></i> Utilities</a>
                     </div>
                 </div>
             </div>
@@ -875,10 +905,10 @@
 
         <header>
             <h1 id="pageTitle">WeatherForge</h1>
-            <div class="subhead" id="pageSubhead">Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit grafischen Icons.</div>
+            <div class="subhead" id="pageSubhead">Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit professionellen Icons.</div>
         </header>
 
-        <!-- Fehlermeldung Geo -->
+        <!-- Geo-Fehler -->
         <div id="geoError" class="geo-error">
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span class="geo-msg" id="geoMsg">Standortzugriff verweigert.</span>
@@ -888,7 +918,7 @@
             </div>
         </div>
 
-        <!-- Suche & Standort -->
+        <!-- Suche -->
         <div class="search-section">
             <input type="text" id="searchInput" placeholder="Stadt eingeben, z.B. Berlin" autocomplete="off" />
             <div id="autocompleteList" class="autocomplete-list"></div>
@@ -899,14 +929,14 @@
         </div>
 
         <!-- Favoriten -->
-        <div class="favorites-section" id="favoritesSection">
+        <div class="favorites-section">
             <div class="header"><i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> <span id="favHeader">Favoriten</span></div>
             <div class="favorites-grid" id="favoritesGrid">
                 <span class="no-favs" id="noFavsText">Keine Favoriten gespeichert.</span>
             </div>
         </div>
 
-        <!-- Wetter-Hauptkarte -->
+        <!-- Wetter -->
         <div id="weatherDisplay">
             <div class="loading"><i class="fa-solid fa-circle-notch"></i> <span id="loadingText">Wetterdaten werden geladen...</span></div>
         </div>
@@ -914,12 +944,27 @@
         <footer>&copy; <span id="year"></span> Zero's Tool Hub // Entwickelt von Zerocoolluis</footer>
     </div>
 
+    <!-- Overlay für Einstellungen-Hilfe -->
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="overlay-content">
+            <h3><i class="fa-solid fa-location-dot"></i> Standort-Einstellungen</h3>
+            <p>Öffne die Browser-Einstellungen für Standortberechtigungen und erlaube den Zugriff.</p>
+            <p><strong>Pfade für gängige Browser:</strong></p>
+            <div class="browser-path">Chrome: <code>chrome://settings/content/location</code></div>
+            <div class="browser-path">Firefox: <code>about:preferences#privacy</code> → Berechtigungen</div>
+            <div class="browser-path">Edge: <code>edge://settings/content/location</code></div>
+            <div class="browser-path">Safari: <code>preferences:privacy</code> → Website-Daten</div>
+            <p style="margin-top:12px; color: var(--text-muted); font-size:0.9rem;">Nach der Änderung klicke auf „Erneut versuchen“.</p>
+            <button class="btn-close-overlay" id="closeOverlayBtn"><i class="fa-solid fa-check"></i> Verstanden</button>
+        </div>
+    </div>
+
     <script>
         // ========== SPRACHEN ==========
         const translations = {
             de: {
                 pageTitle: 'WeatherForge',
-                pageSubhead: 'Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit grafischen Icons.',
+                pageSubhead: 'Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit professionellen Icons.',
                 searchPlaceholder: 'Stadt eingeben, z.B. Berlin',
                 searchBtn: 'Suchen',
                 geoBtn: 'Mein Standort',
@@ -940,12 +985,11 @@
                 visibility: 'Sichtweite',
                 sunrise: 'Sonnenaufgang',
                 sunset: 'Sonnenuntergang',
-                forecast: '3-Tage-Vorhersage',
-                dayNames: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
+                forecast: '3-Tage-Vorhersage'
             },
             en: {
                 pageTitle: 'WeatherForge',
-                pageSubhead: 'Current weather, tiles, 3-day forecast & favorites – with graphic icons.',
+                pageSubhead: 'Current weather, tiles, 3-day forecast & favorites – with professional icons.',
                 searchPlaceholder: 'Enter city, e.g. Berlin',
                 searchBtn: 'Search',
                 geoBtn: 'My Location',
@@ -966,8 +1010,7 @@
                 visibility: 'Visibility',
                 sunrise: 'Sunrise',
                 sunset: 'Sunset',
-                forecast: '3-Day Forecast',
-                dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+                forecast: '3-Day Forecast'
             }
         };
 
@@ -989,10 +1032,7 @@
             document.getElementById('geoMsg').textContent = t.geoMsg;
             document.getElementById('themeLabel').textContent = t.themeLabel;
             document.getElementById('langLabel').textContent = t.langLabel;
-            // Bei bereits geladenem Wetter die Kacheln neu zeichnen (wird bei fetchWeather erneut aufgerufen)
-            if (currentCity) {
-                fetchWeather(currentCity);
-            }
+            if (currentCity) fetchWeather(currentCity);
         }
 
         // ========== THEME ==========
@@ -1002,96 +1042,74 @@
             currentTheme = theme;
             document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : '');
             const btn = document.getElementById('themeToggle');
-            if (theme === 'light') {
-                btn.innerHTML = '<i class="fa-regular fa-sun"></i> Light';
-            } else {
-                btn.innerHTML = '<i class="fa-regular fa-moon"></i> Dark';
-            }
-            // Lokal speichern (optional)
+            btn.innerHTML = theme === 'light' ? '<i class="fa-regular fa-sun"></i> Light' : '<i class="fa-regular fa-moon"></i> Dark';
             localStorage.setItem('weather_theme', theme);
         }
 
         // ========== GEOLOCATION ==========
-
-        let geoBlocked = false; // wird gesetzt, wenn Nutzer verweigert hat
-
         function requestGeolocation() {
             if (!navigator.geolocation) {
-                document.getElementById('geoMsg').textContent = 'Geolocation wird von Ihrem Browser nicht unterstützt.';
+                document.getElementById('geoMsg').textContent = 'Geolocation wird nicht unterstützt.';
                 document.getElementById('geoError').classList.add('visible');
                 return;
             }
-            // Fehlerbox ausblenden
             document.getElementById('geoError').classList.remove('visible');
-            weatherDisplay.innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
+            document.getElementById('weatherDisplay').innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
 
             navigator.geolocation.getCurrentPosition(
                 async (pos) => {
                     const { latitude, longitude } = pos.coords;
                     try {
-                        const res = await fetch(
-                            `https://wttr.in/${latitude},${longitude}?format=j1&lang=de`
-                        );
+                        const res = await fetch(`https://wttr.in/${latitude},${longitude}?format=j1&lang=de`);
                         if (!res.ok) throw new Error('Wetterabfrage fehlgeschlagen');
                         const data = await res.json();
                         const city = data.nearest_area[0]?.areaName[0]?.value || 'Unbekannter Ort';
-                        searchInput.value = city;
+                        document.getElementById('searchInput').value = city;
                         fetchWeather(city);
                     } catch (e) {
-                        weatherDisplay.innerHTML = `<div class="loading" style="color: var(--accent-pink);"><i class="fa-solid fa-triangle-exclamation"></i> Standort konnte nicht ermittelt werden.</div>`;
+                        document.getElementById('weatherDisplay').innerHTML = `<div class="loading" style="color: var(--accent-pink);"><i class="fa-solid fa-triangle-exclamation"></i> Standort konnte nicht ermittelt werden.</div>`;
                     }
                 },
                 (err) => {
-                    // Fehler beim Standortzugriff
-                    let msg = translations[currentLang].geoMsg;
-                    if (err.message) msg += ' (' + err.message + ')';
-                    document.getElementById('geoMsg').textContent = msg;
+                    document.getElementById('geoMsg').textContent = translations[currentLang].geoMsg + ' (' + err.message + ')';
                     document.getElementById('geoError').classList.add('visible');
-                    weatherDisplay.innerHTML = `<div class="loading" style="color: var(--text-muted);">${translations[currentLang].geoMsg} Bitte erlaube den Zugriff in deinem Browser oder suche manuell.</div>`;
-                    geoBlocked = true;
+                    document.getElementById('weatherDisplay').innerHTML = `<div class="loading" style="color: var(--text-muted);">${translations[currentLang].geoMsg} Bitte erlaube den Zugriff oder suche manuell.</div>`;
                 }
             );
         }
 
-        // ========== BROWSER-EINSTELLUNGEN ==========
-        function openBrowserSettings() {
-            const ua = navigator.userAgent.toLowerCase();
-            let url = '';
-            if (ua.indexOf('chrome') > -1 && ua.indexOf('edg') === -1) {
-                url = 'chrome://settings/content/location';
-            } else if (ua.indexOf('firefox') > -1) {
-                url = 'about:preferences#privacy';
-            } else if (ua.indexOf('edg') > -1) {
-                url = 'edge://settings/content/location';
-            } else if (ua.indexOf('safari') > -1) {
-                url = 'preferences:privacy';
-            } else {
-                url = 'about:preferences';
-            }
-            window.open(url, '_blank');
+        // ========== OVERLAY für Einstellungen ==========
+        function showSettingsOverlay() {
+            document.getElementById('settingsOverlay').classList.add('visible');
         }
 
-        // ========== WETTERABFRAGE ==========
+        document.getElementById('settingsGeoBtn').addEventListener('click', showSettingsOverlay);
+        document.getElementById('closeOverlayBtn').addEventListener('click', () => {
+            document.getElementById('settingsOverlay').classList.remove('visible');
+        });
+        document.getElementById('settingsOverlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('settingsOverlay').classList.remove('visible');
+            }
+        });
 
+        // ========== WETTERABFRAGE ==========
         let currentCity = '';
 
         async function fetchWeather(city) {
-            weatherDisplay.innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
+            document.getElementById('weatherDisplay').innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
 
             try {
-                const currentRes = await fetch(
-                    `https://wttr.in/${encodeURIComponent(city)}?format=j1&lang=de`
-                );
-                if (!currentRes.ok) {
-                    if (currentRes.status === 404) {
-                        weatherDisplay.innerHTML = `<div class="loading" style="color: var(--text-muted);">Stadt "${city}" nicht gefunden.</div>`;
+                const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1&lang=de`);
+                if (!res.ok) {
+                    if (res.status === 404) {
+                        document.getElementById('weatherDisplay').innerHTML = `<div class="loading" style="color: var(--text-muted);">Stadt "${city}" nicht gefunden.</div>`;
                     } else {
-                        weatherDisplay.innerHTML = `<div class="loading" style="color: var(--accent-pink);">Fehler beim Abrufen (Status ${currentRes.status}).</div>`;
+                        document.getElementById('weatherDisplay').innerHTML = `<div class="loading" style="color: var(--accent-pink);">Fehler beim Abrufen (Status ${res.status}).</div>`;
                     }
                     return;
                 }
-                const data = await currentRes.json();
-
+                const data = await res.json();
                 const current = data.current_condition[0];
                 const location = data.nearest_area[0];
                 const cityName = location.areaName[0].value;
@@ -1112,7 +1130,6 @@
                 const sunrise = current.sunrise || '--:--';
                 const sunset = current.sunset || '--:--';
 
-                // Vorhersage
                 const forecast = data.weather;
                 const forecastDays = forecast.slice(0, 3).map(day => {
                     const dateObj = new Date(day.date);
@@ -1133,7 +1150,6 @@
                     <div class="weather-main">
                         <div class="city-name">${cityName}, ${country}</div>
                         <div class="city-date">${date}</div>
-
                         <div class="main-weather">
                             <img src="${iconUrl}" alt="${desc}" />
                             <div class="temp-group">
@@ -1141,20 +1157,19 @@
                                 <div class="desc">${desc}</div>
                             </div>
                         </div>
-
                         <div class="kacheln-grid">
                             <div class="kachel">
-                                <div class="kachel-icon icon-thermometer"></div>
+                                <div class="kachel-icon"><i class="fa-regular fa-temperature-half"></i></div>
                                 <div class="kachel-label">${t.feelsLike}</div>
                                 <div class="kachel-value">${feelsLike}°C</div>
                             </div>
                             <div class="kachel">
-                                <div class="kachel-icon icon-humidity"></div>
+                                <div class="kachel-icon"><i class="fa-regular fa-droplet"></i></div>
                                 <div class="kachel-label">${t.humidity}</div>
                                 <div class="kachel-value">${humidity}%</div>
                             </div>
                             <div class="kachel">
-                                <div class="kachel-icon wind-icon">
+                                <div class="kachel-icon wind-icon-container">
                                     <div class="wind-line"></div>
                                     <div class="wind-line"></div>
                                     <div class="wind-line"></div>
@@ -1163,7 +1178,7 @@
                                 <div class="kachel-value">${windSpeed} <span class="kachel-unit">km/h</span></div>
                             </div>
                             <div class="kachel">
-                                <div class="kachel-icon gust-icon">
+                                <div class="kachel-icon gust-icon-container">
                                     <div class="gust-line"></div>
                                     <div class="gust-line"></div>
                                     <div class="gust-line"></div>
@@ -1172,17 +1187,17 @@
                                 <div class="kachel-value">${windGust} <span class="kachel-unit">km/h</span></div>
                             </div>
                             <div class="kachel">
-                                <div class="kachel-icon icon-pressure"></div>
+                                <div class="kachel-icon"><i class="fa-regular fa-gauge-high"></i></div>
                                 <div class="kachel-label">${t.pressure}</div>
                                 <div class="kachel-value">${pressure} <span class="kachel-unit">hPa</span></div>
                             </div>
                             <div class="kachel">
-                                <div class="kachel-icon icon-uv"></div>
+                                <div class="kachel-icon"><i class="fa-regular fa-sun"></i></div>
                                 <div class="kachel-label">${t.uv}</div>
                                 <div class="kachel-value">${uvIndex}</div>
                             </div>
                             <div class="kachel">
-                                <div class="kachel-icon icon-visibility"></div>
+                                <div class="kachel-icon"><i class="fa-regular fa-eye"></i></div>
                                 <div class="kachel-label">${t.visibility}</div>
                                 <div class="kachel-value">${visibility} <span class="kachel-unit">km</span></div>
                             </div>
@@ -1209,16 +1224,14 @@
                                 <div class="kachel-value">${sunset}</div>
                             </div>
                         </div>
-
                         <div class="forecast-section">
                             <div class="forecast-title">📅 ${t.forecast}</div>
                             <div class="forecast-grid" id="forecastGrid"></div>
                         </div>
                     </div>
                 `;
-                weatherDisplay.innerHTML = html;
+                document.getElementById('weatherDisplay').innerHTML = html;
 
-                // Vorhersage befüllen
                 const grid = document.getElementById('forecastGrid');
                 forecastDays.forEach(day => {
                     const div = document.createElement('div');
@@ -1231,19 +1244,18 @@
                         <div class="temp-low">${day.minTemp}°</div>
                         <div class="desc">${day.desc}</div>
                         <div class="extra">
-                            <span><span style="font-size:1rem;">💧</span> ${day.rainChance}%</span>
-                            <span><span style="font-size:1rem;">🌬️</span> ${day.wind} km/h</span>
+                            <span><i class="fa-regular fa-droplet" style="font-size:1rem;"></i> ${day.rainChance}%</span>
+                            <span><i class="fa-regular fa-wind" style="font-size:1rem;"></i> ${day.wind} km/h</span>
                         </div>
                     `;
                     grid.appendChild(div);
                 });
 
-                // Favorit hinzufügen
                 addFavorite(cityName);
                 currentCity = cityName;
 
             } catch (e) {
-                weatherDisplay.innerHTML = `<div class="loading" style="color: var(--accent-pink);"><i class="fa-solid fa-triangle-exclamation"></i> Netzwerkfehler: ${e.message}</div>`;
+                document.getElementById('weatherDisplay').innerHTML = `<div class="loading" style="color: var(--accent-pink);"><i class="fa-solid fa-triangle-exclamation"></i> Netzwerkfehler: ${e.message}</div>`;
             }
         }
 
@@ -1307,7 +1319,7 @@
                 `;
                 div.addEventListener('click', (e) => {
                     if (e.target.closest('.remove-fav')) return;
-                    searchInput.value = city;
+                    document.getElementById('searchInput').value = city;
                     fetchWeather(city);
                 });
                 const removeBtn = div.querySelector('.remove-fav');
@@ -1319,20 +1331,12 @@
             });
         }
 
-        // ========== DOM-EVENTS ==========
-
-        // Sprachumschaltung
-        document.getElementById('langSelect').addEventListener('change', (e) => {
-            setLanguage(e.target.value);
-        });
-
-        // Theme-Umschaltung
+        // ========== EVENTS ==========
+        document.getElementById('langSelect').addEventListener('change', (e) => setLanguage(e.target.value));
         document.getElementById('themeToggle').addEventListener('click', () => {
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            setTheme(newTheme);
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
         });
 
-        // Einstellungen-Dropdown
         document.getElementById('settingsToggle').addEventListener('click', (e) => {
             e.stopPropagation();
             document.getElementById('settingsDropdown').classList.toggle('visible');
@@ -1341,7 +1345,6 @@
             document.getElementById('settingsDropdown').classList.remove('visible');
         });
 
-        // Suche
         document.getElementById('searchBtn').addEventListener('click', () => {
             const city = document.getElementById('searchInput').value.trim();
             if (city) fetchWeather(city);
@@ -1350,21 +1353,55 @@
             if (e.key === 'Enter') document.getElementById('searchBtn').click();
         });
 
-        // Standort
         document.getElementById('geolocationBtn').addEventListener('click', requestGeolocation);
         document.getElementById('retryGeoBtn').addEventListener('click', requestGeolocation);
-        document.getElementById('settingsGeoBtn').addEventListener('click', openBrowserSettings);
 
-        // Initial
+        // ========== AUTOCOMPLETE ==========
+        let autocompleteTimeout = null;
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const query = this.value.trim();
+            const list = document.getElementById('autocompleteList');
+            if (query.length < 2) { list.classList.remove('visible'); return; }
+            clearTimeout(autocompleteTimeout);
+            autocompleteTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(
+                        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=6&addressdetails=1`
+                    );
+                    const data = await res.json();
+                    list.innerHTML = '';
+                    if (data.length === 0) { list.classList.remove('visible'); return; }
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        const name = item.display_name.split(',').slice(0, 3).join(',');
+                        div.textContent = name;
+                        div.addEventListener('click', () => {
+                            document.getElementById('searchInput').value = name;
+                            list.classList.remove('visible');
+                            fetchWeather(name);
+                        });
+                        list.appendChild(div);
+                    });
+                    list.classList.add('visible');
+                } catch (e) { list.classList.remove('visible'); }
+            }, 300);
+        });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-section')) {
+                document.getElementById('autocompleteList').classList.remove('visible');
+            }
+        });
+
+        // ========== INIT ==========
         const savedTheme = localStorage.getItem('weather_theme') || 'dark';
         setTheme(savedTheme);
-        // Sprache initial auf Deutsch
         document.getElementById('langSelect').value = 'de';
         setLanguage('de');
         renderFavorites();
         fetchWeather('Berlin');
 
-        // ========== HINTERGRUND-PARTIKEL ==========
+        // ========== HINTERGRUND ==========
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -1406,10 +1443,13 @@
         document.addEventListener('visibilitychange', () => { isTabActive = !document.hidden; });
 
         // ========== DROPDOWN ==========
-        const menuToggle = document.getElementById('menuToggle');
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        menuToggle.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('active'); });
-        window.addEventListener('click', () => { dropdownMenu.classList.remove('active'); });
+        document.getElementById('menuToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('dropdownMenu').classList.toggle('active');
+        });
+        document.addEventListener('click', () => {
+            document.getElementById('dropdownMenu').classList.remove('active');
+        });
 
         document.getElementById('year').textContent = new Date().getFullYear();
     </script>
