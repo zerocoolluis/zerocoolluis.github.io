@@ -779,7 +779,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* === Overlay für Einstellungen (Hilfe) === */
+        /* === Overlay für Einstellungen === */
         .settings-overlay {
             display: none;
             position: fixed;
@@ -824,6 +824,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         .settings-overlay .overlay-content .browser-path .copy-btn {
             background: rgba(255,255,255,0.1);
@@ -872,7 +874,6 @@
         .settings-overlay .overlay-content .path-copied-msg {
             color: var(--accent-gold);
             font-size: 0.85rem;
-            margin-left: 10px;
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -1157,10 +1158,9 @@
 
         function openSettingsDirect() {
             const { path } = getBrowserSettingsPath();
-            // Versuche, den Pfad zu öffnen
+            // Öffne den Pfad – falls Popup blockiert wird, zeigen wir eine Nachricht
             const win = window.open(path, '_blank');
             if (!win || win.closed || typeof win.closed === 'undefined') {
-                // Falls das blockiert wird, zeige eine Nachricht an.
                 alert('Das Öffnen der Einstellungen wurde blockiert. Bitte kopiere den Pfad manuell in die Adressleiste:\n\n' + path);
             }
         }
@@ -1170,7 +1170,7 @@
             document.getElementById('browserName').textContent = name;
             document.getElementById('browserPathDisplay').textContent = path;
             document.getElementById('settingsOverlay').classList.add('visible');
-            // Kopier-Button neu einrichten
+            // Kopier-Button
             document.getElementById('copyPathBtn').onclick = function() {
                 const pathText = document.getElementById('browserPathDisplay').textContent;
                 navigator.clipboard.writeText(pathText).then(() => {
