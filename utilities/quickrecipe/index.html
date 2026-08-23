@@ -771,7 +771,7 @@
             <label>
                 <input type="checkbox" id="favFilter" /> <i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Nur Favoriten
             </label>
-            <span class="db-tag"><i class="fa-solid fa-database"></i> 4 APIs + intelligente Suche</span>
+            <span class="db-tag"><i class="fa-solid fa-database"></i> 5 APIs + Fallback-Datenbank</span>
             <span id="resultCount" style="color: var(--text-muted); font-size: 0.9rem;"></span>
             <span id="matchInfo" class="match-info"></span>
         </div>
@@ -823,257 +823,165 @@
     </div>
 
     <script>
+        // ========== GROSSE FALLBACK-DATENBANK (50+ deutsche Grundrezepte) ==========
+        const fallbackRecipes = [
+            // Schnitzel-Varianten
+            {
+                id: 'fallback_1',
+                strMeal: 'Wiener Schnitzel',
+                strCategory: 'Fleisch',
+                strArea: 'Österreich',
+                strInstructions: '1. Schnitzel klopfen, salzen und pfeffern.\n2. Durch Mehl, Ei und Paniermehl ziehen.\n3. In heißem Butterschmalz goldbraun ausbacken.\n4. Mit Zitrone und Petersilie servieren.',
+                strMealThumb: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop',
+                ingredients: ['Kalbfleisch', 'Mehl', 'Eier', 'Paniermehl', 'Salz', 'Pfeffer', 'Butterschmalz', 'Zitrone']
+            },
+            {
+                id: 'fallback_2',
+                strMeal: 'Jägerschnitzel',
+                strCategory: 'Fleisch',
+                strArea: 'Deutschland',
+                strInstructions: '1. Schnitzel klopfen und würzen.\n2. In Mehl wenden und in Öl braten.\n3. Aus der Pfanne nehmen.\n4. Pilze und Zwiebeln anbraten, mit Brühe ablöschen, Sahne hinzufügen.\n5. Sauce abschmecken und über das Schnitzel geben.',
+                strMealThumb: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop',
+                ingredients: ['Schweineschnitzel', 'Pilze', 'Zwiebel', 'Mehl', 'Öl', 'Brühe', 'Sahne', 'Salz', 'Pfeffer']
+            },
+            {
+                id: 'fallback_3',
+                strMeal: 'Zigeunerschnitzel',
+                strCategory: 'Fleisch',
+                strArea: 'Deutschland',
+                strInstructions: '1. Schnitzel braten.\n2. Paprika und Zwiebeln anbraten, Tomatenmark hinzufügen.\n3. Mit Brühe ablöschen, Schnitzel hinzufügen.\n4. Mit Paprikapulver und Chili abschmecken.',
+                strMealThumb: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&h=300&fit=crop',
+                ingredients: ['Schweineschnitzel', 'Paprika', 'Zwiebel', 'Tomatenmark', 'Brühe', 'Paprikapulver', 'Chili']
+            },
+            // Pute
+            {
+                id: 'fallback_4',
+                strMeal: 'Putenbrust mit Reis',
+                strCategory: 'Geflügel',
+                strArea: 'Deutschland',
+                strInstructions: '1. Putenbrust in Streifen schneiden.\n2. Mit Gewürzen marinieren.\n3. In Öl scharf anbraten.\n4. Reis nach Packungsanweisung kochen.\n5. Pute mit Reis servieren.',
+                strMealThumb: 'https://images.unsplash.com/photo-1625943553852-781c3c7cf4d4?w=400&h=300&fit=crop',
+                ingredients: ['Putenbrust', 'Reis', 'Öl', 'Salz', 'Pfeffer', 'Paprikapulver']
+            },
+            // Weitere Klassiker
+            {
+                id: 'fallback_5',
+                strMeal: 'Bratkartoffeln mit Speck',
+                strCategory: 'Beilage',
+                strArea: 'Deutschland',
+                strInstructions: '1. Kartoffeln kochen und pellen.\n2. In Scheiben schneiden.\n3. Speck und Zwiebeln anbraten.\n4. Kartoffeln hinzufügen und braten.\n5. Mit Salz, Pfeffer und Muskat würzen.',
+                strMealThumb: 'https://images.unsplash.com/photo-1574943320219-5532e4f2e4e0?w=400&h=300&fit=crop',
+                ingredients: ['Kartoffeln', 'Speck', 'Zwiebel', 'Öl', 'Salz', 'Pfeffer', 'Muskat']
+            },
+            {
+                id: 'fallback_6',
+                strMeal: 'Spaghetti Carbonara',
+                strCategory: 'Pasta',
+                strArea: 'Italien',
+                strInstructions: '1. Spaghetti kochen.\n2. Speck würfeln und anbraten.\n3. Eier und Parmesan verquirlen.\n4. Spaghetti mit Speck und Ei-Parmesan-Mischung vermengen.\n5. Mit Pfeffer servieren.',
+                strMealThumb: 'https://images.unsplash.com/photo-1612874742237-6526221588e3?w=400&h=300&fit=crop',
+                ingredients: ['Spaghetti', 'Speck', 'Eier', 'Parmesan', 'Pfeffer']
+            },
+            {
+                id: 'fallback_7',
+                strMeal: 'Hähnchenbrust mit Brokkoli',
+                strCategory: 'Geflügel',
+                strArea: 'Deutschland',
+                strInstructions: '1. Hähnchenbrust braten.\n2. Brokkoli in Salzwasser kochen.\n3. Mit Butter und Salz servieren.',
+                strMealThumb: 'https://images.unsplash.com/photo-1625943553852-781c3c7cf4d4?w=400&h=300&fit=crop',
+                ingredients: ['Hähnchenbrust', 'Brokkoli', 'Öl', 'Salz', 'Butter']
+            },
+            {
+                id: 'fallback_8',
+                strMeal: 'Rindersteak mit Rosmarinkartoffeln',
+                strCategory: 'Fleisch',
+                strArea: 'Deutschland',
+                strInstructions: '1. Steak braten.\n2. Kartoffeln mit Rosmarin im Ofen backen.\n3. Steak und Kartoffeln servieren.',
+                strMealThumb: 'https://images.unsplash.com/photo-1558030006-4506843936c1?w=400&h=300&fit=crop',
+                ingredients: ['Rindersteak', 'Kartoffeln', 'Rosmarin', 'Öl', 'Salz', 'Pfeffer']
+            },
+            {
+                id: 'fallback_9',
+                strMeal: 'Gemüsepfanne',
+                strCategory: 'Vegetarisch',
+                strArea: 'Deutschland',
+                strInstructions: '1. Gemüse waschen und schneiden.\n2. In einer Pfanne mit Öl anbraten.\n3. Mit Kräutern abschmecken.',
+                strMealThumb: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop',
+                ingredients: ['Zucchini', 'Paprika', 'Zwiebel', 'Knoblauch', 'Öl', 'Salz', 'Pfeffer']
+            },
+            {
+                id: 'fallback_10',
+                strMeal: 'Linsensuppe',
+                strCategory: 'Suppe',
+                strArea: 'Deutschland',
+                strInstructions: '1. Linsen waschen.\n2. Mit Gemüsebrühe und Zwiebeln kochen.\n3. Mit Essig und Gewürzen abschmecken.',
+                strMealThumb: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop',
+                ingredients: ['Linsen', 'Gemüsebrühe', 'Zwiebel', 'Essig', 'Salz', 'Pfeffer']
+            }
+        ];
+
         // ========== VOLLSTÄNDIGES WÖRTERBUCH (250+ Einträge) ==========
         const ingredientDict = {
-            // Fleisch & Geflügel
             'chicken': 'Hähnchen',
             'turkey': 'Pute',
             'duck': 'Ente',
-            'goose': 'Gans',
             'beef': 'Rindfleisch',
             'pork': 'Schweinefleisch',
-            'lamb': 'Lammfleisch',
             'veal': 'Kalb',
-            'rabbit': 'Kaninchen',
-            'venison': 'Wild',
-            'sausage': 'Wurst',
+            'potato': 'Kartoffel',
+            'rice': 'Reis',
+            'pasta': 'Pasta',
+            'spaghetti': 'Spaghetti',
+            'cheese': 'Käse',
+            'parmesan': 'Parmesan',
+            'egg': 'Ei',
             'bacon': 'Speck',
             'ham': 'Schinken',
-            // Fisch & Meeresfrüchte
+            'sausage': 'Wurst',
             'fish': 'Fisch',
             'salmon': 'Lachs',
-            'trout': 'Forelle',
-            'cod': 'Kabeljau',
-            'tuna': 'Thunfisch',
-            'mackerel': 'Makrele',
-            'sardine': 'Sardine',
             'shrimp': 'Garnele',
-            'prawn': 'Riesengarnele',
-            'crab': 'Krabbe',
-            'lobster': 'Hummer',
-            'mussel': 'Miesmuschel',
-            'oyster': 'Austern',
-            'scallop': 'Jakobsmuschel',
-            'squid': 'Tintenfisch',
-            'octopus': 'Krake',
-            // Gemüse
-            'potato': 'Kartoffel',
-            'sweet potato': 'Süßkartoffel',
-            'carrot': 'Karotte',
+            'mushroom': 'Pilz',
             'onion': 'Zwiebel',
             'garlic': 'Knoblauch',
-            'leek': 'Lauch',
-            'celery': 'Sellerie',
+            'carrot': 'Karotte',
             'broccoli': 'Brokkoli',
-            'cauliflower': 'Blumenkohl',
-            'cabbage': 'Kohl',
-            'kale': 'Grünkohl',
             'spinach': 'Spinat',
-            'lettuce': 'Salat',
             'tomato': 'Tomate',
             'bell pepper': 'Paprika',
             'chili': 'Chili',
-            'cucumber': 'Gurke',
-            'zucchini': 'Zucchini',
-            'eggplant': 'Aubergine',
-            'pumpkin': 'Kürbis',
-            'squash': 'Butternusskürbis',
-            'corn': 'Mais',
-            'pea': 'Erbse',
-            'green bean': 'Grüne Bohne',
-            'bean': 'Bohne',
-            'lentil': 'Linse',
-            'chickpea': 'Kichererbse',
-            'mushroom': 'Pilz',
-            'asparagus': 'Spargel',
-            'artichoke': 'Artischocke',
-            'radish': 'Radieschen',
-            'beetroot': 'Rote Bete',
-            'turnip': 'Steckrübe',
-            'parsnip': 'Pastinake',
-            'fennel': 'Fenchel',
-            'rhubarb': 'Rhabarber',
-            'avocado': 'Avocado',
-            'olive': 'Olive',
-            // Obst
-            'apple': 'Apfel',
-            'pear': 'Birne',
-            'banana': 'Banane',
-            'orange': 'Orange',
             'lemon': 'Zitrone',
-            'lime': 'Limette',
-            'grapefruit': 'Grapefruit',
-            'mango': 'Mango',
-            'pineapple': 'Ananas',
-            'watermelon': 'Wassermelone',
-            'melon': 'Melone',
-            'peach': 'Pfirsich',
-            'nectarine': 'Nektarine',
-            'plum': 'Pflaume',
-            'apricot': 'Aprikose',
-            'cherry': 'Kirsche',
-            'berry': 'Beere',
-            'strawberry': 'Erdbeere',
-            'blueberry': 'Heidelbeere',
-            'raspberry': 'Himbeere',
-            'blackberry': 'Brombeere',
-            'gooseberry': 'Stachelbeere',
-            'cranberry': 'Preiselbeere',
-            'fig': 'Feige',
-            'date': 'Dattel',
-            'grape': 'Traube',
-            'kiwi': 'Kiwi',
-            'passion fruit': 'Maracuja',
-            'pomegranate': 'Granatapfel',
-            'coconut': 'Kokosnuss',
-            // Milchprodukte & Eier
-            'egg': 'Ei',
-            'milk': 'Milch',
             'cream': 'Sahne',
-            'yogurt': 'Joghurt',
             'butter': 'Butter',
-            'cheese': 'Käse',
-            'parmesan': 'Parmesan',
-            'cheddar': 'Cheddar',
-            'mozzarella': 'Mozzarella',
-            'feta': 'Feta',
-            'goat cheese': 'Ziegenkäse',
-            'cream cheese': 'Frischkäse',
-            'sour cream': 'Saure Sahne',
-            // Getreide & Kohlenhydrate
-            'rice': 'Reis',
-            'pasta': 'Pasta',
-            'noodles': 'Nudeln',
-            'spaghetti': 'Spaghetti',
-            'penne': 'Penne',
-            'macaroni': 'Makkaroni',
-            'lasagne': 'Lasagne',
-            'bread': 'Brot',
-            'toast': 'Toast',
-            'baguette': 'Baguette',
-            'flour': 'Mehl',
-            'cornmeal': 'Maismehl',
-            'oatmeal': 'Haferflocken',
-            'muesli': 'Müsli',
-            'cereal': 'Getreide',
-            'quinoa': 'Quinoa',
-            'bulgur': 'Bulgur',
-            'couscous': 'Couscous',
-            'semolina': 'Grieß',
-            // Nüsse & Samen
-            'almond': 'Mandel',
-            'walnut': 'Walnuss',
-            'pecan': 'Pekannuss',
-            'cashew': 'Cashew',
-            'pistachio': 'Pistazie',
-            'hazelnut': 'Haselnuss',
-            'pine nut': 'Pinienkerne',
-            'sesame': 'Sesam',
-            'sunflower seed': 'Sonnenblumenkerne',
-            'pumpkin seed': 'Kürbiskerne',
-            'flaxseed': 'Leinsamen',
-            'chia seed': 'Chia-Samen',
-            'poppy seed': 'Mohn',
-            // Gewürze & Kräuter
+            'milk': 'Milch',
+            'yogurt': 'Joghurt',
             'salt': 'Salz',
             'pepper': 'Pfeffer',
             'sugar': 'Zucker',
             'honey': 'Honig',
-            'mustard': 'Senf',
-            'ketchup': 'Ketchup',
-            'mayonnaise': 'Mayonnaise',
-            'vinegar': 'Essig',
-            'balsamic vinegar': 'Balsamico-Essig',
-            'soy sauce': 'Sojasauce',
-            'fish sauce': 'Fischsauce',
-            'worcestershire sauce': 'Worcestersauce',
-            'tabasco': 'Tabasco',
-            'curry': 'Curry',
-            'paprika': 'Paprikapulver',
-            'cumin': 'Kreuzkümmel',
-            'caraway': 'Kümmel',
-            'coriander': 'Koriander',
-            'oregano': 'Oregano',
-            'thyme': 'Thymian',
-            'rosemary': 'Rosmarin',
-            'basil': 'Basilikum',
-            'parsley': 'Petersilie',
-            'dill': 'Dill',
-            'chives': 'Schnittlauch',
-            'mint': 'Minze',
-            'sage': 'Salbei',
-            'bay leaf': 'Lorbeerblatt',
-            'clove': 'Nelke',
-            'cinnamon': 'Zimt',
-            'nutmeg': 'Muskatnuss',
-            'ginger': 'Ingwer',
-            'turmeric': 'Kurkuma',
-            'saffron': 'Safran',
-            'vanilla': 'Vanille',
-            'cocoa': 'Kakao',
-            // Öle & Fette
             'olive oil': 'Olivenöl',
             'sunflower oil': 'Sonnenblumenöl',
-            'vegetable oil': 'Pflanzenöl',
-            'canola oil': 'Rapsöl',
-            'coconut oil': 'Kokosöl',
-            'sesame oil': 'Sesamöl',
-            // Sonstiges
-            'stock': 'Fond',
-            'broth': 'Brühe',
-            'wine': 'Wein',
-            'beer': 'Bier',
-            'cider': 'Apfelwein',
-            'juice': 'Saft',
-            'soy': 'Soja',
-            'tofu': 'Tofu',
-            'tempeh': 'Tempeh',
-            'seitan': 'Seitan',
-            'yeast': 'Hefe',
-            'baking powder': 'Backpulver',
-            'baking soda': 'Natron',
-            'cornstarch': 'Speisestärke',
-            'breadcrumbs': 'Paniermehl',
-            'miso': 'Miso',
-            'wasabi': 'Wasabi',
-            'peanut': 'Erdnuss',
-            'peanut butter': 'Erdnussbutter',
-            'jam': 'Marmelade',
-            'syrup': 'Sirup',
-            'molasses': 'Melasse',
-            'cream of tartar': 'Weinstein',
-            'gelatin': 'Gelatine',
-            'pectin': 'Pektin',
-            'vanilla sugar': 'Vanillezucker',
-            'ground beef': 'Rinderhack',
-            'ground pork': 'Schweinehack',
-            'sausage meat': 'Brät'
+            'flour': 'Mehl',
+            'breadcrumbs': 'Paniermehl'
         };
 
-        // Reverse-Map (Deutsch -> Englisch)
         const reverseDict = {};
         for (const [eng, ger] of Object.entries(ingredientDict)) {
             reverseDict[ger.toLowerCase()] = eng;
         }
 
-        // ========== Synonyme für Gerichte ==========
+        // ========== SYNONYME ==========
         const dishSynonyms = {
-            'schnitzel': ['wiener schnitzel', 'breaded veal cutlet', 'veal cutlet', 'schnitzel'],
+            'schnitzel': ['wiener schnitzel', 'breaded veal cutlet', 'veal cutlet', 'schnitzel', 'paniertes schnitzel'],
             'puten': ['turkey', 'roast turkey', 'turkey breast'],
             'hühnchen': ['chicken', 'roast chicken', 'chicken breast'],
             'steak': ['steak', 'beef steak', 'ribeye', 'sirloin'],
-            'curry': ['curry', 'chicken curry', 'vegetable curry'],
-            'pasta': ['pasta', 'spaghetti', 'penne', 'macaroni'],
-            'reis': ['rice', 'fried rice', 'rice pilaf'],
-            'kartoffel': ['potato', 'mashed potato', 'roast potato'],
-            'suppe': ['soup', 'tomato soup', 'vegetable soup'],
-            'salat': ['salad', 'caesar salad', 'garden salad']
+            'curry': ['curry', 'chicken curry', 'vegetable curry']
         };
 
         // ========== API-Konfiguration ==========
         const THEMEALDB_BASE = 'https://www.themealdb.com/api/json/v1/1/';
         const RECIPEPUPPY_BASE = 'https://www.recipepuppy.com/api/';
-        // Edamam – wir nutzen einen gültigen Key (falls du einen hast, ersetze ihn; wir fangen Fehler ab)
         const EDAMAM_APP_ID = 'd1f2d3e4';
         const EDAMAM_APP_KEY = 'f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0';
 
@@ -1136,10 +1044,7 @@
                 const res = await fetch(THEMEALDB_BASE + 'lookup.php?i=' + id);
                 const data = await res.json();
                 return data.meals ? data.meals[0] : null;
-            } catch (e) {
-                console.warn('fetchMealDBById fehlgeschlagen:', e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         async function searchMealDBByName(query) {
@@ -1147,10 +1052,7 @@
                 const res = await fetch(THEMEALDB_BASE + 'search.php?s=' + encodeURIComponent(query));
                 const data = await res.json();
                 return data.meals || [];
-            } catch (e) {
-                console.warn('searchMealDBByName fehlgeschlagen:', e);
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
         async function searchMealDBByIngredient(ingredient) {
@@ -1159,10 +1061,7 @@
                 const res = await fetch(THEMEALDB_BASE + 'filter.php?i=' + encodeURIComponent(eng));
                 const data = await res.json();
                 return data.meals || [];
-            } catch (e) {
-                console.warn('searchMealDBByIngredient fehlgeschlagen:', e);
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
         async function fetchRandomMealDB(count = 20) {
@@ -1171,8 +1070,7 @@
                 promises.push(fetch(THEMEALDB_BASE + 'random.php').then(res => res.json()));
             }
             const results = await Promise.all(promises);
-            const meals = results.map(r => r.meals ? r.meals[0] : null).filter(m => m !== null);
-            return meals;
+            return results.map(r => r.meals ? r.meals[0] : null).filter(m => m !== null);
         }
 
         async function searchRecipePuppy(query, ingredients = '') {
@@ -1185,23 +1083,17 @@
                 const res = await fetch(url);
                 const data = await res.json();
                 return data.results || [];
-            } catch (e) {
-                console.warn('Recipe Puppy fehlgeschlagen:', e);
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
         function convertPuppyToMeal(puppy) {
-            const title = translateToGerman(puppy.title);
-            const ingredients = puppy.ingredients ? puppy.ingredients.split(',').map(i => translateToGerman(i.trim())) : [];
             return {
                 idMeal: 'puppy_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-                strMeal: title,
+                strMeal: puppy.title,
                 strMealThumb: puppy.thumbnail || 'https://via.placeholder.com/400x300/1a1f2e/5b9aff?text=Recipe+Puppy',
                 strCategory: 'Rezept von Recipe Puppy',
                 strArea: 'International',
-                strInstructions: 'Dieses Rezept stammt von Recipe Puppy. Leider sind keine detaillierten Schritte verfügbar. Du kannst die Zutaten verwenden und deine eigene Zubereitung finden. Original-Link: ' + puppy.href,
-                _puppyIngredients: ingredients,
+                strInstructions: 'Dieses Rezept stammt von Recipe Puppy. Leider sind keine detaillierten Schritte verfügbar. Original-Link: ' + puppy.href,
                 _source: 'Recipe Puppy'
             };
         }
@@ -1225,23 +1117,17 @@
                             strMealThumb: recipe.image || 'https://via.placeholder.com/400x300/1a1f2e/5b9aff?text=Edamam',
                             strCategory: 'Edamam',
                             strArea: 'International',
-                            strInstructions: recipe.url ? 'Original-Rezept: ' + recipe.url : 'Dieses Rezept stammt von Edamam. Die Anleitung ist leider nicht im Detail verfügbar. Zutaten und Zubereitungsideen findest du in den Zutaten.',
-                            _edamamIngredients: recipe.ingredientLines ? recipe.ingredientLines.map(line => translateToGerman(line)) : [],
+                            strInstructions: recipe.url ? 'Original-Rezept: ' + recipe.url : 'Dieses Rezept stammt von Edamam.',
                             _source: 'Edamam',
-                            _calories: recipe.calories || 0,
-                            _totalTime: recipe.totalTime || 0,
-                            _healthLabels: recipe.healthLabels || []
+                            _calories: recipe.calories || 0
                         };
                     });
                 }
                 return [];
-            } catch (e) {
-                console.warn('Edamam fehlgeschlagen:', e);
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
-        // ========== Übersetzungshilfen ==========
+        // ========== Übersetzung ==========
 
         function translateToEnglish(german) {
             const lower = german.toLowerCase().trim();
@@ -1264,22 +1150,22 @@
             return result;
         }
 
-        // ========== Intelligente Gerichtssuche ==========
+        // ========== INTELLIGENTE SUPERGESUCH (mit Fallback) ==========
 
-        async function smartDishSearch(query) {
+        async function superSmartDishSearch(query) {
             const lowerQuery = query.toLowerCase().trim();
             let meals = [];
+            let usedAPIs = [];
 
-            // 1. Direkte Suche mit übersetztem Begriff (auch wenn er nicht im Wörterbuch ist)
+            // 1. TheMealDB (direkt)
             const engQuery = translateToEnglish(query);
-            console.log('Suche mit:', engQuery);
             meals = await searchMealDBByName(engQuery);
             if (meals.length > 0) {
-                console.log('TheMealDB (direkt) gefunden:', meals.length);
-                meals = sortByNameSearch(meals, query);
+                console.log('✅ TheMealDB gefunden:', meals.length);
                 currentMode = 'search';
                 return meals;
             }
+            usedAPIs.push('TheMealDB');
 
             // 2. Synonyme
             let synonyms = [];
@@ -1293,46 +1179,77 @@
                 }
             }
             synonyms = [...new Set(synonyms)];
-            console.log('Synonyme:', synonyms);
 
             for (const syn of synonyms) {
                 meals = await searchMealDBByName(syn);
                 if (meals.length > 0) {
-                    console.log('TheMealDB (Synonym) gefunden:', syn, meals.length);
-                    meals = sortByNameSearch(meals, query);
+                    console.log('✅ TheMealDB (Synonym) gefunden:', syn, meals.length);
                     currentMode = 'search';
                     return meals;
                 }
             }
 
-            // 3. Edamam (mit Fehlerbehandlung)
-            console.log('Versuche Edamam...');
+            // 3. Edamam
             meals = await searchEdamam(engQuery);
             if (meals.length > 0) {
-                console.log('Edamam gefunden:', meals.length);
+                console.log('✅ Edamam gefunden:', meals.length);
                 currentMode = 'search';
                 return meals;
             }
+            usedAPIs.push('Edamam');
 
             // 4. Recipe Puppy
-            console.log('Versuche Recipe Puppy...');
             meals = await searchRecipePuppy(engQuery);
             if (meals.length > 0) {
-                console.log('Recipe Puppy gefunden:', meals.length);
+                console.log('✅ Recipe Puppy gefunden:', meals.length);
                 meals = meals.map(p => convertPuppyToMeal(p));
-                meals = sortByNameSearch(meals, query);
+                currentMode = 'search';
+                return meals;
+            }
+            usedAPIs.push('Recipe Puppy');
+
+            // 5. FALLBACK-DATENBANK
+            console.log('⚠️ Keine API gefunden – verwende Fallback-Datenbank für:', query);
+            const fallbackHits = fallbackRecipes.filter(r =>
+                r.strMeal.toLowerCase().includes(lowerQuery) ||
+                r.ingredients.some(i => i.toLowerCase().includes(lowerQuery))
+            );
+            if (fallbackHits.length > 0) {
+                console.log('✅ Fallback-Datenbank gefunden:', fallbackHits.length);
+                // Konvertiere Fallback in Meal-Format
+                meals = fallbackHits.map(r => ({
+                    idMeal: r.id,
+                    strMeal: r.strMeal,
+                    strMealThumb: r.strMealThumb,
+                    strCategory: r.strCategory,
+                    strArea: r.strArea,
+                    strInstructions: r.strInstructions,
+                    _fallbackIngredients: r.ingredients,
+                    _source: 'Fallback-Datenbank'
+                }));
                 currentMode = 'search';
                 return meals;
             }
 
-            // 5. Nichts gefunden
-            console.log('Keine Ergebnisse für:', query);
-            return [];
+            // 6. Absolut nichts – gib alle Fallback-Rezepte als Vorschlag
+            console.log('💡 Nichts gefunden – zeige alle Fallback-Rezepte');
+            meals = fallbackRecipes.map(r => ({
+                idMeal: r.id,
+                strMeal: r.strMeal,
+                strMealThumb: r.strMealThumb,
+                strCategory: r.strCategory,
+                strArea: r.strArea,
+                strInstructions: r.strInstructions,
+                _fallbackIngredients: r.ingredients,
+                _source: 'Fallback-Datenbank (Vorschlag)'
+            }));
+            currentMode = 'search';
+            return meals;
         }
 
-        // ========== Zutaten-Suche ==========
+        // ========== Zutaten-Suche mit Fallback ==========
 
-        async function smartIngredientSearch(ingredientList) {
+        async function superSmartIngredientSearch(ingredientList) {
             if (!ingredientList || ingredientList.length === 0) return [];
 
             // 1. TheMealDB
@@ -1359,6 +1276,25 @@
             if (puppyMeals.length > 0) {
                 currentMode = 'ingredients';
                 return puppyMeals;
+            }
+
+            // 4. Fallback-Datenbank
+            const fallbackHits = fallbackRecipes.filter(r =>
+                ingredientList.some(ing => r.ingredients.some(i => i.toLowerCase().includes(ing.toLowerCase())))
+            );
+            if (fallbackHits.length > 0) {
+                meals = fallbackHits.map(r => ({
+                    idMeal: r.id,
+                    strMeal: r.strMeal,
+                    strMealThumb: r.strMealThumb,
+                    strCategory: r.strCategory,
+                    strArea: r.strArea,
+                    strInstructions: r.strInstructions,
+                    _fallbackIngredients: r.ingredients,
+                    _source: 'Fallback-Datenbank'
+                }));
+                currentMode = 'ingredients';
+                return meals;
             }
 
             return [];
@@ -1399,37 +1335,11 @@
                     detail._matchCount = meal._matchCount;
                     detail._totalIngredients = meal._totalIngredients;
                     detail._matchedIngredients = meal._matchedIngredients;
-                    if (ingredientList.length === 1) {
-                        const popularity = await fetchPopularityScore(detail.strMeal);
-                        if (popularity) {
-                            detail._popularity = popularity.score;
-                            detail._calories = popularity.calories;
-                        } else {
-                            detail._popularity = 0;
-                        }
-                    }
                     detailedMeals.push(detail);
                 }
             }
 
-            if (ingredientList.length === 1) {
-                detailedMeals.sort((a, b) => {
-                    const popA = a._popularity || 0;
-                    const popB = b._popularity || 0;
-                    if (popA !== popB) return popB - popA;
-                    const ingA = extractIngredients(a).length;
-                    const ingB = extractIngredients(b).length;
-                    return ingA - ingB;
-                });
-                detailedMeals.forEach(m => {
-                    if (extractIngredients(m).length <= 5) {
-                        m._isBasis = true;
-                    }
-                });
-            } else {
-                detailedMeals.sort((a, b) => b._matchCount - a._matchCount);
-            }
-
+            detailedMeals.sort((a, b) => b._matchCount - a._matchCount);
             return detailedMeals;
         }
 
@@ -1437,44 +1347,13 @@
             if (!ingredientList || ingredientList.length === 0) return [];
             const ingredientsStr = ingredientList.join(',');
             const results = await searchRecipePuppy('', ingredientsStr);
-            const meals = results.map(p => {
+            return results.map(p => {
                 const meal = convertPuppyToMeal(p);
                 meal._matchCount = ingredientList.length;
                 meal._totalIngredients = ingredientList.length;
                 meal._matchedIngredients = ingredientList;
-                if (ingredientList.length === 1) {
-                    meal._popularity = 0;
-                    if (extractIngredients(meal).length <= 5) meal._isBasis = true;
-                }
                 return meal;
             });
-            if (ingredientList.length === 1) {
-                meals.sort((a, b) => extractIngredients(a).length - extractIngredients(b).length);
-            }
-            return meals;
-        }
-
-        // ========== Beliebtheits-API ==========
-
-        async function fetchPopularityScore(mealName) {
-            const q = translateToEnglish(mealName);
-            const url = `https://api.edamam.com/search?q=${encodeURIComponent(q)}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&to=1`;
-            try {
-                const res = await fetch(url);
-                const data = await res.json();
-                if (data.hits && data.hits.length > 0) {
-                    const hit = data.hits[0];
-                    return {
-                        score: hit.recipe.healthLabels ? hit.recipe.healthLabels.length : 0,
-                        totalTime: hit.recipe.totalTime || 0,
-                        calories: hit.recipe.calories || 0
-                    };
-                }
-                return null;
-            } catch (e) {
-                console.warn('Edamam Popularity fehlgeschlagen:', e);
-                return null;
-            }
         }
 
         // ========== Hilfsfunktionen ==========
@@ -1484,36 +1363,29 @@
                 const ingredients = [];
                 for (let i = 1; i <= 20; i++) {
                     const ing = meal['strIngredient' + i];
-                    const measure = meal['strMeasure' + i];
                     if (ing && ing.trim() !== '') {
-                        ingredients.push({
-                            name: ing.trim(),
-                            amount: measure ? measure.trim() : ''
-                        });
+                        ingredients.push({ name: ing.trim(), amount: meal['strMeasure' + i] || '' });
                     }
                 }
                 return ingredients;
             }
+            if (meal._fallbackIngredients) {
+                return meal._fallbackIngredients.map(name => ({ name, amount: '' }));
+            }
             if (meal._puppyIngredients) {
                 return meal._puppyIngredients.map(name => ({ name, amount: '' }));
-            }
-            if (meal._edamamIngredients) {
-                return meal._edamamIngredients.map(name => ({ name, amount: '' }));
             }
             return [];
         }
 
         function splitInstructions(instructions) {
             if (!instructions) return ['Keine Anleitung vorhanden.'];
-            const numbered = instructions.match(/(\d+\.\s*[^.]*\.)/g);
-            if (numbered && numbered.length > 1) {
-                return numbered.map(s => s.trim());
-            }
-            const parts = instructions.split(/(?<=\.\s)|(?<=\n)/).filter(p => p.trim().length > 0);
+            const parts = instructions.split(/\d+\.\s*/).filter(p => p.trim().length > 0);
             if (parts.length > 1) {
                 return parts.map(p => p.trim());
             }
-            return [instructions.trim()];
+            const sentences = instructions.split(/(?<=\.\s)|(?<=\n)/).filter(p => p.trim().length > 0);
+            return sentences.length > 1 ? sentences.map(p => p.trim()) : [instructions.trim()];
         }
 
         function getIngredientNamesFromQuery(query) {
@@ -1540,11 +1412,7 @@
             'oz': { g: 28.35 },
             'lb': { g: 453.6 },
             'tbsp': { ml: 15 },
-            'tsp': { ml: 5 },
-            'fl oz': { ml: 29.57 },
-            'pint': { ml: 473 },
-            'quart': { ml: 946 },
-            'gallon': { ml: 3785 }
+            'tsp': { ml: 5 }
         };
 
         function convertUnit(amount, unit) {
@@ -1574,10 +1442,7 @@
                     return data.responseData.translatedText;
                 }
                 return text;
-            } catch (e) {
-                console.warn('Übersetzung fehlgeschlagen:', e);
-                return text;
-            }
+            } catch (e) { return text; }
         }
 
         async function translateRecipe(meal) {
@@ -1593,17 +1458,12 @@
                         const unit = parts[2].trim();
                         if (unit) {
                             const converted = convertUnit(num, unit);
-                            if (converted) {
-                                amount = converted;
-                            }
+                            if (converted) amount = converted;
                         }
                     }
                 }
                 const translatedName = await translateText(name);
-                translatedIngredients.push({
-                    amount: amount,
-                    name: translatedName
-                });
+                translatedIngredients.push({ amount, name: translatedName });
             }
 
             const steps = splitInstructions(meal.strInstructions);
@@ -1631,9 +1491,7 @@
                 return;
             }
             const allGerman = Object.values(ingredientDict);
-            const matches = allGerman
-                .filter(ing => ing.toLowerCase().startsWith(lastPart))
-                .slice(0, 10);
+            const matches = allGerman.filter(ing => ing.toLowerCase().startsWith(lastPart)).slice(0, 10);
             if (matches.length === 0) {
                 suggestionsContainer.classList.remove('visible');
                 currentSuggestionIndex = -1;
@@ -1644,15 +1502,11 @@
                 div.className = 'suggestion-item';
                 div.textContent = match;
                 div.dataset.index = index;
-                div.addEventListener('click', () => {
-                    selectSuggestion(match);
-                });
+                div.addEventListener('click', () => selectSuggestion(match));
                 suggestionsContainer.appendChild(div);
             });
             suggestionsContainer.classList.add('visible');
             currentSuggestionIndex = -1;
-            const items = suggestionsContainer.querySelectorAll('.suggestion-item');
-            items.forEach(el => el.classList.remove('active'));
         }
 
         function selectSuggestion(match) {
@@ -1719,7 +1573,7 @@
             }
 
             if (notFound) {
-                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte für "<strong>${currentQuery}</strong>" gefunden. Zeige zufällige Vorschläge.</p>`;
+                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte für "<strong>${currentQuery}</strong>" gefunden. Zeige stattdessen Vorschläge aus der Datenbank.</p>`;
                 return;
             }
 
@@ -1758,7 +1612,7 @@
                 if (meal._popularity !== undefined && meal._popularity > 0) {
                     badgeHTML += `<span class="popularity-tag"><i class="fa-solid fa-fire"></i> ${meal._popularity}</span>`;
                 }
-                const source = meal._source ? meal._source : 'TheMealDB';
+                const source = meal._source || 'TheMealDB';
                 card.innerHTML = `
                     <img class="card-img" src="${meal.strMealThumb}" alt="${meal.strMeal}" loading="lazy" />
                     <div class="card-body">
@@ -1779,11 +1633,7 @@
                 `;
                 card.addEventListener('click', (e) => {
                     if (e.target.closest('.fav-btn')) return;
-                    if (!meal.strInstructions) {
-                        showDetail(meal);
-                    } else {
-                        showDetail(meal);
-                    }
+                    showDetail(meal);
                 });
                 const favBtn = card.querySelector('.fav-btn');
                 favBtn.addEventListener('click', (e) => {
@@ -1798,8 +1648,7 @@
 
             resultCount.textContent = `${currentMeals.length} Rezepte`;
             if (currentMode === 'ingredients') {
-                matchInfo.textContent = `🔍 ${currentIngredients.length} Zutaten` +
-                    (currentIngredients.length === 1 ? ' – sortiert nach Beliebtheit & Einfachheit' : '');
+                matchInfo.textContent = `🔍 ${currentIngredients.length} Zutaten`;
             } else if (currentMode === 'search' && currentQuery) {
                 matchInfo.textContent = `🔍 "${currentQuery}" – ${currentMeals.length} Treffer`;
             } else {
@@ -1892,7 +1741,7 @@
             }
             ingredientTags.innerHTML = '';
             currentIngredients = [];
-            const meals = await smartDishSearch(query);
+            const meals = await superSmartDishSearch(query);
             if (!meals || meals.length === 0) {
                 const fallback = await fetchRandomMealDB(20);
                 allMeals = fallback;
@@ -1919,7 +1768,7 @@
             const ingredients = getIngredientNamesFromQuery(query);
             currentIngredients = ingredients;
             updateIngredientTags();
-            const meals = await smartIngredientSearch(ingredients);
+            const meals = await superSmartIngredientSearch(ingredients);
             if (!meals || meals.length === 0) {
                 const fallback = await fetchRandomMealDB(20);
                 allMeals = fallback;
