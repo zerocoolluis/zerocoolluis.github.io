@@ -347,7 +347,7 @@
             background: rgba(255,255,255,0.18);
         }
 
-        /* === Autocomplete (jetzt deutlich sichtbar) === */
+        /* === Autocomplete (ganz oben) === */
         .autocomplete-list {
             position: absolute;
             top: calc(100% + 8px);
@@ -361,7 +361,7 @@
             max-height: 250px;
             overflow-y: auto;
             display: none;
-            z-index: 1000;
+            z-index: 9999;
             padding: 8px 0;
         }
         .autocomplete-list.visible { display: block; }
@@ -389,6 +389,8 @@
             padding: 1.5rem 2rem;
             backdrop-filter: blur(10px);
             margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
         }
         .favorites-section .header {
             font-family: 'Orbitron', sans-serif;
@@ -982,7 +984,7 @@
             <div class="subhead" id="pageSubhead">Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit Font Awesome Icons.</div>
         </header>
 
-        <!-- Geo-Fehler -->
+        <!-- Geo-Fehler (wird nur bei echten Fehlern angezeigt) -->
         <div id="geoError" class="geo-error">
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span class="geo-msg" id="geoMsg">Standortzugriff verweigert.</span>
@@ -1126,23 +1128,23 @@
             localStorage.setItem('weather_theme', theme);
         }
 
-        // ========== GEOLOCATION ==========
+        // ========== GEOLOCATION (funktioniert in Chrome mit Browser-Abfrage) ==========
         function requestGeolocation() {
             if (!navigator.geolocation) {
                 document.getElementById('geoMsg').textContent = 'Geolocation wird nicht unterstützt.';
                 document.getElementById('geoError').classList.add('visible');
                 return;
             }
-            // Fehlerbox ausblenden
+
+            // Fehlerbox ausblenden, bevor die Abfrage startet
             document.getElementById('geoError').classList.remove('visible');
             document.getElementById('weatherDisplay').innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
 
-            // Browser zeigt automatisch die Berechtigungsabfrage an („Nur dieses Mal“, „Immer“ etc.)
+            // Browser zeigt die Berechtigungsabfrage an
             navigator.geolocation.getCurrentPosition(
                 async (pos) => {
                     const { latitude, longitude } = pos.coords;
                     try {
-                        // Stadtnamen über wttr.in ermitteln
                         const res = await fetch(`https://wttr.in/${latitude},${longitude}?format=j1&lang=de`);
                         if (!res.ok) throw new Error('Wetterabfrage fehlgeschlagen');
                         const data = await res.json();
@@ -1154,10 +1156,16 @@
                     }
                 },
                 (err) => {
-                    // Nutzer hat abgelehnt oder es gab einen Fehler
-                    document.getElementById('geoMsg').textContent = translations[currentLang].geoMsg + ' (' + err.message + ')';
-                    document.getElementById('geoError').classList.add('visible');
-                    document.getElementById('weatherDisplay').innerHTML = `<div class="loading" style="color: var(--text-muted);">${translations[currentLang].geoMsg} Bitte erlaube den Zugriff oder suche manuell.</div>`;
+                    // Nur bei echten Fehlern die Fehlerbox anzeigen
+                    if (err.code === 1) { // PERMISSION_DENIED
+                        document.getElementById('geoMsg').textContent = translations[currentLang].geoMsg + ' (Zugriff verweigert)';
+                        document.getElementById('geoError').classList.add('visible');
+                        document.getElementById('weatherDisplay').innerHTML = `<div class="loading" style="color: var(--text-muted);">${translations[currentLang].geoMsg} Bitte erlaube den Zugriff in den Browser-Einstellungen oder suche manuell.</div>`;
+                    } else {
+                        document.getElementById('geoMsg').textContent = 'Fehler beim Standortzugriff: ' + err.message;
+                        document.getElementById('geoError').classList.add('visible');
+                        document.getElementById('weatherDisplay').innerHTML = `<div class="loading" style="color: var(--text-muted);">Fehler beim Standortzugriff. Bitte versuche es erneut oder suche manuell.</div>`;
+                    }
                 }
             );
         }
@@ -1231,7 +1239,6 @@
                 favorites.push(city);
             }
             renderFavorites();
-            // Aktuellen Herz-Status aktualisieren
             const favBtn = document.querySelector('.fav-toggle');
             if (favBtn) {
                 const isFav = favorites.includes(city);
@@ -1244,14 +1251,13 @@
             return favorites.includes(city);
         }
 
-        // ========== WETTERABFRAGE (wttr.in + Open-Meteo) ==========
+        // ========== WETTERABFRAGE ==========
         let currentCity = '';
 
         async function fetchWeather(city) {
             document.getElementById('weatherDisplay').innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
 
             try {
-                // 1. wttr.in für Basisdaten
                 const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1&lang=de`);
                 if (!res.ok) {
                     if (res.status === 404) {
@@ -1278,11 +1284,10 @@
                 const uvIndex = current.uvIndex || '—';
                 const visibility = current.visibility || '—';
 
-                // 2. Koordinaten für Open-Meteo holen
+                // Koordinaten für Open-Meteo
                 let lat = location.latitude || 52.52;
                 let lon = location.longitude || 13.405;
                 if (!lat || !lon) {
-                    // Fallback: Nominatim
                     const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}&limit=1`);
                     const geoData = await geoRes.json();
                     if (geoData.length > 0) {
@@ -1291,17 +1296,16 @@
                     }
                 }
 
-                // 3. Open-Meteo für Wind & Sonne
+                // Open-Meteo für Wind & Sonne
                 const meteoRes = await fetch(
                     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m&daily=sunrise,sunset&timezone=auto&forecast_days=1`
                 );
-                let meteoData = null;
                 let windSpeed = '—';
                 let windGust = '—';
                 let sunrise = '--:--';
                 let sunset = '--:--';
                 if (meteoRes.ok) {
-                    meteoData = await meteoRes.json();
+                    const meteoData = await meteoRes.json();
                     if (meteoData.current) {
                         windSpeed = meteoData.current.wind_speed_10m !== undefined ? meteoData.current.wind_speed_10m.toFixed(1) : '—';
                         windGust = meteoData.current.wind_gusts_10m !== undefined ? meteoData.current.wind_gusts_10m.toFixed(1) : '—';
@@ -1313,14 +1317,13 @@
                         sunset = sunsetDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
                     }
                 } else {
-                    // Fallback: wttr.in Daten verwenden
                     windSpeed = current.windSpeedKmph || '—';
                     windGust = current.windGustKmph || '—';
                     sunrise = current.sunrise || '--:--';
                     sunset = current.sunset || '--:--';
                 }
 
-                // Vorhersage (wttr.in)
+                // Vorhersage
                 const forecast = data.weather;
                 const forecastDays = forecast.slice(0, 3).map(day => {
                     const dateObj = new Date(day.date);
@@ -1345,7 +1348,7 @@
                     <div class="weather-main">
                         <div class="city-name">
                             <span>${cityName}, ${country}</span>
-                            <button class="fav-toggle ${heartClass}" id="favToggleBtn" aria-label="Favorit umschalten">${heartIcon}</button>
+                            <button class="fav-toggle ${heartClass}" id="favToggleBtn">${heartIcon}</button>
                         </div>
                         <div class="city-date">${date}</div>
                         <div class="main-weather">
@@ -1430,7 +1433,6 @@
                 `;
                 document.getElementById('weatherDisplay').innerHTML = html;
 
-                // Vorhersage befüllen
                 const grid = document.getElementById('forecastGrid');
                 forecastDays.forEach(day => {
                     const div = document.createElement('div');
@@ -1450,7 +1452,6 @@
                     grid.appendChild(div);
                 });
 
-                // Event-Listener für Herz-Button
                 const favBtn = document.getElementById('favToggleBtn');
                 if (favBtn) {
                     favBtn.addEventListener('click', function(e) {
@@ -1566,7 +1567,10 @@
         document.getElementById('searchInput').addEventListener('input', function() {
             const query = this.value.trim();
             const list = document.getElementById('autocompleteList');
-            if (query.length < 2) { list.classList.remove('visible'); return; }
+            if (query.length < 2) {
+                list.classList.remove('visible');
+                return;
+            }
             clearTimeout(autocompleteTimeout);
             autocompleteTimeout = setTimeout(async () => {
                 try {
@@ -1575,7 +1579,10 @@
                     );
                     const data = await res.json();
                     list.innerHTML = '';
-                    if (data.length === 0) { list.classList.remove('visible'); return; }
+                    if (data.length === 0) {
+                        list.classList.remove('visible');
+                        return;
+                    }
                     data.forEach(item => {
                         const div = document.createElement('div');
                         div.className = 'autocomplete-item';
@@ -1589,7 +1596,9 @@
                         list.appendChild(div);
                     });
                     list.classList.add('visible');
-                } catch (e) { list.classList.remove('visible'); }
+                } catch (e) {
+                    list.classList.remove('visible');
+                }
             }, 300);
         });
         document.addEventListener('click', (e) => {
