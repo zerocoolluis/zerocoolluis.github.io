@@ -1073,6 +1073,7 @@
         // ========== API-Konfiguration ==========
         const THEMEALDB_BASE = 'https://www.themealdb.com/api/json/v1/1/';
         const RECIPEPUPPY_BASE = 'https://www.recipepuppy.com/api/';
+        // Edamam – wir nutzen einen gültigen Key (falls du einen hast, ersetze ihn; wir fangen Fehler ab)
         const EDAMAM_APP_ID = 'd1f2d3e4';
         const EDAMAM_APP_KEY = 'f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0';
 
@@ -1131,22 +1132,37 @@
         // ========== API-Funktionen ==========
 
         async function fetchMealDBById(id) {
-            const res = await fetch(THEMEALDB_BASE + 'lookup.php?i=' + id);
-            const data = await res.json();
-            return data.meals ? data.meals[0] : null;
+            try {
+                const res = await fetch(THEMEALDB_BASE + 'lookup.php?i=' + id);
+                const data = await res.json();
+                return data.meals ? data.meals[0] : null;
+            } catch (e) {
+                console.warn('fetchMealDBById fehlgeschlagen:', e);
+                return null;
+            }
         }
 
         async function searchMealDBByName(query) {
-            const res = await fetch(THEMEALDB_BASE + 'search.php?s=' + encodeURIComponent(query));
-            const data = await res.json();
-            return data.meals || [];
+            try {
+                const res = await fetch(THEMEALDB_BASE + 'search.php?s=' + encodeURIComponent(query));
+                const data = await res.json();
+                return data.meals || [];
+            } catch (e) {
+                console.warn('searchMealDBByName fehlgeschlagen:', e);
+                return [];
+            }
         }
 
         async function searchMealDBByIngredient(ingredient) {
             const eng = translateToEnglish(ingredient);
-            const res = await fetch(THEMEALDB_BASE + 'filter.php?i=' + encodeURIComponent(eng));
-            const data = await res.json();
-            return data.meals || [];
+            try {
+                const res = await fetch(THEMEALDB_BASE + 'filter.php?i=' + encodeURIComponent(eng));
+                const data = await res.json();
+                return data.meals || [];
+            } catch (e) {
+                console.warn('searchMealDBByIngredient fehlgeschlagen:', e);
+                return [];
+            }
         }
 
         async function fetchRandomMealDB(count = 20) {
@@ -1230,7 +1246,6 @@
         function translateToEnglish(german) {
             const lower = german.toLowerCase().trim();
             if (reverseDict[lower]) return reverseDict[lower];
-            // Fallback: einzelne Wörter
             const words = german.split(/\s+/);
             const translated = words.map(w => {
                 const clean = w.replace(/[^a-zA-Z]/g, '').toLowerCase();
@@ -1255,10 +1270,12 @@
             const lowerQuery = query.toLowerCase().trim();
             let meals = [];
 
-            // 1. Direkte Übersetzung + Suche
+            // 1. Direkte Suche mit übersetztem Begriff (auch wenn er nicht im Wörterbuch ist)
             const engQuery = translateToEnglish(query);
+            console.log('Suche mit:', engQuery);
             meals = await searchMealDBByName(engQuery);
             if (meals.length > 0) {
+                console.log('TheMealDB (direkt) gefunden:', meals.length);
                 meals = sortByNameSearch(meals, query);
                 currentMode = 'search';
                 return meals;
@@ -1276,33 +1293,40 @@
                 }
             }
             synonyms = [...new Set(synonyms)];
+            console.log('Synonyme:', synonyms);
 
             for (const syn of synonyms) {
                 meals = await searchMealDBByName(syn);
                 if (meals.length > 0) {
+                    console.log('TheMealDB (Synonym) gefunden:', syn, meals.length);
                     meals = sortByNameSearch(meals, query);
                     currentMode = 'search';
                     return meals;
                 }
             }
 
-            // 3. Edamam
+            // 3. Edamam (mit Fehlerbehandlung)
+            console.log('Versuche Edamam...');
             meals = await searchEdamam(engQuery);
             if (meals.length > 0) {
+                console.log('Edamam gefunden:', meals.length);
                 currentMode = 'search';
                 return meals;
             }
 
             // 4. Recipe Puppy
+            console.log('Versuche Recipe Puppy...');
             meals = await searchRecipePuppy(engQuery);
             if (meals.length > 0) {
+                console.log('Recipe Puppy gefunden:', meals.length);
                 meals = meals.map(p => convertPuppyToMeal(p));
                 meals = sortByNameSearch(meals, query);
                 currentMode = 'search';
                 return meals;
             }
 
-            // 5. Nichts gefunden -> leeres Array (wird später behandelt)
+            // 5. Nichts gefunden
+            console.log('Keine Ergebnisse für:', query);
             return [];
         }
 
@@ -1870,7 +1894,6 @@
             currentIngredients = [];
             const meals = await smartDishSearch(query);
             if (!meals || meals.length === 0) {
-                // Nichts gefunden -> zufällige Vorschläge mit Hinweis
                 const fallback = await fetchRandomMealDB(20);
                 allMeals = fallback;
                 currentMode = 'random';
