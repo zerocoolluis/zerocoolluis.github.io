@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WeatherForge // ZERO'S TOOL HUB</title>
-    <meta name="description" content="Wettervorhersage mit Standort, Favoriten und 3-Tage-Übersicht – mit animierten grafischen Icons." />
+    <meta name="description" content="Wettervorhersage mit Kacheln, animierten Icons & Standort." />
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -19,10 +19,12 @@
             --primary-glow: rgba(91, 154, 255, 0.4);
             --accent-gold: #f0c27f;
             --accent-pink: #ff6b6b;
+            --accent-green: #6bffb8;
             --text-color: #eef2f8;
             --text-muted: #9aa8c7;
-            --card-radius: 24px;
+            --card-radius: 20px;
             --input-radius: 16px;
+            --kachel-radius: 16px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
@@ -60,6 +62,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* === Top-Bar === */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -277,7 +280,7 @@
             color: var(--text-color);
         }
 
-        /* === Favoriten-Übersicht === */
+        /* === Favoriten === */
         .favorites-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -336,12 +339,12 @@
             font-size: 0.95rem;
         }
 
-        /* === EINE GROSSE WETTERKARTE === */
+        /* === Wetter-Hauptkarte (eine große) === */
         .weather-main {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: var(--card-radius);
-            padding: 2.2rem 2.5rem;
+            padding: 2rem 2.2rem;
             backdrop-filter: blur(12px);
             box-shadow: 0 15px 40px rgba(0,0,0,0.4);
             transition: 0.3s;
@@ -371,8 +374,8 @@
             flex-wrap: wrap;
         }
         .weather-main .main-weather img {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             filter: drop-shadow(0 0 25px rgba(91,154,255,0.4));
         }
         .weather-main .main-weather .temp-group {
@@ -380,113 +383,140 @@
             flex-direction: column;
         }
         .weather-main .main-weather .temp {
-            font-size: 4.2rem;
+            font-size: 3.6rem;
             font-weight: 700;
             line-height: 1;
         }
         .weather-main .main-weather .desc {
             color: var(--text-muted);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
-        /* === Details mit animierten grafischen Icons === */
-        .weather-details {
+        /* === KACHELN (runde Vierecke) === */
+        .kacheln-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px 24px;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
             margin-top: 10px;
             border-top: 1px solid var(--border-color);
             padding-top: 20px;
         }
-        .detail-item {
+
+        .kachel {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            border-radius: var(--kachel-radius);
+            padding: 16px 12px;
+            text-align: center;
+            transition: 0.3s;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 12px;
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            gap: 6px;
         }
-        .detail-item .icon-box {
-            width: 40px;
+        .kachel:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px var(--primary-glow);
+        }
+        .kachel .kachel-icon {
+            font-size: 2rem;
+            line-height: 1;
             height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
         }
-        .detail-item .value {
+        .kachel .kachel-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .kachel .kachel-value {
+            font-weight: 700;
+            font-size: 1.15rem;
             color: var(--text-color);
-            font-weight: 600;
+        }
+        .kachel .kachel-unit {
+            color: var(--text-muted);
+            font-size: 0.8rem;
         }
 
-        /* === Animiertes Wind-Icon === */
+        /* === Wind-Icon (animiert) === */
         .wind-icon {
             position: relative;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
         }
         .wind-icon .wind-line {
-            position: absolute;
-            width: 100%;
-            height: 4px;
+            height: 3px;
             background: var(--primary);
             border-radius: 4px;
             opacity: 0.7;
             animation: windMove 1.5s ease-in-out infinite alternate;
         }
-        .wind-icon .wind-line:nth-child(1) { top: 10%; animation-delay: 0s; width: 80%; }
-        .wind-icon .wind-line:nth-child(2) { top: 40%; animation-delay: 0.3s; width: 100%; }
-        .wind-icon .wind-line:nth-child(3) { top: 70%; animation-delay: 0.6s; width: 60%; }
+        .wind-icon .wind-line:nth-child(1) { width: 70%; animation-delay: 0s; }
+        .wind-icon .wind-line:nth-child(2) { width: 100%; animation-delay: 0.3s; }
+        .wind-icon .wind-line:nth-child(3) { width: 50%; animation-delay: 0.6s; }
         @keyframes windMove {
-            0% { transform: translateX(-10px) scaleX(0.8); opacity: 0.4; }
-            100% { transform: translateX(10px) scaleX(1.2); opacity: 1; }
+            0% { transform: translateX(-6px) scaleX(0.8); opacity: 0.4; }
+            100% { transform: translateX(6px) scaleX(1.2); opacity: 1; }
         }
 
-        /* === Windböen-Icon (stärkerer Wind) === */
+        /* === Windböen-Icon === */
         .gust-icon {
             position: relative;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
         }
         .gust-icon .gust-line {
-            position: absolute;
-            height: 5px;
+            height: 4px;
             background: var(--accent-gold);
             border-radius: 4px;
             opacity: 0.8;
             animation: gustMove 0.8s ease-in-out infinite alternate;
         }
-        .gust-icon .gust-line:nth-child(1) { top: 15%; width: 90%; animation-delay: 0s; }
-        .gust-icon .gust-line:nth-child(2) { top: 45%; width: 70%; animation-delay: 0.2s; }
-        .gust-icon .gust-line:nth-child(3) { top: 75%; width: 100%; animation-delay: 0.4s; }
+        .gust-icon .gust-line:nth-child(1) { width: 80%; animation-delay: 0s; }
+        .gust-icon .gust-line:nth-child(2) { width: 60%; animation-delay: 0.2s; }
+        .gust-icon .gust-line:nth-child(3) { width: 100%; animation-delay: 0.4s; }
         @keyframes gustMove {
-            0% { transform: translateX(-15px) scaleX(0.7); opacity: 0.5; }
-            100% { transform: translateX(15px) scaleX(1.3); opacity: 1; }
+            0% { transform: translateX(-8px) scaleX(0.7); opacity: 0.5; }
+            100% { transform: translateX(8px) scaleX(1.3); opacity: 1; }
         }
 
-        /* === Sonnenaufgang-Icon (Halbkreis mit Strahlen) === */
+        /* === Sonnenaufgang-Icon (Halbkreis) === */
         .sunrise-icon {
             position: relative;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
         }
         .sunrise-icon .sun-body {
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 32px;
-            height: 16px;
+            width: 28px;
+            height: 14px;
             background: var(--accent-gold);
             border-radius: 50% 50% 0 0;
-            box-shadow: 0 0 20px rgba(240,194,127,0.5);
+            box-shadow: 0 0 20px rgba(240,194,127,0.4);
         }
         .sunrise-icon .sun-ray {
             position: absolute;
-            width: 3px;
-            height: 12px;
+            width: 2px;
+            height: 10px;
             background: var(--accent-gold);
             border-radius: 2px;
-            bottom: 14px;
+            bottom: 12px;
             left: 50%;
             transform-origin: bottom center;
             opacity: 0.6;
@@ -496,30 +526,30 @@
         .sunrise-icon .sun-ray:nth-child(4) { transform: translateX(-50%) rotate(-60deg); }
         .sunrise-icon .sun-ray:nth-child(5) { transform: translateX(-50%) rotate(60deg); }
 
-        /* === Sonnenuntergang-Icon (umgekehrter Halbkreis) === */
+        /* === Sonnenuntergang-Icon === */
         .sunset-icon {
             position: relative;
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
         }
         .sunset-icon .sun-body {
             position: absolute;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 32px;
-            height: 16px;
+            width: 28px;
+            height: 14px;
             background: var(--accent-gold);
             border-radius: 0 0 50% 50%;
-            box-shadow: 0 0 20px rgba(240,194,127,0.5);
+            box-shadow: 0 0 20px rgba(240,194,127,0.4);
         }
         .sunset-icon .sun-ray {
             position: absolute;
-            width: 3px;
-            height: 12px;
+            width: 2px;
+            height: 10px;
             background: var(--accent-gold);
             border-radius: 2px;
-            top: 12px;
+            top: 10px;
             left: 50%;
             transform-origin: top center;
             opacity: 0.6;
@@ -529,7 +559,38 @@
         .sunset-icon .sun-ray:nth-child(4) { transform: translateX(-50%) rotate(-60deg); }
         .sunset-icon .sun-ray:nth-child(5) { transform: translateX(-50%) rotate(60deg); }
 
-        /* === Vorhersage (unterhalb der Hauptkarte) === */
+        /* === Fehlermeldung Geolocation === */
+        .geo-error {
+            background: rgba(255,107,107,0.1);
+            border: 1px solid var(--accent-pink);
+            border-radius: var(--card-radius);
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .geo-error i {
+            color: var(--accent-pink);
+            font-size: 1.3rem;
+        }
+        .geo-error button {
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: var(--input-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .geo-error button:hover {
+            background: #4a8aff;
+            transform: scale(1.03);
+        }
+
+        /* === Vorhersage === */
         .forecast-section {
             margin-top: 30px;
             border-top: 1px solid var(--border-color);
@@ -594,9 +655,6 @@
             justify-content: center;
             gap: 12px;
         }
-        .forecast-day .extra .icon-symbol {
-            font-size: 1rem;
-        }
 
         /* === Loading === */
         .loading {
@@ -632,14 +690,14 @@
             .search-section .btn-group { justify-content: stretch; }
             .search-section button { justify-content: center; }
             .weather-main { padding: 1.5rem; }
-            .weather-main .main-weather .temp { font-size: 3rem; }
+            .weather-main .main-weather .temp { font-size: 2.8rem; }
             .weather-main .main-weather img { width: 80px; height: 80px; }
-            .weather-details { grid-template-columns: 1fr 1fr; }
+            .kacheln-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
             .forecast-grid { grid-template-columns: 1fr 1fr; }
             .favorites-grid { flex-direction: column; align-items: stretch; }
         }
         @media (max-width: 480px) {
-            .weather-details { grid-template-columns: 1fr; }
+            .kacheln-grid { grid-template-columns: 1fr 1fr; }
             .forecast-grid { grid-template-columns: 1fr; }
         }
     </style>
@@ -664,8 +722,15 @@
 
         <header>
             <h1>WeatherForge</h1>
-            <div class="subhead">Aktuelles Wetter, 3-Tage-Vorhersage, Favoriten – mit animierten grafischen Icons.</div>
+            <div class="subhead">Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit animierten Icons.</div>
         </header>
+
+        <!-- Fehlermeldung Geo (wird bei Bedarf eingeblendet) -->
+        <div id="geoError" class="geo-error" style="display:none;">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span style="flex:1;">Standortzugriff wurde verweigert. Bitte erlaube in deinem Browser den Standortzugriff oder suche manuell.</span>
+            <button id="retryGeoBtn"><i class="fa-solid fa-rotate"></i> Erneut versuchen</button>
+        </div>
 
         <!-- Suche & Standort -->
         <div class="search-section">
@@ -677,7 +742,7 @@
             </div>
         </div>
 
-        <!-- Favoriten-Übersicht -->
+        <!-- Favoriten -->
         <div class="favorites-section" id="favoritesSection">
             <div class="header"><i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Favoriten</div>
             <div class="favorites-grid" id="favoritesGrid">
@@ -685,7 +750,7 @@
             </div>
         </div>
 
-        <!-- Wetter-Hauptkarte (eine große) -->
+        <!-- Wetter-Hauptkarte mit Kacheln -->
         <div id="weatherDisplay">
             <div class="loading"><i class="fa-solid fa-circle-notch"></i> Wetterdaten werden geladen...</div>
         </div>
@@ -705,11 +770,13 @@
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
         const geolocationBtn = document.getElementById('geolocationBtn');
+        const retryGeoBtn = document.getElementById('retryGeoBtn');
+        const geoError = document.getElementById('geoError');
         const autocompleteList = document.getElementById('autocompleteList');
         const favoritesGrid = document.getElementById('favoritesGrid');
         const weatherDisplay = document.getElementById('weatherDisplay');
 
-        // ========== AUTOCOMPLETE (Nominatim) ==========
+        // ========== AUTOCOMPLETE ==========
         let autocompleteTimeout = null;
 
         searchInput.addEventListener('input', function() {
@@ -735,7 +802,6 @@
                         div.className = 'autocomplete-item';
                         const name = item.display_name.split(',').slice(0, 3).join(',');
                         div.textContent = name;
-                        div.dataset.fullname = item.display_name;
                         div.addEventListener('click', () => {
                             searchInput.value = name;
                             autocompleteList.classList.remove('visible');
@@ -745,7 +811,6 @@
                     });
                     autocompleteList.classList.add('visible');
                 } catch (e) {
-                    console.warn('Autocomplete fehlgeschlagen:', e);
                     autocompleteList.classList.remove('visible');
                 }
             }, 300);
@@ -813,6 +878,42 @@
             });
         }
 
+        // ========== GEOLOCATION ==========
+
+        function requestGeolocation() {
+            if (!navigator.geolocation) {
+                geoError.style.display = 'flex';
+                geoError.querySelector('span').textContent = 'Geolocation wird von Ihrem Browser nicht unterstützt.';
+                return;
+            }
+            geoError.style.display = 'none';
+            weatherDisplay.innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> Standort wird ermittelt...</div>`;
+
+            navigator.geolocation.getCurrentPosition(
+                async (pos) => {
+                    const { latitude, longitude } = pos.coords;
+                    try {
+                        const res = await fetch(
+                            `${WTTR_BASE}/${latitude},${longitude}?format=j1&lang=de`
+                        );
+                        if (!res.ok) throw new Error('Wetterabfrage fehlgeschlagen');
+                        const data = await res.json();
+                        const city = data.nearest_area[0]?.areaName[0]?.value || 'Unbekannter Ort';
+                        searchInput.value = city;
+                        fetchWeather(city);
+                    } catch (e) {
+                        weatherDisplay.innerHTML = `<div class="loading" style="color: var(--accent-pink);"><i class="fa-solid fa-triangle-exclamation"></i> Standort konnte nicht ermittelt werden.</div>`;
+                    }
+                },
+                (err) => {
+                    // Fehler beim Standortzugriff
+                    geoError.style.display = 'flex';
+                    geoError.querySelector('span').textContent = `Standortzugriff verweigert (${err.message}). Bitte erlaube in deinem Browser den Standortzugriff.`;
+                    weatherDisplay.innerHTML = `<div class="loading" style="color: var(--text-muted);">Standortzugriff verweigert. Bitte erlaube den Zugriff in deinem Browser oder suche manuell.</div>`;
+                }
+            );
+        }
+
         // ========== WETTERABFRAGE ==========
 
         let currentCity = '';
@@ -870,7 +971,7 @@
                     return { weekday, dayDate, maxTemp, minTemp, desc, iconUrl, rainChance, wind };
                 });
 
-                // HTML mit einer großen Karte und animierten Icons
+                // HTML mit Kacheln
                 let html = `
                     <div class="weather-main">
                         <div class="city-name">${cityName}, ${country}</div>
@@ -884,65 +985,95 @@
                             </div>
                         </div>
 
-                        <div class="weather-details">
-                            <div class="detail-item">
-                                <div class="icon-box">🌡️</div>
-                                <span>Gefühlt: <span class="value">${feelsLike}°C</span></span>
+                        <!-- KACHELN -->
+                        <div class="kacheln-grid">
+
+                            <!-- Gefühlte Temperatur -->
+                            <div class="kachel">
+                                <div class="kachel-icon">🌡️</div>
+                                <div class="kachel-label">Gefühlt</div>
+                                <div class="kachel-value">${feelsLike}°C</div>
                             </div>
-                            <div class="detail-item">
-                                <div class="icon-box">💧</div>
-                                <span>Luftfeuchtigkeit: <span class="value">${humidity}%</span></span>
+
+                            <!-- Luftfeuchtigkeit -->
+                            <div class="kachel">
+                                <div class="kachel-icon">💧</div>
+                                <div class="kachel-label">Luftfeuchtigkeit</div>
+                                <div class="kachel-value">${humidity}%</div>
                             </div>
-                            <div class="detail-item">
-                                <div class="icon-box wind-icon">
+
+                            <!-- Wind (animiert) -->
+                            <div class="kachel">
+                                <div class="kachel-icon wind-icon">
                                     <div class="wind-line"></div>
                                     <div class="wind-line"></div>
                                     <div class="wind-line"></div>
                                 </div>
-                                <span>Wind: <span class="value">${windSpeed} km/h</span></span>
+                                <div class="kachel-label">Wind</div>
+                                <div class="kachel-value">${windSpeed} <span class="kachel-unit">km/h</span></div>
                             </div>
-                            <div class="detail-item">
-                                <div class="icon-box gust-icon">
+
+                            <!-- Windböen (animiert) -->
+                            <div class="kachel">
+                                <div class="kachel-icon gust-icon">
                                     <div class="gust-line"></div>
                                     <div class="gust-line"></div>
                                     <div class="gust-line"></div>
                                 </div>
-                                <span>Windböen: <span class="value">${windGust} km/h</span></span>
+                                <div class="kachel-label">Windböen</div>
+                                <div class="kachel-value">${windGust} <span class="kachel-unit">km/h</span></div>
                             </div>
-                            <div class="detail-item">
-                                <div class="icon-box">📊</div>
-                                <span>Luftdruck: <span class="value">${pressure} hPa</span></span>
+
+                            <!-- Luftdruck -->
+                            <div class="kachel">
+                                <div class="kachel-icon">📊</div>
+                                <div class="kachel-label">Luftdruck</div>
+                                <div class="kachel-value">${pressure} <span class="kachel-unit">hPa</span></div>
                             </div>
-                            <div class="detail-item">
-                                <div class="icon-box">☀️</div>
-                                <span>UV-Index: <span class="value">${uvIndex}</span></span>
+
+                            <!-- UV-Index -->
+                            <div class="kachel">
+                                <div class="kachel-icon">☀️</div>
+                                <div class="kachel-label">UV-Index</div>
+                                <div class="kachel-value">${uvIndex}</div>
                             </div>
-                            <div class="detail-item">
-                                <div class="icon-box">👁️</div>
-                                <span>Sichtweite: <span class="value">${visibility} km</span></span>
+
+                            <!-- Sichtweite -->
+                            <div class="kachel">
+                                <div class="kachel-icon">👁️</div>
+                                <div class="kachel-label">Sichtweite</div>
+                                <div class="kachel-value">${visibility} <span class="kachel-unit">km</span></div>
                             </div>
-                            <div class="detail-item">
-                                <div class="icon-box sunrise-icon">
+
+                            <!-- Sonnenaufgang (GRAFIK + Uhrzeit) -->
+                            <div class="kachel">
+                                <div class="kachel-icon sunrise-icon">
                                     <div class="sun-body"></div>
                                     <div class="sun-ray"></div>
                                     <div class="sun-ray"></div>
                                     <div class="sun-ray"></div>
                                     <div class="sun-ray"></div>
                                 </div>
-                                <span>Sonnenaufgang: <span class="value">${sunrise}</span></span>
+                                <div class="kachel-label">Sonnenaufgang</div>
+                                <div class="kachel-value">${sunrise}</div>
                             </div>
-                            <div class="detail-item">
-                                <div class="icon-box sunset-icon">
+
+                            <!-- Sonnenuntergang (GRAFIK + Uhrzeit) -->
+                            <div class="kachel">
+                                <div class="kachel-icon sunset-icon">
                                     <div class="sun-body"></div>
                                     <div class="sun-ray"></div>
                                     <div class="sun-ray"></div>
                                     <div class="sun-ray"></div>
                                     <div class="sun-ray"></div>
                                 </div>
-                                <span>Sonnenuntergang: <span class="value">${sunset}</span></span>
+                                <div class="kachel-label">Sonnenuntergang</div>
+                                <div class="kachel-value">${sunset}</div>
                             </div>
+
                         </div>
 
+                        <!-- Vorhersage -->
                         <div class="forecast-section">
                             <div class="forecast-title">📅 3-Tage-Vorhersage</div>
                             <div class="forecast-grid" id="forecastGrid"></div>
@@ -964,14 +1095,13 @@
                         <div class="temp-low">${day.minTemp}°</div>
                         <div class="desc">${day.desc}</div>
                         <div class="extra">
-                            <span><span class="icon-symbol">💧</span> ${day.rainChance}%</span>
-                            <span><span class="icon-symbol">🌬️</span> ${day.wind} km/h</span>
+                            <span><span style="font-size:1rem;">💧</span> ${day.rainChance}%</span>
+                            <span><span style="font-size:1rem;">🌬️</span> ${day.wind} km/h</span>
                         </div>
                     `;
                     grid.appendChild(div);
                 });
 
-                // Favorit hinzufügen
                 addFavorite(cityName);
                 currentCity = cityName;
 
@@ -997,36 +1127,6 @@
             return `https://openweathermap.org/img/wn/${icon}@4x.png`;
         }
 
-        // ========== STANDORT ==========
-
-        function getLocation() {
-            if (!navigator.geolocation) {
-                weatherDisplay.innerHTML = `<div class="loading" style="color: var(--accent-pink);"><i class="fa-solid fa-triangle-exclamation"></i> Geolocation wird nicht unterstützt.</div>`;
-                return;
-            }
-            weatherDisplay.innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> Standort wird ermittelt...</div>`;
-            navigator.geolocation.getCurrentPosition(
-                async (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    try {
-                        const res = await fetch(
-                            `${WTTR_BASE}/${latitude},${longitude}?format=j1&lang=de`
-                        );
-                        if (!res.ok) throw new Error('Wetterabfrage fehlgeschlagen');
-                        const data = await res.json();
-                        const city = data.nearest_area[0]?.areaName[0]?.value || 'Unbekannter Ort';
-                        searchInput.value = city;
-                        fetchWeather(city);
-                    } catch (e) {
-                        weatherDisplay.innerHTML = `<div class="loading" style="color: var(--accent-pink);"><i class="fa-solid fa-triangle-exclamation"></i> Standort konnte nicht ermittelt werden: ${e.message}</div>`;
-                    }
-                },
-                (err) => {
-                    weatherDisplay.innerHTML = `<div class="loading" style="color: var(--accent-pink);"><i class="fa-solid fa-triangle-exclamation"></i> Standortzugriff verweigert: ${err.message}</div>`;
-                }
-            );
-        }
-
         // ========== EVENT-LISTENER ==========
 
         searchBtn.addEventListener('click', () => {
@@ -1036,7 +1136,9 @@
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') searchBtn.click();
         });
-        geolocationBtn.addEventListener('click', getLocation);
+
+        geolocationBtn.addEventListener('click', requestGeolocation);
+        retryGeoBtn.addEventListener('click', requestGeolocation);
 
         // Initial
         renderFavorites();
