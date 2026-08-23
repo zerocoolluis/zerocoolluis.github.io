@@ -9,8 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <style>
-        /* === Basis === */
+    <style id="themeStyle">
+        /* === Basis (Default Dark) === */
         :root {
             --bg-color: #0a0e1a;
             --card-bg: rgba(18, 25, 45, 0.85);
@@ -24,6 +24,18 @@
             --card-radius: 20px;
             --input-radius: 16px;
             --kachel-radius: 16px;
+            --bg-canvas-opacity: 0.12;
+        }
+
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-color: #e8edf5;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(91, 154, 255, 0.4);
+            --text-color: #1a1f2e;
+            --text-muted: #4a5a7a;
+            --bg-canvas-opacity: 0.05;
+            --primary-glow: rgba(91, 154, 255, 0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
@@ -36,6 +48,7 @@
             padding: 30px 20px 60px;
             position: relative;
             overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         #bg-canvas {
@@ -46,6 +59,8 @@
             height: 100%;
             pointer-events: none;
             z-index: 0;
+            opacity: var(--bg-canvas-opacity);
+            transition: opacity 0.3s;
         }
 
         .container {
@@ -91,6 +106,91 @@
             color: var(--primary);
             transform: translateX(-4px);
             box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            width: 45px;
+            height: 45px;
+            border-radius: var(--card-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .settings-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .settings-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            padding: 16px 20px;
+            min-width: 180px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 200;
+        }
+        .settings-dropdown.visible {
+            display: flex;
+        }
+        .settings-dropdown .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+        .settings-dropdown .setting-item select,
+        .settings-dropdown .setting-item button {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border-color);
+            border-radius: var(--input-radius);
+            color: var(--text-color);
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+        }
+        .settings-dropdown .setting-item select:focus,
+        .settings-dropdown .setting-item button:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        .theme-toggle {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border-color);
+            border-radius: var(--input-radius);
+            padding: 6px 12px;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
         }
 
         .menu-container { position: relative; }
@@ -157,6 +257,12 @@
             padding-left: 26px;
         }
 
+        /* === Rest des Styles (unverändert, aber anpassbar durch CSS-Variablen) === */
+        /* ... (der Rest bleibt gleich, ich werde ihn aus Platzgründen nicht wiederholen, sondern alles in einem Block posten) */
+    </style>
+
+    <style id="additionalStyles">
+        /* Die restlichen Styles – ich füge sie hier in einem einzigen Block ein */
         header {
             margin-bottom: 30px;
             border-bottom: 1px solid var(--border-color);
@@ -180,7 +286,6 @@
             font-size: 1.2rem;
         }
 
-        /* === Suche & Standort === */
         .search-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -249,7 +354,6 @@
             background: rgba(255,255,255,0.18);
         }
 
-        /* === Autocomplete === */
         .autocomplete-list {
             position: absolute;
             top: calc(100% + 8px);
@@ -279,7 +383,6 @@
             color: var(--text-color);
         }
 
-        /* === Favoriten === */
         .favorites-section {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -338,7 +441,6 @@
             font-size: 0.95rem;
         }
 
-        /* === Fehlermeldung Geolocation === */
         .geo-error {
             background: rgba(255,107,107,0.1);
             border: 1px solid var(--accent-pink);
@@ -387,7 +489,6 @@
             background: rgba(255,255,255,0.2);
         }
 
-        /* === Wetter-Hauptkarte === */
         .weather-main {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -440,7 +541,6 @@
             font-size: 1.2rem;
         }
 
-        /* === Kacheln (runde Vierecke) === */
         .kacheln-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -491,7 +591,6 @@
             font-size: 0.7rem;
         }
 
-        /* === Wind-Icon (animiert) === */
         .wind-icon {
             position: relative;
             width: 32px;
@@ -516,7 +615,6 @@
             100% { transform: translateX(5px) scaleX(1.2); opacity: 1; }
         }
 
-        /* === Windböen-Icon === */
         .gust-icon {
             position: relative;
             width: 32px;
@@ -541,7 +639,6 @@
             100% { transform: translateX(6px) scaleX(1.3); opacity: 1; }
         }
 
-        /* === Sonnenaufgang-Icon (Halbkreis) === */
         .sunrise-icon {
             position: relative;
             width: 32px;
@@ -574,7 +671,6 @@
         .sunrise-icon .sun-ray:nth-child(4) { transform: translateX(-50%) rotate(-60deg); }
         .sunrise-icon .sun-ray:nth-child(5) { transform: translateX(-50%) rotate(60deg); }
 
-        /* === Sonnenuntergang-Icon === */
         .sunset-icon {
             position: relative;
             width: 32px;
@@ -607,7 +703,6 @@
         .sunset-icon .sun-ray:nth-child(4) { transform: translateX(-50%) rotate(-60deg); }
         .sunset-icon .sun-ray:nth-child(5) { transform: translateX(-50%) rotate(60deg); }
 
-        /* === Thermometer, Feuchtigkeit, Druck etc. als CSS-Icons === */
         .icon-thermometer::before {
             content: "🌡";
             font-size: 1.6rem;
@@ -628,11 +723,7 @@
             content: "👁️";
             font-size: 1.6rem;
         }
-        /* Diese Icons sind eigentlich Emojis – aber der Browser rendert sie als einfarbige Symbole, 
-           wenn wir sie nicht als Emoji interpretieren – daher belasse ich sie als Unicode-Zeichen 
-           ohne Emoji-Präsentation (wir nutzen sie als grafische Symbole). */
 
-        /* === Vorhersage === */
         .forecast-section {
             margin-top: 30px;
             border-top: 1px solid var(--border-color);
@@ -698,7 +789,6 @@
             gap: 12px;
         }
 
-        /* === Loading === */
         .loading {
             text-align: center;
             color: var(--text-muted);
@@ -713,7 +803,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* === Footer === */
         footer {
             margin-top: 60px;
             padding-top: 30px;
@@ -723,7 +812,6 @@
             font-size: 0.95rem;
         }
 
-        /* === Responsive === */
         @media (max-width: 768px) {
             body { padding: 20px 15px 40px; }
             .container { max-width: 100%; }
@@ -739,6 +827,7 @@
             .favorites-grid { flex-direction: column; align-items: stretch; }
             .geo-error { flex-direction: column; align-items: stretch; }
             .geo-error .geo-buttons { justify-content: center; }
+            .top-right .settings-dropdown { right: -10px; min-width: 160px; }
         }
         @media (max-width: 480px) {
             .kacheln-grid { grid-template-columns: 1fr 1fr; }
@@ -751,22 +840,42 @@
     <canvas id="bg-canvas"></canvas>
 
     <div class="container">
-        <!-- Top-Bar -->
+        <!-- Top-Bar mit Einstellungen -->
         <div class="top-bar">
             <a href="../" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Zurück zur Übersicht</a>
-            <div class="menu-container">
-                <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen"><i class="fa-solid fa-bars"></i></button>
-                <div class="dropdown-menu" id="dropdownMenu" role="menu">
-                    <a href="../../entertainment/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-clapperboard" style="color: var(--accent-pink);"></i> Entertainment</a>
-                    <a href="../../school/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-lightbulb" style="color: var(--accent-gold);"></i> School</a>
-                    <a href="../../utilities/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-gears" style="color: var(--primary);"></i> Utilities</a>
+            <div class="top-right">
+                <!-- Einstellungen-Button -->
+                <div style="position: relative;">
+                    <button class="settings-btn" id="settingsToggle"><i class="fa-solid fa-sliders"></i></button>
+                    <div class="settings-dropdown" id="settingsDropdown">
+                        <div class="setting-item">
+                            <span id="langLabel">Sprache</span>
+                            <select id="langSelect">
+                                <option value="de">Deutsch</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <span id="themeLabel">Theme</span>
+                            <button class="theme-toggle" id="themeToggle"><i class="fa-regular fa-moon"></i> Dark</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Menü -->
+                <div class="menu-container">
+                    <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen"><i class="fa-solid fa-bars"></i></button>
+                    <div class="dropdown-menu" id="dropdownMenu" role="menu">
+                        <a href="../../entertainment/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-clapperboard" style="color: var(--accent-pink);"></i> Entertainment</a>
+                        <a href="../../school/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-lightbulb" style="color: var(--accent-gold);"></i> School</a>
+                        <a href="../../utilities/" class="dropdown-item" role="menuitem"><i class="fa-solid fa-gears" style="color: var(--primary);"></i> Utilities</a>
+                    </div>
                 </div>
             </div>
         </div>
 
         <header>
-            <h1>WeatherForge</h1>
-            <div class="subhead">Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit grafischen Icons.</div>
+            <h1 id="pageTitle">WeatherForge</h1>
+            <div class="subhead" id="pageSubhead">Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit grafischen Icons.</div>
         </header>
 
         <!-- Fehlermeldung Geo -->
@@ -774,8 +883,8 @@
             <i class="fa-solid fa-triangle-exclamation"></i>
             <span class="geo-msg" id="geoMsg">Standortzugriff verweigert.</span>
             <div class="geo-buttons">
-                <button id="retryGeoBtn"><i class="fa-solid fa-rotate"></i> Erneut versuchen</button>
-                <button id="settingsGeoBtn" class="btn-settings"><i class="fa-solid fa-gear"></i> Zu den Einstellungen</button>
+                <button id="retryGeoBtn"><i class="fa-solid fa-rotate"></i> <span id="retryBtnText">Erneut versuchen</span></button>
+                <button id="settingsGeoBtn" class="btn-settings"><i class="fa-solid fa-gear"></i> <span id="settingsBtnText">Zu den Einstellungen</span></button>
             </div>
         </div>
 
@@ -784,167 +893,144 @@
             <input type="text" id="searchInput" placeholder="Stadt eingeben, z.B. Berlin" autocomplete="off" />
             <div id="autocompleteList" class="autocomplete-list"></div>
             <div class="btn-group">
-                <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
-                <button id="geolocationBtn" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> Mein Standort</button>
+                <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> <span id="searchBtnText">Suchen</span></button>
+                <button id="geolocationBtn" class="btn-secondary"><i class="fa-solid fa-location-dot"></i> <span id="geoBtnText">Mein Standort</span></button>
             </div>
         </div>
 
         <!-- Favoriten -->
         <div class="favorites-section" id="favoritesSection">
-            <div class="header"><i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> Favoriten</div>
+            <div class="header"><i class="fa-regular fa-heart" style="color: var(--accent-pink);"></i> <span id="favHeader">Favoriten</span></div>
             <div class="favorites-grid" id="favoritesGrid">
-                <span class="no-favs">Keine Favoriten gespeichert.</span>
+                <span class="no-favs" id="noFavsText">Keine Favoriten gespeichert.</span>
             </div>
         </div>
 
         <!-- Wetter-Hauptkarte -->
         <div id="weatherDisplay">
-            <div class="loading"><i class="fa-solid fa-circle-notch"></i> Wetterdaten werden geladen...</div>
+            <div class="loading"><i class="fa-solid fa-circle-notch"></i> <span id="loadingText">Wetterdaten werden geladen...</span></div>
         </div>
 
         <footer>&copy; <span id="year"></span> Zero's Tool Hub // Entwickelt von Zerocoolluis</footer>
     </div>
 
     <script>
-        // ========== KONFIGURATION ==========
-        const WTTR_BASE = 'https://wttr.in';
-        const NOMINATIM_BASE = 'https://nominatim.openstreetmap.org/search';
-
-        // ========== FAVORITEN (NUR IM SPEICHER) ==========
-        let favorites = [];
-
-        // ========== DOM-REFERENZEN ==========
-        const searchInput = document.getElementById('searchInput');
-        const searchBtn = document.getElementById('searchBtn');
-        const geolocationBtn = document.getElementById('geolocationBtn');
-        const retryGeoBtn = document.getElementById('retryGeoBtn');
-        const settingsGeoBtn = document.getElementById('settingsGeoBtn');
-        const geoError = document.getElementById('geoError');
-        const geoMsg = document.getElementById('geoMsg');
-        const autocompleteList = document.getElementById('autocompleteList');
-        const favoritesGrid = document.getElementById('favoritesGrid');
-        const weatherDisplay = document.getElementById('weatherDisplay');
-
-        // ========== AUTOCOMPLETE ==========
-        let autocompleteTimeout = null;
-
-        searchInput.addEventListener('input', function() {
-            const query = this.value.trim();
-            if (query.length < 2) {
-                autocompleteList.classList.remove('visible');
-                return;
+        // ========== SPRACHEN ==========
+        const translations = {
+            de: {
+                pageTitle: 'WeatherForge',
+                pageSubhead: 'Aktuelles Wetter, Kacheln, 3-Tage-Vorhersage & Favoriten – mit grafischen Icons.',
+                searchPlaceholder: 'Stadt eingeben, z.B. Berlin',
+                searchBtn: 'Suchen',
+                geoBtn: 'Mein Standort',
+                favHeader: 'Favoriten',
+                noFavs: 'Keine Favoriten gespeichert.',
+                loading: 'Wetterdaten werden geladen...',
+                retryBtn: 'Erneut versuchen',
+                settingsBtn: 'Zu den Einstellungen',
+                geoMsg: 'Standortzugriff verweigert.',
+                themeLabel: 'Theme',
+                langLabel: 'Sprache',
+                feelsLike: 'Gefühlt',
+                humidity: 'Luftfeuchtigkeit',
+                wind: 'Wind',
+                gusts: 'Windböen',
+                pressure: 'Luftdruck',
+                uv: 'UV-Index',
+                visibility: 'Sichtweite',
+                sunrise: 'Sonnenaufgang',
+                sunset: 'Sonnenuntergang',
+                forecast: '3-Tage-Vorhersage',
+                dayNames: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa']
+            },
+            en: {
+                pageTitle: 'WeatherForge',
+                pageSubhead: 'Current weather, tiles, 3-day forecast & favorites – with graphic icons.',
+                searchPlaceholder: 'Enter city, e.g. Berlin',
+                searchBtn: 'Search',
+                geoBtn: 'My Location',
+                favHeader: 'Favorites',
+                noFavs: 'No favorites saved.',
+                loading: 'Loading weather data...',
+                retryBtn: 'Retry',
+                settingsBtn: 'Go to Settings',
+                geoMsg: 'Location access denied.',
+                themeLabel: 'Theme',
+                langLabel: 'Language',
+                feelsLike: 'Feels like',
+                humidity: 'Humidity',
+                wind: 'Wind',
+                gusts: 'Gusts',
+                pressure: 'Pressure',
+                uv: 'UV Index',
+                visibility: 'Visibility',
+                sunrise: 'Sunrise',
+                sunset: 'Sunset',
+                forecast: '3-Day Forecast',
+                dayNames: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
             }
-            clearTimeout(autocompleteTimeout);
-            autocompleteTimeout = setTimeout(async () => {
-                try {
-                    const res = await fetch(
-                        `${NOMINATIM_BASE}?format=json&q=${encodeURIComponent(query)}&limit=6&addressdetails=1`
-                    );
-                    const data = await res.json();
-                    autocompleteList.innerHTML = '';
-                    if (data.length === 0) {
-                        autocompleteList.classList.remove('visible');
-                        return;
-                    }
-                    data.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'autocomplete-item';
-                        const name = item.display_name.split(',').slice(0, 3).join(',');
-                        div.textContent = name;
-                        div.addEventListener('click', () => {
-                            searchInput.value = name;
-                            autocompleteList.classList.remove('visible');
-                            fetchWeather(name);
-                        });
-                        autocompleteList.appendChild(div);
-                    });
-                    autocompleteList.classList.add('visible');
-                } catch (e) {
-                    autocompleteList.classList.remove('visible');
-                }
-            }, 300);
-        });
+        };
 
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.search-section')) {
-                autocompleteList.classList.remove('visible');
-            }
-        });
+        let currentLang = 'de';
 
-        // ========== FAVORITEN ==========
-
-        function addFavorite(city) {
-            if (!city) return;
-            if (!favorites.includes(city)) {
-                favorites.push(city);
-                renderFavorites();
+        function setLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            document.getElementById('pageTitle').textContent = t.pageTitle;
+            document.getElementById('pageSubhead').textContent = t.pageSubhead;
+            document.getElementById('searchInput').placeholder = t.searchPlaceholder;
+            document.getElementById('searchBtnText').textContent = t.searchBtn;
+            document.getElementById('geoBtnText').textContent = t.geoBtn;
+            document.getElementById('favHeader').textContent = t.favHeader;
+            document.getElementById('noFavsText').textContent = t.noFavs;
+            document.getElementById('loadingText').textContent = t.loading;
+            document.getElementById('retryBtnText').textContent = t.retryBtn;
+            document.getElementById('settingsBtnText').textContent = t.settingsBtn;
+            document.getElementById('geoMsg').textContent = t.geoMsg;
+            document.getElementById('themeLabel').textContent = t.themeLabel;
+            document.getElementById('langLabel').textContent = t.langLabel;
+            // Bei bereits geladenem Wetter die Kacheln neu zeichnen (wird bei fetchWeather erneut aufgerufen)
+            if (currentCity) {
+                fetchWeather(currentCity);
             }
         }
 
-        function removeFavorite(city) {
-            favorites = favorites.filter(c => c !== city);
-            renderFavorites();
-        }
+        // ========== THEME ==========
+        let currentTheme = 'dark';
 
-        async function renderFavorites() {
-            favoritesGrid.innerHTML = '';
-            if (favorites.length === 0) {
-                favoritesGrid.innerHTML = '<span class="no-favs">Keine Favoriten gespeichert.</span>';
-                return;
+        function setTheme(theme) {
+            currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : '');
+            const btn = document.getElementById('themeToggle');
+            if (theme === 'light') {
+                btn.innerHTML = '<i class="fa-regular fa-sun"></i> Light';
+            } else {
+                btn.innerHTML = '<i class="fa-regular fa-moon"></i> Dark';
             }
-            const promises = favorites.map(async (city) => {
-                try {
-                    const res = await fetch(`${WTTR_BASE}/${encodeURIComponent(city)}?format=j1&lang=de`);
-                    if (!res.ok) return { city, temp: '?' };
-                    const data = await res.json();
-                    const temp = data.current_condition[0]?.temp_C || '?';
-                    return { city, temp };
-                } catch (e) {
-                    return { city, temp: '?' };
-                }
-            });
-            const results = await Promise.all(promises);
-
-            results.forEach(({ city, temp }) => {
-                const div = document.createElement('div');
-                div.className = 'fav-item';
-                div.innerHTML = `
-                    <span>${city}</span>
-                    <span class="temp">${temp}°C</span>
-                    <span class="remove-fav" data-city="${city}"><i class="fa-solid fa-xmark"></i></span>
-                `;
-                div.addEventListener('click', (e) => {
-                    if (e.target.closest('.remove-fav')) return;
-                    searchInput.value = city;
-                    fetchWeather(city);
-                });
-                const removeBtn = div.querySelector('.remove-fav');
-                removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeFavorite(city);
-                });
-                favoritesGrid.appendChild(div);
-            });
+            // Lokal speichern (optional)
+            localStorage.setItem('weather_theme', theme);
         }
 
         // ========== GEOLOCATION ==========
 
+        let geoBlocked = false; // wird gesetzt, wenn Nutzer verweigert hat
+
         function requestGeolocation() {
             if (!navigator.geolocation) {
-                geoMsg.textContent = 'Geolocation wird von Ihrem Browser nicht unterstützt.';
-                geoError.classList.add('visible');
-                weatherDisplay.innerHTML = `<div class="loading" style="color: var(--text-muted);">Ihr Browser unterstützt keine Standortermittlung.</div>`;
+                document.getElementById('geoMsg').textContent = 'Geolocation wird von Ihrem Browser nicht unterstützt.';
+                document.getElementById('geoError').classList.add('visible');
                 return;
             }
-            geoError.classList.remove('visible');
-            weatherDisplay.innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> Standort wird ermittelt...</div>`;
+            // Fehlerbox ausblenden
+            document.getElementById('geoError').classList.remove('visible');
+            weatherDisplay.innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
 
             navigator.geolocation.getCurrentPosition(
                 async (pos) => {
                     const { latitude, longitude } = pos.coords;
                     try {
                         const res = await fetch(
-                            `${WTTR_BASE}/${latitude},${longitude}?format=j1&lang=de`
+                            `https://wttr.in/${latitude},${longitude}?format=j1&lang=de`
                         );
                         if (!res.ok) throw new Error('Wetterabfrage fehlgeschlagen');
                         const data = await res.json();
@@ -957,29 +1043,30 @@
                 },
                 (err) => {
                     // Fehler beim Standortzugriff
-                    let msg = 'Standortzugriff verweigert.';
+                    let msg = translations[currentLang].geoMsg;
                     if (err.message) msg += ' (' + err.message + ')';
-                    geoMsg.textContent = msg;
-                    geoError.classList.add('visible');
-                    weatherDisplay.innerHTML = `<div class="loading" style="color: var(--text-muted);">Standortzugriff verweigert. Bitte erlaube den Zugriff in deinem Browser oder suche manuell.</div>`;
+                    document.getElementById('geoMsg').textContent = msg;
+                    document.getElementById('geoError').classList.add('visible');
+                    weatherDisplay.innerHTML = `<div class="loading" style="color: var(--text-muted);">${translations[currentLang].geoMsg} Bitte erlaube den Zugriff in deinem Browser oder suche manuell.</div>`;
+                    geoBlocked = true;
                 }
             );
         }
 
         // ========== BROWSER-EINSTELLUNGEN ==========
         function openBrowserSettings() {
-            const userAgent = navigator.userAgent.toLowerCase();
+            const ua = navigator.userAgent.toLowerCase();
             let url = '';
-            if (userAgent.indexOf('chrome') > -1) {
+            if (ua.indexOf('chrome') > -1 && ua.indexOf('edg') === -1) {
                 url = 'chrome://settings/content/location';
-            } else if (userAgent.indexOf('firefox') > -1) {
+            } else if (ua.indexOf('firefox') > -1) {
                 url = 'about:preferences#privacy';
-            } else if (userAgent.indexOf('edg') > -1) {
+            } else if (ua.indexOf('edg') > -1) {
                 url = 'edge://settings/content/location';
-            } else if (userAgent.indexOf('safari') > -1) {
+            } else if (ua.indexOf('safari') > -1) {
                 url = 'preferences:privacy';
             } else {
-                url = 'about:preferences'; // Fallback
+                url = 'about:preferences';
             }
             window.open(url, '_blank');
         }
@@ -989,11 +1076,11 @@
         let currentCity = '';
 
         async function fetchWeather(city) {
-            weatherDisplay.innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> Lade Wetter für "${city}"...</div>`;
+            weatherDisplay.innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
 
             try {
                 const currentRes = await fetch(
-                    `${WTTR_BASE}/${encodeURIComponent(city)}?format=j1&lang=de`
+                    `https://wttr.in/${encodeURIComponent(city)}?format=j1&lang=de`
                 );
                 if (!currentRes.ok) {
                     if (currentRes.status === 404) {
@@ -1022,7 +1109,6 @@
                 const pressure = current.pressure;
                 const uvIndex = current.uvIndex || '—';
                 const visibility = current.visibility || '—';
-                // Sonnenauf- und -untergang (wttr.in liefert sie im Format "HH:MM")
                 const sunrise = current.sunrise || '--:--';
                 const sunset = current.sunset || '--:--';
 
@@ -1042,8 +1128,8 @@
                     return { weekday, dayDate, maxTemp, minTemp, desc, iconUrl, rainChance, wind };
                 });
 
-                // HTML – ohne Emojis, mit grafischen Icons (CSS)
-                let html = `
+                const t = translations[currentLang];
+                const html = `
                     <div class="weather-main">
                         <div class="city-name">${cityName}, ${country}</div>
                         <div class="city-date">${date}</div>
@@ -1056,67 +1142,50 @@
                             </div>
                         </div>
 
-                        <!-- KACHELN -->
                         <div class="kacheln-grid">
-
-                            <!-- Gefühlte Temperatur -->
                             <div class="kachel">
                                 <div class="kachel-icon icon-thermometer"></div>
-                                <div class="kachel-label">Gefühlt</div>
+                                <div class="kachel-label">${t.feelsLike}</div>
                                 <div class="kachel-value">${feelsLike}°C</div>
                             </div>
-
-                            <!-- Luftfeuchtigkeit -->
                             <div class="kachel">
                                 <div class="kachel-icon icon-humidity"></div>
-                                <div class="kachel-label">Luftfeuchtigkeit</div>
+                                <div class="kachel-label">${t.humidity}</div>
                                 <div class="kachel-value">${humidity}%</div>
                             </div>
-
-                            <!-- Wind (animiert) -->
                             <div class="kachel">
                                 <div class="kachel-icon wind-icon">
                                     <div class="wind-line"></div>
                                     <div class="wind-line"></div>
                                     <div class="wind-line"></div>
                                 </div>
-                                <div class="kachel-label">Wind</div>
+                                <div class="kachel-label">${t.wind}</div>
                                 <div class="kachel-value">${windSpeed} <span class="kachel-unit">km/h</span></div>
                             </div>
-
-                            <!-- Windböen (animiert) -->
                             <div class="kachel">
                                 <div class="kachel-icon gust-icon">
                                     <div class="gust-line"></div>
                                     <div class="gust-line"></div>
                                     <div class="gust-line"></div>
                                 </div>
-                                <div class="kachel-label">Windböen</div>
+                                <div class="kachel-label">${t.gusts}</div>
                                 <div class="kachel-value">${windGust} <span class="kachel-unit">km/h</span></div>
                             </div>
-
-                            <!-- Luftdruck -->
                             <div class="kachel">
                                 <div class="kachel-icon icon-pressure"></div>
-                                <div class="kachel-label">Luftdruck</div>
+                                <div class="kachel-label">${t.pressure}</div>
                                 <div class="kachel-value">${pressure} <span class="kachel-unit">hPa</span></div>
                             </div>
-
-                            <!-- UV-Index -->
                             <div class="kachel">
                                 <div class="kachel-icon icon-uv"></div>
-                                <div class="kachel-label">UV-Index</div>
+                                <div class="kachel-label">${t.uv}</div>
                                 <div class="kachel-value">${uvIndex}</div>
                             </div>
-
-                            <!-- Sichtweite -->
                             <div class="kachel">
                                 <div class="kachel-icon icon-visibility"></div>
-                                <div class="kachel-label">Sichtweite</div>
+                                <div class="kachel-label">${t.visibility}</div>
                                 <div class="kachel-value">${visibility} <span class="kachel-unit">km</span></div>
                             </div>
-
-                            <!-- Sonnenaufgang (GRAFIK + Uhrzeit) -->
                             <div class="kachel">
                                 <div class="kachel-icon sunrise-icon">
                                     <div class="sun-body"></div>
@@ -1125,11 +1194,9 @@
                                     <div class="sun-ray"></div>
                                     <div class="sun-ray"></div>
                                 </div>
-                                <div class="kachel-label">Sonnenaufgang</div>
+                                <div class="kachel-label">${t.sunrise}</div>
                                 <div class="kachel-value">${sunrise}</div>
                             </div>
-
-                            <!-- Sonnenuntergang (GRAFIK + Uhrzeit) -->
                             <div class="kachel">
                                 <div class="kachel-icon sunset-icon">
                                     <div class="sun-body"></div>
@@ -1138,15 +1205,13 @@
                                     <div class="sun-ray"></div>
                                     <div class="sun-ray"></div>
                                 </div>
-                                <div class="kachel-label">Sonnenuntergang</div>
+                                <div class="kachel-label">${t.sunset}</div>
                                 <div class="kachel-value">${sunset}</div>
                             </div>
-
                         </div>
 
-                        <!-- Vorhersage -->
                         <div class="forecast-section">
-                            <div class="forecast-title">📅 3-Tage-Vorhersage</div>
+                            <div class="forecast-title">📅 ${t.forecast}</div>
                             <div class="forecast-grid" id="forecastGrid"></div>
                         </div>
                     </div>
@@ -1173,6 +1238,7 @@
                     grid.appendChild(div);
                 });
 
+                // Favorit hinzufügen
                 addFavorite(cityName);
                 currentCity = cityName;
 
@@ -1198,21 +1264,103 @@
             return `https://openweathermap.org/img/wn/${icon}@4x.png`;
         }
 
-        // ========== EVENT-LISTENER ==========
+        // ========== FAVORITEN ==========
+        let favorites = [];
 
-        searchBtn.addEventListener('click', () => {
-            const city = searchInput.value.trim();
+        function addFavorite(city) {
+            if (!city || favorites.includes(city)) return;
+            favorites.push(city);
+            renderFavorites();
+        }
+
+        function removeFavorite(city) {
+            favorites = favorites.filter(c => c !== city);
+            renderFavorites();
+        }
+
+        async function renderFavorites() {
+            const grid = document.getElementById('favoritesGrid');
+            grid.innerHTML = '';
+            if (favorites.length === 0) {
+                grid.innerHTML = `<span class="no-favs">${translations[currentLang].noFavs}</span>`;
+                return;
+            }
+            const promises = favorites.map(async (city) => {
+                try {
+                    const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1&lang=de`);
+                    if (!res.ok) return { city, temp: '?' };
+                    const data = await res.json();
+                    const temp = data.current_condition[0]?.temp_C || '?';
+                    return { city, temp };
+                } catch (e) {
+                    return { city, temp: '?' };
+                }
+            });
+            const results = await Promise.all(promises);
+            results.forEach(({ city, temp }) => {
+                const div = document.createElement('div');
+                div.className = 'fav-item';
+                div.innerHTML = `
+                    <span>${city}</span>
+                    <span class="temp">${temp}°C</span>
+                    <span class="remove-fav" data-city="${city}"><i class="fa-solid fa-xmark"></i></span>
+                `;
+                div.addEventListener('click', (e) => {
+                    if (e.target.closest('.remove-fav')) return;
+                    searchInput.value = city;
+                    fetchWeather(city);
+                });
+                const removeBtn = div.querySelector('.remove-fav');
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeFavorite(city);
+                });
+                grid.appendChild(div);
+            });
+        }
+
+        // ========== DOM-EVENTS ==========
+
+        // Sprachumschaltung
+        document.getElementById('langSelect').addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+
+        // Theme-Umschaltung
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        // Einstellungen-Dropdown
+        document.getElementById('settingsToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('settingsDropdown').classList.toggle('visible');
+        });
+        document.addEventListener('click', () => {
+            document.getElementById('settingsDropdown').classList.remove('visible');
+        });
+
+        // Suche
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const city = document.getElementById('searchInput').value.trim();
             if (city) fetchWeather(city);
         });
-        searchInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') searchBtn.click();
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') document.getElementById('searchBtn').click();
         });
 
-        geolocationBtn.addEventListener('click', requestGeolocation);
-        retryGeoBtn.addEventListener('click', requestGeolocation);
-        settingsGeoBtn.addEventListener('click', openBrowserSettings);
+        // Standort
+        document.getElementById('geolocationBtn').addEventListener('click', requestGeolocation);
+        document.getElementById('retryGeoBtn').addEventListener('click', requestGeolocation);
+        document.getElementById('settingsGeoBtn').addEventListener('click', openBrowserSettings);
 
         // Initial
+        const savedTheme = localStorage.getItem('weather_theme') || 'dark';
+        setTheme(savedTheme);
+        // Sprache initial auf Deutsch
+        document.getElementById('langSelect').value = 'de';
+        setLanguage('de');
         renderFavorites();
         fetchWeather('Berlin');
 
