@@ -347,7 +347,7 @@
             background: rgba(255,255,255,0.18);
         }
 
-        /* === Autocomplete === */
+        /* === Autocomplete (jetzt deutlich sichtbarer) === */
         .autocomplete-list {
             position: absolute;
             top: calc(100% + 8px);
@@ -357,24 +357,28 @@
             border: 1px solid var(--border-color);
             border-radius: var(--input-radius);
             backdrop-filter: blur(20px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            max-height: 200px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+            max-height: 240px;
             overflow-y: auto;
             display: none;
-            z-index: 100;
-            padding: 6px 0;
+            z-index: 1000;
+            padding: 8px 0;
         }
         .autocomplete-list.visible { display: block; }
         .autocomplete-item {
-            padding: 10px 20px;
+            padding: 12px 22px;
             cursor: pointer;
-            color: var(--text-muted);
+            color: var(--text-color);
             transition: 0.2s;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .autocomplete-item:hover {
-            background: rgba(91,154,255,0.15);
-            color: var(--text-color);
+            background: rgba(91,154,255,0.2);
+            color: #fff;
+        }
+        .autocomplete-item:last-child {
+            border-bottom: none;
         }
 
         /* === Favoriten === */
@@ -503,6 +507,28 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 2rem;
             margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .weather-main .city-name .fav-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 4px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+        }
+        .weather-main .city-name .fav-toggle:hover {
+            transform: scale(1.15);
+        }
+        .weather-main .city-name .fav-toggle.active {
+            color: var(--accent-pink);
         }
         .weather-main .city-date {
             color: var(--text-muted);
@@ -536,7 +562,7 @@
             font-size: 1.2rem;
         }
 
-        /* === Kacheln mit Font Awesome === */
+        /* === Kacheln === */
         .kacheln-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -638,7 +664,7 @@
             100% { transform: translateX(6px) scaleX(1.3); opacity: 1; }
         }
 
-        /* === Sonnenauf-/untergang als CSS === */
+        /* === Sonnenauf-/untergang === */
         .sunrise-icon, .sunset-icon {
             position: relative;
             width: 36px;
@@ -1114,6 +1140,7 @@
                 async (pos) => {
                     const { latitude, longitude } = pos.coords;
                     try {
+                        // Wetter über wttr.in abrufen (für Stadtnamen)
                         const res = await fetch(`https://wttr.in/${latitude},${longitude}?format=j1&lang=de`);
                         if (!res.ok) throw new Error('Wetterabfrage fehlgeschlagen');
                         const data = await res.json();
@@ -1132,7 +1159,7 @@
             );
         }
 
-        // ========== BROWSER-ERKENNUNG (robust) ==========
+        // ========== BROWSER-ERKENNUNG ==========
         function getBrowserSettingsPath() {
             const ua = navigator.userAgent.toLowerCase();
             let name = 'Unbekannt';
@@ -1158,7 +1185,6 @@
 
         function openSettingsDirect() {
             const { path } = getBrowserSettingsPath();
-            // Öffne den Pfad – falls Popup blockiert wird, zeigen wir eine Nachricht
             const win = window.open(path, '_blank');
             if (!win || win.closed || typeof win.closed === 'undefined') {
                 alert('Das Öffnen der Einstellungen wurde blockiert. Bitte kopiere den Pfad manuell in die Adressleiste:\n\n' + path);
@@ -1170,7 +1196,6 @@
             document.getElementById('browserName').textContent = name;
             document.getElementById('browserPathDisplay').textContent = path;
             document.getElementById('settingsOverlay').classList.add('visible');
-            // Kopier-Button
             document.getElementById('copyPathBtn').onclick = function() {
                 const pathText = document.getElementById('browserPathDisplay').textContent;
                 navigator.clipboard.writeText(pathText).then(() => {
@@ -1178,7 +1203,6 @@
                     msg.classList.add('show');
                     setTimeout(() => msg.classList.remove('show'), 3000);
                 }).catch(() => {
-                    // Fallback: manuelle Auswahl
                     const range = document.createRange();
                     const el = document.getElementById('browserPathDisplay');
                     range.selectNode(el);
@@ -1192,13 +1216,39 @@
             };
         }
 
-        // ========== WETTERABFRAGE ==========
+        // ========== FAVORITEN ==========
+        let favorites = [];
+
+        function toggleFavorite(city) {
+            if (!city) return;
+            const index = favorites.indexOf(city);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(city);
+            }
+            renderFavorites();
+            // Aktuellen Herz-Status aktualisieren
+            const favBtn = document.querySelector('.fav-toggle');
+            if (favBtn) {
+                const isFav = favorites.includes(city);
+                favBtn.innerHTML = isFav ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>';
+                favBtn.classList.toggle('active', isFav);
+            }
+        }
+
+        function isFavorite(city) {
+            return favorites.includes(city);
+        }
+
+        // ========== WETTERABFRAGE (wttr.in + Open-Meteo) ==========
         let currentCity = '';
 
         async function fetchWeather(city) {
             document.getElementById('weatherDisplay').innerHTML = `<div class="loading"><i class="fa-solid fa-circle-notch"></i> ${translations[currentLang].loading}</div>`;
 
             try {
+                // 1. wttr.in für Basisdaten
                 const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1&lang=de`);
                 if (!res.ok) {
                     if (res.status === 404) {
@@ -1221,14 +1271,53 @@
                 const iconCode = current.weatherCode;
                 const iconUrl = getWeatherIcon(iconCode);
                 const humidity = current.humidity;
-                const windSpeed = (parseFloat(current.windSpeedKmph) || 0).toFixed(1);
-                const windGust = (parseFloat(current.windGustKmph) || 0).toFixed(1);
                 const pressure = current.pressure;
                 const uvIndex = current.uvIndex || '—';
                 const visibility = current.visibility || '—';
-                const sunrise = current.sunrise || '--:--';
-                const sunset = current.sunset || '--:--';
 
+                // 2. Koordinaten für Open-Meteo holen
+                let lat = location.latitude || 52.52;
+                let lon = location.longitude || 13.405;
+                if (!lat || !lon) {
+                    // Fallback: Nominatim
+                    const geoRes = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cityName)}&limit=1`);
+                    const geoData = await geoRes.json();
+                    if (geoData.length > 0) {
+                        lat = parseFloat(geoData[0].lat);
+                        lon = parseFloat(geoData[0].lon);
+                    }
+                }
+
+                // 3. Open-Meteo für Wind & Sonne
+                const meteoRes = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,wind_gusts_10m&daily=sunrise,sunset&timezone=auto&forecast_days=1`
+                );
+                let meteoData = null;
+                let windSpeed = '—';
+                let windGust = '—';
+                let sunrise = '--:--';
+                let sunset = '--:--';
+                if (meteoRes.ok) {
+                    meteoData = await meteoRes.json();
+                    if (meteoData.current) {
+                        windSpeed = meteoData.current.wind_speed_10m !== undefined ? meteoData.current.wind_speed_10m.toFixed(1) : '—';
+                        windGust = meteoData.current.wind_gusts_10m !== undefined ? meteoData.current.wind_gusts_10m.toFixed(1) : '—';
+                    }
+                    if (meteoData.daily && meteoData.daily.sunrise && meteoData.daily.sunrise.length > 0) {
+                        const sunriseDate = new Date(meteoData.daily.sunrise[0]);
+                        sunrise = sunriseDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                        const sunsetDate = new Date(meteoData.daily.sunset[0]);
+                        sunset = sunsetDate.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+                    }
+                } else {
+                    // Fallback: wttr.in Daten verwenden
+                    windSpeed = current.windSpeedKmph || '—';
+                    windGust = current.windGustKmph || '—';
+                    sunrise = current.sunrise || '--:--';
+                    sunset = current.sunset || '--:--';
+                }
+
+                // Vorhersage (wttr.in)
                 const forecast = data.weather;
                 const forecastDays = forecast.slice(0, 3).map(day => {
                     const dateObj = new Date(day.date);
@@ -1245,9 +1334,16 @@
                 });
 
                 const t = translations[currentLang];
+                const isFav = isFavorite(cityName);
+                const heartIcon = isFav ? '<i class="fa-solid fa-heart"></i>' : '<i class="fa-regular fa-heart"></i>';
+                const heartClass = isFav ? 'active' : '';
+
                 const html = `
                     <div class="weather-main">
-                        <div class="city-name">${cityName}, ${country}</div>
+                        <div class="city-name">
+                            <span>${cityName}, ${country}</span>
+                            <button class="fav-toggle ${heartClass}" id="favToggleBtn" aria-label="Favorit umschalten">${heartIcon}</button>
+                        </div>
                         <div class="city-date">${date}</div>
                         <div class="main-weather">
                             <img src="${iconUrl}" alt="${desc}" />
@@ -1331,6 +1427,7 @@
                 `;
                 document.getElementById('weatherDisplay').innerHTML = html;
 
+                // Vorhersage befüllen
                 const grid = document.getElementById('forecastGrid');
                 forecastDays.forEach(day => {
                     const div = document.createElement('div');
@@ -1350,7 +1447,15 @@
                     grid.appendChild(div);
                 });
 
-                addFavorite(cityName);
+                // Event-Listener für Herz-Button
+                const favBtn = document.getElementById('favToggleBtn');
+                if (favBtn) {
+                    favBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        toggleFavorite(cityName);
+                    });
+                }
+
                 currentCity = cityName;
 
             } catch (e) {
@@ -1375,21 +1480,8 @@
             return `https://openweathermap.org/img/wn/${icon}@4x.png`;
         }
 
-        // ========== FAVORITEN ==========
-        let favorites = [];
-
-        function addFavorite(city) {
-            if (!city || favorites.includes(city)) return;
-            favorites.push(city);
-            renderFavorites();
-        }
-
-        function removeFavorite(city) {
-            favorites = favorites.filter(c => c !== city);
-            renderFavorites();
-        }
-
-        async function renderFavorites() {
+        // ========== FAVORITEN RENDERING ==========
+        function renderFavorites() {
             const grid = document.getElementById('favoritesGrid');
             grid.innerHTML = '';
             if (favorites.length === 0) {
@@ -1407,26 +1499,27 @@
                     return { city, temp: '?' };
                 }
             });
-            const results = await Promise.all(promises);
-            results.forEach(({ city, temp }) => {
-                const div = document.createElement('div');
-                div.className = 'fav-item';
-                div.innerHTML = `
-                    <span>${city}</span>
-                    <span class="temp">${temp}°C</span>
-                    <span class="remove-fav" data-city="${city}"><i class="fa-solid fa-xmark"></i></span>
-                `;
-                div.addEventListener('click', (e) => {
-                    if (e.target.closest('.remove-fav')) return;
-                    document.getElementById('searchInput').value = city;
-                    fetchWeather(city);
+            Promise.all(promises).then(results => {
+                results.forEach(({ city, temp }) => {
+                    const div = document.createElement('div');
+                    div.className = 'fav-item';
+                    div.innerHTML = `
+                        <span>${city}</span>
+                        <span class="temp">${temp}°C</span>
+                        <span class="remove-fav" data-city="${city}"><i class="fa-solid fa-xmark"></i></span>
+                    `;
+                    div.addEventListener('click', (e) => {
+                        if (e.target.closest('.remove-fav')) return;
+                        document.getElementById('searchInput').value = city;
+                        fetchWeather(city);
+                    });
+                    const removeBtn = div.querySelector('.remove-fav');
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleFavorite(city);
+                    });
+                    grid.appendChild(div);
                 });
-                const removeBtn = div.querySelector('.remove-fav');
-                removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeFavorite(city);
-                });
-                grid.appendChild(div);
             });
         }
 
@@ -1454,8 +1547,6 @@
 
         document.getElementById('geolocationBtn').addEventListener('click', requestGeolocation);
         document.getElementById('retryGeoBtn').addEventListener('click', requestGeolocation);
-
-        // Einstellungen-Button öffnet Overlay
         document.getElementById('settingsGeoBtn').addEventListener('click', showSettingsOverlay);
         document.getElementById('openSettingsDirectBtn').addEventListener('click', openSettingsDirect);
         document.getElementById('closeOverlayBtn').addEventListener('click', () => {
