@@ -749,14 +749,14 @@
             <div class="search-box">
                 <label><i class="fa-solid fa-utensils"></i> Gericht suchen</label>
                 <div class="input-group">
-                    <input type="text" id="dishInput" placeholder="z.B. Spaghetti Carbonara, Steak" />
+                    <input type="text" id="dishInput" placeholder="z.B. Schnitzel, Pasta, Curry" />
                     <button id="dishSearchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
                 </div>
             </div>
             <div class="search-box">
                 <label><i class="fa-solid fa-basket-shopping"></i> Nach Zutaten suchen</label>
                 <div class="input-group">
-                    <input type="text" id="ingredientInput" placeholder="z.B. Hähnchen, Reis, Paprika" />
+                    <input type="text" id="ingredientInput" placeholder="z.B. Pute, Reis, Paprika" />
                     <button id="ingredientSearchBtn"><i class="fa-solid fa-magnifying-glass"></i> Suchen</button>
                     <div id="suggestions" class="suggestions"></div>
                 </div>
@@ -1131,7 +1131,6 @@
         }
 
         async function searchMealDBByIngredient(ingredient) {
-            // Übersetze deutsche Zutat ins Englische
             const eng = translateToEnglish(ingredient);
             const res = await fetch(THEMEALDB_BASE + 'filter.php?i=' + encodeURIComponent(eng));
             const data = await res.json();
@@ -1180,9 +1179,8 @@
             };
         }
 
-        // Edamam (neue API)
+        // Edamam
         async function searchEdamam(query, ingredients = '') {
-            // Edamam erwartet englische Begriffe
             const q = translateToEnglish(query);
             let url = `https://api.edamam.com/search?q=${encodeURIComponent(q)}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&to=20&language=de`;
             if (ingredients) {
@@ -1195,14 +1193,13 @@
                 if (data.hits && data.hits.length > 0) {
                     return data.hits.map(hit => {
                         const recipe = hit.recipe;
-                        // Erstelle ein einheitliches Meal-Objekt
                         return {
                             idMeal: 'edamam_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
                             strMeal: recipe.label,
                             strMealThumb: recipe.image || 'https://via.placeholder.com/400x300/1a1f2e/5b9aff?text=Edamam',
                             strCategory: 'Edamam',
                             strArea: 'International',
-                            strInstructions: 'Dieses Rezept stammt von Edamam. Die Anleitung ist leider nicht im Detail verfügbar. Zutaten und Zubereitungsideen findest du in den Zutaten.',
+                            strInstructions: recipe.url ? 'Original-Rezept: ' + recipe.url : 'Dieses Rezept stammt von Edamam. Die Anleitung ist leider nicht im Detail verfügbar. Zutaten und Zubereitungsideen findest du in den Zutaten.',
                             _edamamIngredients: recipe.ingredientLines ? recipe.ingredientLines.map(line => translateToGerman(line)) : [],
                             _source: 'Edamam',
                             _calories: recipe.calories || 0,
@@ -1234,15 +1231,10 @@
 
         function translateToGerman(english) {
             if (!english) return english;
-            // Versuche komplette Übereinstimmung
-            const lower = english.toLowerCase();
-            if (ingredientDict[lower]) return ingredientDict[lower];
-            // Teile übersetzen
             let result = english;
             for (const [eng, ger] of Object.entries(ingredientDict)) {
-                if (lower.includes(eng)) {
-                    result = result.replace(new RegExp(eng, 'gi'), ger);
-                }
+                const regex = new RegExp('\\b' + eng + '\\b', 'gi');
+                result = result.replace(regex, ger);
             }
             return result;
         }
@@ -1250,7 +1242,6 @@
         // ========== Beliebtheits-API (Edamam) ==========
 
         async function fetchPopularityScore(mealName) {
-            // Verwende Edamam, um einen Popularitätswert zu bekommen
             const q = translateToEnglish(mealName);
             const url = `https://api.edamam.com/search?q=${encodeURIComponent(q)}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&to=1`;
             try {
@@ -1361,17 +1352,21 @@
             return meals;
         }
 
-        // ========== Erweiterte Gerichtssuche (mehrwörtig) ==========
+        // ========== Erweiterte Gerichtssuche (mehrwörtig, robust) ==========
 
         async function smartDishSearch(query) {
-            // Übersetze deutsche Begriffe in Englisch für die API
             const engQuery = translateToEnglish(query);
-            let meals = await searchMealDBByName(engQuery);
+            let meals = [];
+
+            // 1. Versuche exakte Suche mit übersetztem Begriff
+            meals = await searchMealDBByName(engQuery);
             if (meals.length > 0) {
                 meals = sortByNameSearch(meals, query);
                 currentMode = 'search';
                 return meals;
             }
+
+            // 2. Versuche Teilwort-Suche (z.B. "schnitzel" -> "wiener")
             const words = query.split(/\s+/).filter(w => w.length > 2);
             if (words.length > 1) {
                 for (let i = words.length; i >= 1; i--) {
@@ -1384,6 +1379,7 @@
                         return meals;
                     }
                 }
+                // Einzelne Wörter durchsuchen und kombinieren
                 const allResults = [];
                 for (const word of words) {
                     const engWord = translateToEnglish(word);
@@ -1404,14 +1400,16 @@
                     return meals;
                 }
             }
-            // Fallback: Edamam
+
+            // 3. Edamam (mehr internationale Gerichte)
             const edamamResults = await searchEdamam(engQuery);
             if (edamamResults.length > 0) {
                 meals = edamamResults;
                 currentMode = 'search';
                 return meals;
             }
-            // Fallback: Recipe Puppy
+
+            // 4. Recipe Puppy
             const puppyResults = await searchRecipePuppy(engQuery);
             if (puppyResults.length > 0) {
                 meals = puppyResults.map(p => convertPuppyToMeal(p));
@@ -1419,6 +1417,8 @@
                 currentMode = 'search';
                 return meals;
             }
+
+            // 5. Letzter Ausweg: zufällige Vorschläge
             meals = await fetchRandomMealDB(20);
             currentMode = 'random';
             return meals;
@@ -1579,7 +1579,6 @@
                 currentSuggestionIndex = -1;
                 return;
             }
-            // Alle deutschen Zutaten aus dem Wörterbuch
             const allGerman = Object.values(ingredientDict);
             const matches = allGerman
                 .filter(ing => ing.toLowerCase().startsWith(lastPart))
@@ -1846,43 +1845,47 @@
             const ingredients = getIngredientNamesFromQuery(query);
             currentIngredients = ingredients;
             updateIngredientTags();
-            // Versuche zuerst TheMealDB + Edamam
+
+            // 1. TheMealDB
             let meals = await searchMealDBByIngredientsExtended(ingredients);
-            if (meals.length === 0) {
-                // Edamam Fallback
-                const edamamResults = await searchEdamam('', query);
-                if (edamamResults.length > 0) {
-                    meals = edamamResults;
-                    meals.forEach(m => {
-                        m._matchCount = ingredients.length;
-                        m._totalIngredients = ingredients.length;
-                        m._matchedIngredients = ingredients;
-                    });
-                    currentMode = 'ingredients';
-                    allMeals = meals;
-                    renderMeals(meals, false);
-                    return;
-                }
-                // Recipe Puppy
-                const puppyMeals = await searchPuppyByIngredientsExtended(ingredients);
-                if (puppyMeals.length > 0) {
-                    allMeals = puppyMeals;
-                    currentMode = 'ingredients';
-                    renderMeals(puppyMeals, false);
-                    return;
-                }
-                // Nichts gefunden -> zufällig
-                const random = await fetchRandomMealDB(20);
-                allMeals = random;
-                currentMode = 'random';
-                currentIngredients = [];
-                ingredientTags.innerHTML = '';
-                renderMeals(random, false);
+            if (meals.length > 0) {
+                allMeals = meals;
+                currentMode = 'ingredients';
+                renderMeals(meals, false);
                 return;
             }
-            allMeals = meals;
-            currentMode = 'ingredients';
-            renderMeals(meals, false);
+
+            // 2. Edamam
+            const edamamResults = await searchEdamam('', query);
+            if (edamamResults.length > 0) {
+                meals = edamamResults;
+                meals.forEach(m => {
+                    m._matchCount = ingredients.length;
+                    m._totalIngredients = ingredients.length;
+                    m._matchedIngredients = ingredients;
+                });
+                allMeals = meals;
+                currentMode = 'ingredients';
+                renderMeals(meals, false);
+                return;
+            }
+
+            // 3. Recipe Puppy
+            const puppyMeals = await searchPuppyByIngredientsExtended(ingredients);
+            if (puppyMeals.length > 0) {
+                allMeals = puppyMeals;
+                currentMode = 'ingredients';
+                renderMeals(puppyMeals, false);
+                return;
+            }
+
+            // 4. Nichts gefunden -> zufällig
+            const random = await fetchRandomMealDB(20);
+            allMeals = random;
+            currentMode = 'random';
+            currentIngredients = [];
+            ingredientTags.innerHTML = '';
+            renderMeals(random, false);
         }
 
         async function loadMore() {
@@ -1966,7 +1969,7 @@
 
         init();
 
-        // ========== Hintergrund-Partikel (unverändert) ==========
+        // ========== Hintergrund-Partikel ==========
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
