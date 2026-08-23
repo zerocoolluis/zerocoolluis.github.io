@@ -75,6 +75,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* === Top-Bar === */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -778,6 +779,81 @@
             to { transform: rotate(360deg); }
         }
 
+        /* === Overlay für Einstellungen (Hilfe) === */
+        .settings-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .settings-overlay.visible { display: flex; }
+        .settings-overlay .overlay-content {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--card-radius);
+            padding: 2rem;
+            max-width: 520px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .settings-overlay .overlay-content h3 {
+            font-family: 'Orbitron', sans-serif;
+            margin-bottom: 12px;
+            color: var(--accent-gold);
+        }
+        .settings-overlay .overlay-content p {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .settings-overlay .overlay-content .browser-path {
+            background: rgba(0,0,0,0.3);
+            padding: 8px 12px;
+            border-radius: var(--input-radius);
+            font-family: monospace;
+            color: var(--text-color);
+            margin: 6px 0;
+            font-size: 0.9rem;
+        }
+        .settings-overlay .overlay-content .btn-open-settings {
+            margin-top: 16px;
+            background: var(--primary);
+            border: none;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: var(--input-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .settings-overlay .overlay-content .btn-open-settings:hover {
+            background: #4a8aff;
+        }
+        .settings-overlay .overlay-content .btn-close-overlay {
+            margin-top: 12px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: var(--text-color);
+            padding: 8px 20px;
+            border-radius: var(--input-radius);
+            cursor: pointer;
+            transition: 0.3s;
+            margin-left: 10px;
+        }
+        .settings-overlay .overlay-content .btn-close-overlay:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
         /* === Footer === */
         footer {
             margin-top: 60px;
@@ -859,7 +935,7 @@
             <span class="geo-msg" id="geoMsg">Standortzugriff verweigert.</span>
             <div class="geo-buttons">
                 <button id="retryGeoBtn"><i class="fa-solid fa-rotate"></i> <span id="retryBtnText">Erneut versuchen</span></button>
-                <button id="settingsGeoBtn" class="btn-settings"><i class="fa-solid fa-gear"></i> <span id="settingsBtnText">Zu den Einstellungen</span></button>
+                <button id="settingsGeoBtn" class="btn-settings"><i class="fa-solid fa-gear"></i> <span id="settingsBtnText">Einstellungen öffnen</span></button>
             </div>
         </div>
 
@@ -889,6 +965,23 @@
         <footer>&copy; <span id="year"></span> Zero's Tool Hub // Entwickelt von Zerocoolluis</footer>
     </div>
 
+    <!-- Overlay für Einstellungen-Hilfe -->
+    <div class="settings-overlay" id="settingsOverlay">
+        <div class="overlay-content">
+            <h3><i class="fa-solid fa-location-dot"></i> Standort-Einstellungen</h3>
+            <p>Öffne die Browser-Einstellungen für Standortberechtigungen und erlaube den Zugriff.</p>
+            <p><strong>Dein Browser:</strong> <span id="browserName">Unbekannt</span></p>
+            <div class="browser-path" id="browserPathDisplay">chrome://settings/content/location</div>
+            <p style="margin-top:8px; font-size:0.9rem; color: var(--text-muted);">
+                <i class="fa-regular fa-copy"></i> Kopiere den Pfad manuell in die Adressleiste oder klicke unten.
+            </p>
+            <div style="margin-top:10px;">
+                <button class="btn-open-settings" id="openSettingsDirectBtn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Einstellungen öffnen</button>
+                <button class="btn-close-overlay" id="closeOverlayBtn">Schließen</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ========== SPRACHEN ==========
         const translations = {
@@ -902,7 +995,7 @@
                 noFavs: 'Keine Favoriten gespeichert.',
                 loading: 'Wetterdaten werden geladen...',
                 retryBtn: 'Erneut versuchen',
-                settingsBtn: 'Zu den Einstellungen',
+                settingsBtn: 'Einstellungen öffnen',
                 geoMsg: 'Standortzugriff verweigert.',
                 themeLabel: 'Theme',
                 langLabel: 'Sprache',
@@ -927,7 +1020,7 @@
                 noFavs: 'No favorites saved.',
                 loading: 'Loading weather data...',
                 retryBtn: 'Retry',
-                settingsBtn: 'Go to Settings',
+                settingsBtn: 'Open Settings',
                 geoMsg: 'Location access denied.',
                 themeLabel: 'Theme',
                 langLabel: 'Language',
@@ -1008,22 +1101,41 @@
             );
         }
 
-        // ========== BROWSER-EINSTELLUNGEN (direkter Link) ==========
-        function openBrowserSettings() {
+        // ========== BROWSER-ERKENNUNG + PFAD ==========
+        function getBrowserSettingsPath() {
             const ua = navigator.userAgent.toLowerCase();
-            let url = '';
+            let name = 'Unbekannt';
+            let path = '';
             if (ua.indexOf('chrome') > -1 && ua.indexOf('edg') === -1) {
-                url = 'chrome://settings/content/location';
+                name = 'Chrome';
+                path = 'chrome://settings/content/location';
             } else if (ua.indexOf('firefox') > -1) {
-                url = 'about:preferences#privacy';
+                name = 'Firefox';
+                path = 'about:preferences#privacy';
             } else if (ua.indexOf('edg') > -1) {
-                url = 'edge://settings/content/location';
+                name = 'Edge';
+                path = 'edge://settings/content/location';
             } else if (ua.indexOf('safari') > -1) {
-                url = 'preferences:privacy';
+                name = 'Safari';
+                path = 'preferences:privacy';
             } else {
-                url = 'about:preferences';
+                name = 'Anderer Browser';
+                path = 'about:preferences';
             }
-            window.open(url, '_blank');
+            return { name, path };
+        }
+
+        function openSettingsDirect() {
+            const { path } = getBrowserSettingsPath();
+            window.open(path, '_blank');
+            // Falls das nicht funktioniert (z.B. wegen Sicherheit), zeigen wir den Pfad an.
+        }
+
+        function showSettingsOverlay() {
+            const { name, path } = getBrowserSettingsPath();
+            document.getElementById('browserName').textContent = name;
+            document.getElementById('browserPathDisplay').textContent = path;
+            document.getElementById('settingsOverlay').classList.add('visible');
         }
 
         // ========== WETTERABFRAGE ==========
@@ -1288,7 +1400,18 @@
 
         document.getElementById('geolocationBtn').addEventListener('click', requestGeolocation);
         document.getElementById('retryGeoBtn').addEventListener('click', requestGeolocation);
-        document.getElementById('settingsGeoBtn').addEventListener('click', openBrowserSettings);
+
+        // Einstellungen-Button öffnet Overlay
+        document.getElementById('settingsGeoBtn').addEventListener('click', showSettingsOverlay);
+        document.getElementById('openSettingsDirectBtn').addEventListener('click', openSettingsDirect);
+        document.getElementById('closeOverlayBtn').addEventListener('click', () => {
+            document.getElementById('settingsOverlay').classList.remove('visible');
+        });
+        document.getElementById('settingsOverlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('settingsOverlay').classList.remove('visible');
+            }
+        });
 
         // ========== AUTOCOMPLETE ==========
         let autocompleteTimeout = null;
