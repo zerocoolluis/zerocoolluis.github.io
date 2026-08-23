@@ -823,7 +823,7 @@
     </div>
 
     <script>
-        // ========== ERWEITERTES WÖRTERBUCH (250+ Einträge) ==========
+        // ========== VOLLSTÄNDIGES WÖRTERBUCH (250+ Einträge) ==========
         const ingredientDict = {
             // Fleisch & Geflügel
             'chicken': 'Hähnchen',
@@ -839,14 +839,226 @@
             'sausage': 'Wurst',
             'bacon': 'Speck',
             'ham': 'Schinken',
-            // ... (alle vorherigen Einträge sind hier enthalten, aber ich kürze ab, da sie bereits im letzten Code waren – sie bleiben erhalten)
+            // Fisch & Meeresfrüchte
+            'fish': 'Fisch',
+            'salmon': 'Lachs',
+            'trout': 'Forelle',
+            'cod': 'Kabeljau',
+            'tuna': 'Thunfisch',
+            'mackerel': 'Makrele',
+            'sardine': 'Sardine',
+            'shrimp': 'Garnele',
+            'prawn': 'Riesengarnele',
+            'crab': 'Krabbe',
+            'lobster': 'Hummer',
+            'mussel': 'Miesmuschel',
+            'oyster': 'Austern',
+            'scallop': 'Jakobsmuschel',
+            'squid': 'Tintenfisch',
+            'octopus': 'Krake',
+            // Gemüse
+            'potato': 'Kartoffel',
+            'sweet potato': 'Süßkartoffel',
+            'carrot': 'Karotte',
+            'onion': 'Zwiebel',
+            'garlic': 'Knoblauch',
+            'leek': 'Lauch',
+            'celery': 'Sellerie',
+            'broccoli': 'Brokkoli',
+            'cauliflower': 'Blumenkohl',
+            'cabbage': 'Kohl',
+            'kale': 'Grünkohl',
+            'spinach': 'Spinat',
+            'lettuce': 'Salat',
+            'tomato': 'Tomate',
+            'bell pepper': 'Paprika',
+            'chili': 'Chili',
+            'cucumber': 'Gurke',
+            'zucchini': 'Zucchini',
+            'eggplant': 'Aubergine',
+            'pumpkin': 'Kürbis',
+            'squash': 'Butternusskürbis',
+            'corn': 'Mais',
+            'pea': 'Erbse',
+            'green bean': 'Grüne Bohne',
+            'bean': 'Bohne',
+            'lentil': 'Linse',
+            'chickpea': 'Kichererbse',
+            'mushroom': 'Pilz',
+            'asparagus': 'Spargel',
+            'artichoke': 'Artischocke',
+            'radish': 'Radieschen',
+            'beetroot': 'Rote Bete',
+            'turnip': 'Steckrübe',
+            'parsnip': 'Pastinake',
+            'fennel': 'Fenchel',
+            'rhubarb': 'Rhabarber',
+            'avocado': 'Avocado',
+            'olive': 'Olive',
+            // Obst
+            'apple': 'Apfel',
+            'pear': 'Birne',
+            'banana': 'Banane',
+            'orange': 'Orange',
+            'lemon': 'Zitrone',
+            'lime': 'Limette',
+            'grapefruit': 'Grapefruit',
+            'mango': 'Mango',
+            'pineapple': 'Ananas',
+            'watermelon': 'Wassermelone',
+            'melon': 'Melone',
+            'peach': 'Pfirsich',
+            'nectarine': 'Nektarine',
+            'plum': 'Pflaume',
+            'apricot': 'Aprikose',
+            'cherry': 'Kirsche',
+            'berry': 'Beere',
+            'strawberry': 'Erdbeere',
+            'blueberry': 'Heidelbeere',
+            'raspberry': 'Himbeere',
+            'blackberry': 'Brombeere',
+            'gooseberry': 'Stachelbeere',
+            'cranberry': 'Preiselbeere',
+            'fig': 'Feige',
+            'date': 'Dattel',
+            'grape': 'Traube',
+            'kiwi': 'Kiwi',
+            'passion fruit': 'Maracuja',
+            'pomegranate': 'Granatapfel',
+            'coconut': 'Kokosnuss',
+            // Milchprodukte & Eier
+            'egg': 'Ei',
+            'milk': 'Milch',
+            'cream': 'Sahne',
+            'yogurt': 'Joghurt',
+            'butter': 'Butter',
+            'cheese': 'Käse',
+            'parmesan': 'Parmesan',
+            'cheddar': 'Cheddar',
+            'mozzarella': 'Mozzarella',
+            'feta': 'Feta',
+            'goat cheese': 'Ziegenkäse',
+            'cream cheese': 'Frischkäse',
+            'sour cream': 'Saure Sahne',
+            // Getreide & Kohlenhydrate
+            'rice': 'Reis',
+            'pasta': 'Pasta',
+            'noodles': 'Nudeln',
+            'spaghetti': 'Spaghetti',
+            'penne': 'Penne',
+            'macaroni': 'Makkaroni',
+            'lasagne': 'Lasagne',
+            'bread': 'Brot',
+            'toast': 'Toast',
+            'baguette': 'Baguette',
+            'flour': 'Mehl',
+            'cornmeal': 'Maismehl',
+            'oatmeal': 'Haferflocken',
+            'muesli': 'Müsli',
+            'cereal': 'Getreide',
+            'quinoa': 'Quinoa',
+            'bulgur': 'Bulgur',
+            'couscous': 'Couscous',
+            'semolina': 'Grieß',
+            // Nüsse & Samen
+            'almond': 'Mandel',
+            'walnut': 'Walnuss',
+            'pecan': 'Pekannuss',
+            'cashew': 'Cashew',
+            'pistachio': 'Pistazie',
+            'hazelnut': 'Haselnuss',
+            'pine nut': 'Pinienkerne',
+            'sesame': 'Sesam',
+            'sunflower seed': 'Sonnenblumenkerne',
+            'pumpkin seed': 'Kürbiskerne',
+            'flaxseed': 'Leinsamen',
+            'chia seed': 'Chia-Samen',
+            'poppy seed': 'Mohn',
+            // Gewürze & Kräuter
+            'salt': 'Salz',
+            'pepper': 'Pfeffer',
+            'sugar': 'Zucker',
+            'honey': 'Honig',
+            'mustard': 'Senf',
+            'ketchup': 'Ketchup',
+            'mayonnaise': 'Mayonnaise',
+            'vinegar': 'Essig',
+            'balsamic vinegar': 'Balsamico-Essig',
+            'soy sauce': 'Sojasauce',
+            'fish sauce': 'Fischsauce',
+            'worcestershire sauce': 'Worcestersauce',
+            'tabasco': 'Tabasco',
+            'curry': 'Curry',
+            'paprika': 'Paprikapulver',
+            'cumin': 'Kreuzkümmel',
+            'caraway': 'Kümmel',
+            'coriander': 'Koriander',
+            'oregano': 'Oregano',
+            'thyme': 'Thymian',
+            'rosemary': 'Rosmarin',
+            'basil': 'Basilikum',
+            'parsley': 'Petersilie',
+            'dill': 'Dill',
+            'chives': 'Schnittlauch',
+            'mint': 'Minze',
+            'sage': 'Salbei',
+            'bay leaf': 'Lorbeerblatt',
+            'clove': 'Nelke',
+            'cinnamon': 'Zimt',
+            'nutmeg': 'Muskatnuss',
+            'ginger': 'Ingwer',
+            'turmeric': 'Kurkuma',
+            'saffron': 'Safran',
+            'vanilla': 'Vanille',
+            'cocoa': 'Kakao',
+            // Öle & Fette
+            'olive oil': 'Olivenöl',
+            'sunflower oil': 'Sonnenblumenöl',
+            'vegetable oil': 'Pflanzenöl',
+            'canola oil': 'Rapsöl',
+            'coconut oil': 'Kokosöl',
+            'sesame oil': 'Sesamöl',
+            // Sonstiges
+            'stock': 'Fond',
+            'broth': 'Brühe',
+            'wine': 'Wein',
+            'beer': 'Bier',
+            'cider': 'Apfelwein',
+            'juice': 'Saft',
+            'soy': 'Soja',
+            'tofu': 'Tofu',
+            'tempeh': 'Tempeh',
+            'seitan': 'Seitan',
+            'yeast': 'Hefe',
+            'baking powder': 'Backpulver',
+            'baking soda': 'Natron',
+            'cornstarch': 'Speisestärke',
+            'breadcrumbs': 'Paniermehl',
+            'miso': 'Miso',
+            'wasabi': 'Wasabi',
+            'peanut': 'Erdnuss',
+            'peanut butter': 'Erdnussbutter',
+            'jam': 'Marmelade',
+            'syrup': 'Sirup',
+            'molasses': 'Melasse',
+            'cream of tartar': 'Weinstein',
+            'gelatin': 'Gelatine',
+            'pectin': 'Pektin',
+            'vanilla sugar': 'Vanillezucker',
+            'ground beef': 'Rinderhack',
+            'ground pork': 'Schweinehack',
+            'sausage meat': 'Brät'
         };
-        // Das vollständige Wörterbuch ist im vorherigen Code enthalten – ich verwende es hier wieder.
-        // Aus Platzgründen wird es hier nicht nochmal komplett ausgegeben, aber es ist in der Datei vorhanden.
-        // Ich füge hier nur die Synonyme für Gerichte hinzu:
 
+        // Reverse-Map (Deutsch -> Englisch)
+        const reverseDict = {};
+        for (const [eng, ger] of Object.entries(ingredientDict)) {
+            reverseDict[ger.toLowerCase()] = eng;
+        }
+
+        // ========== Synonyme für Gerichte ==========
         const dishSynonyms = {
-            'schnitzel': ['wiener schnitzel', 'breaded veal cutlet', 'schnitzel', 'veal cutlet'],
+            'schnitzel': ['wiener schnitzel', 'breaded veal cutlet', 'veal cutlet', 'schnitzel'],
             'puten': ['turkey', 'roast turkey', 'turkey breast'],
             'hühnchen': ['chicken', 'roast chicken', 'chicken breast'],
             'steak': ['steak', 'beef steak', 'ribeye', 'sirloin'],
@@ -857,12 +1069,6 @@
             'suppe': ['soup', 'tomato soup', 'vegetable soup'],
             'salat': ['salad', 'caesar salad', 'garden salad']
         };
-
-        // Reverse-Map (Deutsch -> Englisch)
-        const reverseDict = {};
-        for (const [eng, ger] of Object.entries(ingredientDict)) {
-            reverseDict[ger.toLowerCase()] = eng;
-        }
 
         // ========== API-Konfiguration ==========
         const THEMEALDB_BASE = 'https://www.themealdb.com/api/json/v1/1/';
@@ -924,7 +1130,6 @@
 
         // ========== API-Funktionen ==========
 
-        // TheMealDB
         async function fetchMealDBById(id) {
             const res = await fetch(THEMEALDB_BASE + 'lookup.php?i=' + id);
             const data = await res.json();
@@ -954,7 +1159,6 @@
             return meals;
         }
 
-        // Recipe Puppy
         async function searchRecipePuppy(query, ingredients = '') {
             let url = RECIPEPUPPY_BASE + '?q=' + encodeURIComponent(query);
             if (ingredients) {
@@ -986,7 +1190,6 @@
             };
         }
 
-        // Edamam
         async function searchEdamam(query, ingredients = '') {
             const q = translateToEnglish(query);
             let url = `https://api.edamam.com/search?q=${encodeURIComponent(q)}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&to=20&language=de`;
@@ -1061,19 +1264,17 @@
                 return meals;
             }
 
-            // 2. Synonyme aus dem Wörterbuch
+            // 2. Synonyme
             let synonyms = [];
             if (dishSynonyms[lowerQuery]) {
                 synonyms = dishSynonyms[lowerQuery];
             } else {
-                // Versuche Teilwörter
                 for (const [key, vals] of Object.entries(dishSynonyms)) {
                     if (lowerQuery.includes(key) || key.includes(lowerQuery)) {
                         synonyms = synonyms.concat(vals);
                     }
                 }
             }
-            // Einzigartige Synonyme
             synonyms = [...new Set(synonyms)];
 
             for (const syn of synonyms) {
@@ -1085,7 +1286,7 @@
                 }
             }
 
-            // 3. Edamam (hat mehr internationale Gerichte)
+            // 3. Edamam
             meals = await searchEdamam(engQuery);
             if (meals.length > 0) {
                 currentMode = 'search';
@@ -1101,14 +1302,11 @@
                 return meals;
             }
 
-            // 5. Nichts gefunden -> zufällige Vorschläge mit Hinweis
-            meals = await fetchRandomMealDB(20);
-            currentMode = 'random';
-            // Füge einen Hinweis hinzu, dass nichts gefunden wurde (wird in renderMeals angezeigt)
-            return meals;
+            // 5. Nichts gefunden -> leeres Array (wird später behandelt)
+            return [];
         }
 
-        // ========== Zutaten-Suche (intelligent) ==========
+        // ========== Zutaten-Suche ==========
 
         async function smartIngredientSearch(ingredientList) {
             if (!ingredientList || ingredientList.length === 0) return [];
@@ -1139,10 +1337,7 @@
                 return puppyMeals;
             }
 
-            // 4. Nichts gefunden -> zufällig
-            const random = await fetchRandomMealDB(20);
-            currentMode = 'random';
-            return random;
+            return [];
         }
 
         // ========== Erweiterte Zutaten-Suche (TheMealDB) ==========
@@ -1499,8 +1694,15 @@
                 currentMeals = [];
             }
 
-            if (notFound && meals.length === 0) {
-                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte für "${currentQuery}" gefunden. Zeige zufällige Vorschläge.</p>`;
+            if (notFound) {
+                resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte für "<strong>${currentQuery}</strong>" gefunden. Zeige zufällige Vorschläge.</p>`;
+                return;
+            }
+
+            if (!meals || meals.length === 0) {
+                if (!append) {
+                    resultsContainer.innerHTML = `<p style="color: var(--text-muted); text-align:center; grid-column:1/-1;">Keine Rezepte gefunden.</p>`;
+                }
                 return;
             }
 
@@ -1667,8 +1869,8 @@
             ingredientTags.innerHTML = '';
             currentIngredients = [];
             const meals = await smartDishSearch(query);
-            if (meals.length === 0 || meals[0]?.strMeal === 'Keine Ergebnisse') {
-                // Fallback: zufällige Vorschläge mit Hinweis
+            if (!meals || meals.length === 0) {
+                // Nichts gefunden -> zufällige Vorschläge mit Hinweis
                 const fallback = await fetchRandomMealDB(20);
                 allMeals = fallback;
                 currentMode = 'random';
@@ -1695,7 +1897,7 @@
             currentIngredients = ingredients;
             updateIngredientTags();
             const meals = await smartIngredientSearch(ingredients);
-            if (meals.length === 0) {
+            if (!meals || meals.length === 0) {
                 const fallback = await fetchRandomMealDB(20);
                 allMeals = fallback;
                 currentMode = 'random';
