@@ -66,28 +66,19 @@
       gap: 12px;
     }
 
-    .search-controls {
+    .search-bar {
       display: flex;
       gap: 8px;
-      flex-wrap: wrap;
     }
 
-    select, input[type="text"] {
+    input[type="text"] {
+      flex: 1;
       background: #090d16;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 10px 14px;
       color: var(--text);
       font-size: 0.95rem;
-    }
-
-    select {
-      cursor: pointer;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      min-width: 200px;
     }
 
     button {
@@ -119,10 +110,12 @@
       border: 1px solid var(--border);
     }
 
-    .frame-wrapper:fullscreen {
+    .frame-wrapper:fullscreen,
+    .frame-wrapper:-webkit-full-screen {
       width: 100vw !important;
       height: 100vh !important;
       border-radius: 0 !important;
+      border: none !important;
     }
 
     iframe {
@@ -166,19 +159,14 @@
   <header>
     <div>
       <h1>Web Viewer</h1>
-      <p style="color: var(--text-muted); font-size: 0.875rem;">Webseiten, YouTube und Twitch ohne Einbettungs-Sperre nutzen</p>
+      <p style="color: var(--text-muted); font-size: 0.875rem;">Füge einfach deine Adresse ein – Umwandlung erfolgt automatisch.</p>
     </div>
     <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
   </header>
 
   <main class="nav-card">
-    <div class="search-controls">
-      <select id="modeSelect">
-        <option value="auto">🌐 Web (Auto)</option>
-        <option value="yt">▶️ YouTube</option>
-        <option value="twitch">🟣 Twitch Channel</option>
-      </select>
-      <input type="text" id="urlInput" placeholder="URL, YouTube-Video oder Twitch-Kanal eingeben..." onkeypress="if(event.key==='Enter') loadSite()">
+    <div class="search-bar">
+      <input type="text" id="urlInput" placeholder="URL eingeben (z. B. youtube.com/watch?v=... oder twitch.tv/kanalname)..." onkeypress="if(event.key==='Enter') loadSite()">
       <button onclick="loadSite()">Öffnen</button>
       <button class="btn-secondary" onclick="toggleFullscreen()">⛶ Vollbild</button>
     </div>
@@ -202,54 +190,58 @@
 
   function loadSite() {
     const input = document.getElementById('urlInput');
-    const mode = document.getElementById('modeSelect').value;
-    let query = input.value.trim();
-    if (!query) return;
+    let rawUrl = input.value.trim();
+    if (!rawUrl) return;
 
-    let targetUrl = '';
-    const currentHost = window.location.hostname || 'localhost';
+    if (!/^https?:\/\//i.test(rawUrl)) {
+      rawUrl = 'https://' + rawUrl;
+    }
 
-    if (mode === 'yt') {
-      // YouTube Embed-Verarbeitung
-      const ytMatch = query.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))([\w-]{11})/);
-      if (ytMatch && ytMatch[1]) {
-        targetUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
-      } else {
-        // Falls nur ein Suchbegriff oder Video-ID eingegeben wurde
-        targetUrl = `https://www.youtube.com/embed/${query}?autoplay=1`;
+    let finalEmbedUrl = rawUrl;
+    const domainHost = window.location.hostname || 'localhost';
+
+    // Automatische YouTube Umwandlung
+    if (rawUrl.includes('youtube.com') || rawUrl.includes('youtu.be')) {
+      let videoId = '';
+      if (rawUrl.includes('youtu.be/')) {
+        videoId = rawUrl.split('youtu.be/')[1].split('?')[0].split('&')[0];
+      } else if (rawUrl.includes('v=')) {
+        videoId = rawUrl.split('v=')[1].split('&')[0];
       }
-    } else if (mode === 'twitch') {
-      // Twitch Embed-Verarbeitung
-      let channel = query.replace(/^https?:\/\/(www\.)?twitch\.tv\//i, '').replace(/\//g, '');
-      targetUrl = `https://player.twitch.tv/?channel=${channel}&parent=${currentHost}`;
-    } else {
-      // Automatischer Modus
-      const ytMatch = query.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))([\w-]{11})/);
-      const twitchMatch = query.match(/twitch\.tv\/([a-zA-Z0-9_]+)/);
-
-      if (ytMatch && ytMatch[1]) {
-        targetUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
-      } else if (twitchMatch && twitchMatch[1]) {
-        targetUrl = `https://player.twitch.tv/?channel=${twitchMatch[1]}&parent=${currentHost}`;
-      } else {
-        if (!/^https?:\/\//i.test(query)) {
-          query = 'https://' + query;
-        }
-        targetUrl = query;
+      if (videoId) {
+        finalEmbedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
       }
     }
 
-    document.getElementById('webFrame').src = targetUrl;
-    saveToHistory(query);
+    // Automatische Twitch Umwandlung
+    if (rawUrl.includes('twitch.tv')) {
+      const parts = rawUrl.split('twitch.tv/')[1];
+      if (parts) {
+        const channelName = parts.split('?')[0].split('/')[0];
+        if (channelName) {
+          finalEmbedUrl = `https://player.twitch.tv/?channel=${channelName}&parent=${domainHost}`;
+        }
+      }
+    }
+
+    document.getElementById('webFrame').src = finalEmbedUrl;
+    saveToHistory(rawUrl);
   }
 
   function toggleFullscreen() {
     const container = document.getElementById('frameContainer');
-    if (!document.fullscreenElement) {
-      if (container.requestFullscreen) container.requestFullscreen();
-      else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
+      }
     } else {
-      if (document.exitFullscreen) document.exitFullscreen();
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
     }
   }
 
