@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Web Viewer</title>
+  <style>
+    :root {
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.5);
+      --secondary: #8b5cf6;
+      --bg-color: #0f172a;
+      --surface: rgba(30, 41, 59, 0.7);
+      --surface-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(59, 130, 246, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(139, 92, 246, 0.2) 0%, transparent 40%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      background-attachment: fixed;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .glass-panel {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .header {
+      position: relative;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .btn-home {
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--surface-border);
+      padding: 10px 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-home:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--primary);
+      transform: translateY(-50%) scale(1.03);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #60a5fa, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .controls-wrapper {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    input {
+      flex: 1;
+      min-width: 280px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--surface-border);
+      background: rgba(0, 0, 0, 0.3);
+      color: #fff;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    button {
+      padding: 16px 24px;
+      border-radius: 14px;
+      border: none;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-load {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+    .btn-load:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-fullscreen {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      border: 1px solid var(--surface-border);
+    }
+    .btn-fullscreen:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .frame-container {
+      position: relative;
+      width: 100%;
+      height: 650px;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--surface-border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .frame-container:fullscreen {
+      border-radius: 0;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff;
+    }
+
+    /* History Section */
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .history-header h3 {
+      font-size: 1.4rem;
+      color: var(--text-main);
+    }
+    .btn-clear {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+    .btn-clear:hover { 
+      background: rgba(239, 68, 68, 0.2); 
+      color: #fca5a5; 
+      border-color: rgba(239, 68, 68, 0.5); 
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+
+    .history-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .history-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .site-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      object-fit: contain;
+    }
+
+    .site-url {
+      font-size: 13px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+    }
+
+    @media (max-width: 640px) {
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+      .btn-home {
+        position: static;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="glass-panel header">
+    <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
+    <h1>Web Page Viewer</h1>
+    <p style="color: var(--text-muted);">Webseiten eingeben, betrachten und im Vollbildmodus nutzen</p>
+  </div>
+
+  <!-- Viewer Panel -->
+  <div class="glass-panel">
+    <div class="controls-wrapper">
+      <input type="text" id="urlInput" placeholder="Webseite eingeben (z. B. wikipedia.org)..." onkeypress="handleKey(event)">
+      <button class="btn-load" onclick="loadSite()">🌐 Öffnen</button>
+      <button class="btn-fullscreen" onclick="toggleFullscreen()">⛶ Vollbild</button>
+    </div>
+
+    <div class="frame-container" id="frameContainer">
+      <iframe id="webFrame" src="about:blank"></iframe>
+    </div>
+  </div>
+
+  <!-- Zuletzt besucht (Verlauf) -->
+  <div class="glass-panel">
+    <div class="history-header">
+      <h3>🕒 Zuletzt besucht</h3>
+      <button class="btn-clear" onclick="clearHistory()">🗑️ Verlauf leeren</button>
+    </div>
+    <div class="history-grid" id="historyGrid">
+      <!-- Wird per JavaScript befüllt -->
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', updateHistoryUI);
+
+  function handleKey(event) {
+    if (event.key === 'Enter') loadSite();
+  }
+
+  function loadSite(urlOverride = null) {
+    const input = document.getElementById('urlInput');
+    let url = urlOverride || input.value.trim();
+    if (!url) return;
+
+    // Automatisches Ergänzen von https://
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+    }
+
+    if (urlOverride) input.value = url;
+    document.getElementById('webFrame').src = url;
+
+    saveToHistory(url);
+  }
+
+  function toggleFullscreen() {
+    const container = document.getElementById('frameContainer');
+    if (!document.fullscreenElement) {
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.webkitRequestFullscreen) {
+        container.webkitRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  }
+
+  function saveToHistory(url) {
+    let history = JSON.parse(localStorage.getItem('webViewerHistory')) || [];
+    history = history.filter(item => item !== url); // Duplikate entfernen
+    
+    history.unshift(url); // Neues Element nach vorne stellen
+    if (history.length > 8) history.pop(); // Max. 8 Einträge
+    
+    localStorage.setItem('webViewerHistory', JSON.stringify(history));
+    updateHistoryUI();
+  }
+
+  function clearHistory() {
+    localStorage.removeItem('webViewerHistory');
+    updateHistoryUI();
+  }
+
+  function updateHistoryUI() {
+    const historyGrid = document.getElementById('historyGrid');
+    const history = JSON.parse(localStorage.getItem('webViewerHistory')) || [];
+    
+    if (history.length === 0) {
+      historyGrid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1 / -1;">Noch keine Seiten besucht.</p>';
+      return;
+    }
+
+    historyGrid.innerHTML = '';
+    history.forEach(url => {
+      const card = document.createElement('div');
+      card.className = 'history-card';
+      card.onclick = () => loadSite(url);
+      
+      // Favicon aus der Domain abrufen
+      const domain = url.replace(/^https?:\/\//i, '').split('/')[0];
+      const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+
+      card.innerHTML = `
+        <img class="site-icon" src="${faviconUrl}" alt="icon" onerror="this.src='https://via.placeholder.com/24/3b82f6/ffffff?text=W'">
+        <span class="site-url" title="${url}">${domain}</span>
+      `;
+      historyGrid.appendChild(card);
+    });
+  }
+</script>
+
+</body>
+</html>
