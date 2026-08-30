@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Universal Media Player</title>
   <style>
-    /* ===== Dunkles Theme ===== */
     :root {
       --bg: #0b1120;
       --card: #1a2332;
@@ -15,11 +14,9 @@
       --text: #f0f4fa;
       --text-muted: #8ba0b8;
       --radius: 14px;
-      --shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      --shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg);
@@ -30,7 +27,6 @@
       padding: 20px;
       line-height: 1.5;
     }
-
     .container {
       max-width: 1100px;
       width: 100%;
@@ -38,7 +34,6 @@
       flex-direction: column;
       gap: 18px;
     }
-
     .header {
       background: var(--card);
       border: 1px solid var(--border);
@@ -50,19 +45,10 @@
       justify-content: space-between;
       gap: 12px;
     }
-
-    .header-title h1 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-    .header-title p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
+    .header-title h1 { font-size:1.5rem; font-weight:600; }
+    .header-title p { font-size:0.85rem; color:var(--text-muted); }
     .btn-home {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255,255,255,0.06);
       color: var(--text);
       border: 1px solid var(--border);
       padding: 8px 16px;
@@ -71,7 +57,7 @@
       font-size: 0.875rem;
       transition: background 0.2s;
     }
-    .btn-home:hover { background: rgba(255, 255, 255, 0.12); }
+    .btn-home:hover { background: rgba(255,255,255,0.12); }
 
     .player-card {
       background: var(--card);
@@ -83,7 +69,6 @@
       flex-direction: column;
       gap: 14px;
     }
-
     .controls-bar {
       display: flex;
       gap: 10px;
@@ -100,9 +85,7 @@
       outline: none;
       transition: border-color 0.2s;
     }
-    .controls-bar input[type="text"]:focus {
-      border-color: var(--primary);
-    }
+    .controls-bar input[type="text"]:focus { border-color: var(--primary); }
     .controls-bar button {
       background: var(--primary);
       color: #fff;
@@ -117,25 +100,22 @@
     }
     .controls-bar button:hover { background: var(--primary-hover); }
     .controls-bar button:active { transform: scale(0.96); }
-
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(255,255,255,0.07);
       border: 1px solid var(--border);
       color: var(--text);
     }
-    .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
 
-    /* Video-Container */
     .video-wrapper {
       position: relative;
       width: 100%;
-      aspect-ratio: 16 / 9;
+      aspect-ratio: 16/9;
       background: #000;
       border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--border);
     }
-
     .video-wrapper video,
     .video-wrapper iframe {
       display: block;
@@ -148,7 +128,7 @@
     .loading-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0,0,0,0.6);
       display: none;
       align-items: center;
       justify-content: center;
@@ -162,15 +142,14 @@
     }
     .loading-overlay.active { display: flex; }
     .spinner {
-      width: 40px;
-      height: 40px;
-      border: 4px solid rgba(255, 255, 255, 0.2);
+      width: 36px;
+      height: 36px;
+      border: 4px solid rgba(255,255,255,0.2);
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-weight: 500; }
 
     .history-card {
       background: var(--card);
@@ -187,16 +166,14 @@
       gap: 10px;
       margin-bottom: 14px;
     }
-    .history-header h2 { font-size: 1.2rem; font-weight: 500; }
-
+    .history-header h2 { font-size:1.2rem; font-weight:500; }
     .history-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 12px;
     }
-
     .history-item {
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0,0,0,0.3);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 14px 16px;
@@ -208,57 +185,52 @@
     }
     .history-item:hover {
       border-color: var(--primary);
-      background: rgba(79, 140, 247, 0.08);
+      background: rgba(79,140,247,0.08);
     }
     .history-url {
-      font-size: 0.9rem;
-      font-weight: 500;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      font-size:0.9rem;
+      font-weight:500;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
     }
     .history-meta {
       display: flex;
       justify-content: space-between;
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      font-size:0.75rem;
+      color:var(--text-muted);
     }
     .history-progress {
-      height: 4px;
-      background: var(--border);
-      border-radius: 4px;
-      margin-top: 6px;
-      overflow: hidden;
+      height:4px;
+      background:var(--border);
+      border-radius:4px;
+      margin-top:6px;
+      overflow:hidden;
     }
     .history-progress-bar {
-      height: 100%;
-      background: var(--primary);
-      width: 0%;
-      border-radius: 4px;
-      transition: width 0.3s;
+      height:100%;
+      background:var(--primary);
+      width:0%;
+      border-radius:4px;
+      transition:width 0.3s;
     }
-    .empty-history {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      padding: 8px 0;
-    }
+    .empty-history { color:var(--text-muted); font-size:0.9rem; padding:8px 0; }
 
     .player-status {
       display: flex;
       gap: 16px;
       flex-wrap: wrap;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      padding: 0 4px;
+      font-size:0.85rem;
+      color:var(--text-muted);
+      padding:0 4px;
     }
-    .status-error { color: #f87171; }
-    .status-loading { color: #fbbf24; }
+    .status-error { color:#f87171; }
 
-    @media (max-width: 640px) {
-      body { padding: 12px; }
-      .header { flex-direction: column; align-items: stretch; }
-      .controls-bar input[type="text"] { flex: 1 1 100%; }
-      .controls-bar button { flex: 1 1 auto; }
+    @media (max-width:640px) {
+      body { padding:12px; }
+      .header { flex-direction:column; align-items:stretch; }
+      .controls-bar input[type="text"] { flex:1 1 100%; }
+      .controls-bar button { flex:1 1 auto; }
     }
   </style>
 </head>
@@ -266,7 +238,6 @@
 
 <div class="container">
 
-  <!-- Header -->
   <header class="header">
     <div class="header-title">
       <h1>🎬 Universal Player</h1>
@@ -275,7 +246,6 @@
     <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
   </header>
 
-  <!-- Player -->
   <section class="player-card">
     <div class="controls-bar">
       <input type="text" id="videoUrlInput" placeholder="https://youtube.com/watch?v=... oder .mp4-Link" spellcheck="false" />
@@ -284,11 +254,10 @@
     </div>
 
     <div class="video-wrapper" id="videoWrapper">
-      <!-- Hier wird entweder video oder iframe eingefügt -->
       <video id="mainVideo" controls preload="metadata" playsinline style="display:none;"></video>
       <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
-        <div class="loading-text" id="loadingText">Video wird geladen …</div>
+        <span>Lade …</span>
       </div>
     </div>
 
@@ -298,19 +267,15 @@
     </div>
   </section>
 
-  <!-- History -->
   <section class="history-card">
     <div class="history-header">
       <h2>📜 Zuletzt gesehen</h2>
-      <button id="clearHistoryBtn" class="btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">Verlauf leeren</button>
+      <button id="clearHistoryBtn" class="btn-secondary" style="padding:6px 14px; font-size:0.8rem;">Verlauf leeren</button>
     </div>
     <div class="history-grid" id="historyGrid"></div>
   </section>
 
 </div>
-
-<!-- YouTube-Iframe-API (wird bei Bedarf geladen) -->
-<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
   (() => {
@@ -325,17 +290,15 @@
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     const historyGrid = document.getElementById('historyGrid');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const loadingText = document.getElementById('loadingText');
     const videoStatus = document.getElementById('videoStatus');
     const timeDisplay = document.getElementById('timeDisplay');
 
     // ===== State =====
     let currentUrl = '';
-    let currentPlatform = 'direct';
+    let currentPlatform = 'direct'; // 'direct', 'youtube', 'vimeo', 'dailymotion'
     let saveInterval = null;
-    let ytPlayer = null;
-    let loadingTimeout = null;
-    let isYouTubeReady = false;
+    let startTimestamp = 0; // für Iframe-Zeitschätzung
+    let isIframe = false;
 
     const STORAGE_KEY = 'videoPlayerHistory';
 
@@ -355,31 +318,26 @@
       } catch { return url; }
     }
 
-    // ===== Plattform-Erkennung (erweitert) =====
+    // ===== Plattform-Erkennung =====
     function detectPlatform(url) {
-      // YouTube: verschiedene Formate
       if (/youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\//i.test(url)) return 'youtube';
       if (/vimeo\.com\/\d+/i.test(url)) return 'vimeo';
       if (/dailymotion\.com\/video\//i.test(url)) return 'dailymotion';
-      // Direkte Datei: typische Video-Endungen
       if (/\.(mp4|webm|mov|avi|mkv|flv|m4v|mpg|mpeg)(\?.*)?$/i.test(url)) return 'direct';
-      // Alles andere versuchen wir als direkten Link (kann fehlschlagen)
-      return 'direct';
+      return 'direct'; // Fallback: versuchen als direktes Video
     }
 
     function extractYoutubeId(url) {
-      const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?]+)/i);
-      return match ? match[1] : null;
+      const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?]+)/i);
+      return m ? m[1] : null;
     }
-
     function extractVimeoId(url) {
-      const match = url.match(/vimeo\.com\/(\d+)/i);
-      return match ? match[1] : null;
+      const m = url.match(/vimeo\.com\/(\d+)/i);
+      return m ? m[1] : null;
     }
-
     function extractDailymotionId(url) {
-      const match = url.match(/dailymotion\.com\/video\/([^_?]+)/i);
-      return match ? match[1] : null;
+      const m = url.match(/dailymotion\.com\/video\/([^_?]+)/i);
+      return m ? m[1] : null;
     }
 
     // ===== History =====
@@ -393,11 +351,7 @@
     function saveProgress(url, time) {
       if (!url || time < 0) return;
       const history = getHistory();
-      history[url] = {
-        url,
-        time: Math.max(0, time),
-        timestamp: Date.now()
-      };
+      history[url] = { url, time: Math.max(0, time), timestamp: Date.now() };
       saveHistory(history);
       renderHistory();
     }
@@ -409,32 +363,26 @@
       }
     }
 
-    // ===== History rendern =====
     function renderHistory() {
       const history = getHistory();
       const entries = Object.values(history).sort((a, b) => b.timestamp - a.timestamp);
-
       if (entries.length === 0) {
         historyGrid.innerHTML = `<div class="empty-history">Noch keine Videos abgespielt.</div>`;
         return;
       }
-
       historyGrid.innerHTML = '';
       for (const entry of entries) {
         const item = document.createElement('div');
         item.className = 'history-item';
         const fileName = getFileName(entry.url);
         const progressPercent = entry.time > 0 ? Math.min(100, (entry.time / 60) * 5) : 0;
-
         item.innerHTML = `
           <div class="history-url" title="${entry.url}">${fileName}</div>
           <div class="history-meta">
             <span>⏱️ ${formatTime(entry.time)}</span>
             <span>${new Date(entry.timestamp).toLocaleDateString('de-DE')}</span>
           </div>
-          <div class="history-progress">
-            <div class="history-progress-bar" style="width: ${progressPercent}%;"></div>
-          </div>
+          <div class="history-progress"><div class="history-progress-bar" style="width:${progressPercent}%;"></div></div>
         `;
         item.addEventListener('click', () => {
           input.value = entry.url;
@@ -448,29 +396,17 @@
     function setStatus(text, isError = false) {
       videoStatus.textContent = text;
       videoStatus.className = isError ? 'status-error' : '';
-      if (text.includes('Lädt') || text.includes('Puffert')) {
-        videoStatus.className = 'status-loading';
-      }
     }
 
-    function showLoading(show, msg = 'Video wird geladen …') {
+    function showLoading(show) {
+      loadingOverlay.classList.toggle('active', show);
+      // Automatisch nach 3 Sekunden ausblenden, falls es noch aktiv ist
       if (show) {
-        loadingText.textContent = msg;
-        loadingOverlay.classList.add('active');
-        // Timeout: nach 10 Sekunden ausblenden, falls noch aktiv
-        if (loadingTimeout) clearTimeout(loadingTimeout);
-        loadingTimeout = setTimeout(() => {
+        setTimeout(() => {
           if (loadingOverlay.classList.contains('active')) {
-            showLoading(false);
-            setStatus('⏱️ Ladezeit überschritten – bitte erneut versuchen', true);
+            loadingOverlay.classList.remove('active');
           }
-        }, 10000);
-      } else {
-        loadingOverlay.classList.remove('active');
-        if (loadingTimeout) {
-          clearTimeout(loadingTimeout);
-          loadingTimeout = null;
-        }
+        }, 3000);
       }
     }
 
@@ -486,7 +422,7 @@
 
     // ===== Player zurücksetzen =====
     function resetPlayer() {
-      // Video-Element ausblenden, zurücksetzen
+      // Video ausblenden, stoppen
       videoEl.style.display = 'none';
       videoEl.pause();
       videoEl.src = '';
@@ -502,19 +438,16 @@
       const iframes = wrapper.querySelectorAll('iframe');
       iframes.forEach(ifr => ifr.remove());
 
-      if (ytPlayer) {
-        try { ytPlayer.destroy(); } catch(e) {}
-        ytPlayer = null;
-      }
       clearInterval(saveInterval);
       saveInterval = null;
+      isIframe = false;
       currentPlatform = 'direct';
       showLoading(false);
       setStatus('⏸️ Bereit');
       timeDisplay.textContent = '–';
     }
 
-    // ===== Direktes Video =====
+    // ===== Direktes Video (HTML5) =====
     function loadDirectVideo(url, startTime = 0) {
       resetPlayer();
       currentPlatform = 'direct';
@@ -522,10 +455,9 @@
       videoEl.style.display = 'block';
       videoEl.src = url;
       videoEl.load();
-      showLoading(true, 'Lade Video-Datei …');
+      showLoading(true);
       setStatus('⏳ Lade …');
 
-      // Erfolg
       videoEl.onloadedmetadata = () => {
         showLoading(false);
         if (startTime > 0 && startTime < videoEl.duration) {
@@ -537,7 +469,6 @@
         updateTimeDisplay(videoEl.currentTime, videoEl.duration);
       };
 
-      // Fehler
       videoEl.onerror = () => {
         showLoading(false);
         setStatus('❌ Fehler beim Laden', true);
@@ -554,7 +485,6 @@
         alert(`Video konnte nicht geladen werden:\n${msg}\n\nBitte prüfe die URL.`);
       };
 
-      // Fortschritt
       videoEl.ontimeupdate = () => {
         if (currentUrl && videoEl.currentTime > 0) {
           saveProgress(currentUrl, videoEl.currentTime);
@@ -570,137 +500,19 @@
       };
     }
 
-    // ===== YouTube (mit Fallback) =====
-    function loadYoutubeVideo(url, startTime = 0) {
-      resetPlayer();
-      currentPlatform = 'youtube';
-      currentUrl = url;
-      const videoId = extractYoutubeId(url);
-      if (!videoId) {
-        setStatus('❌ Ungültige YouTube-URL', true);
-        alert('Die YouTube-URL konnte nicht erkannt werden.');
-        return;
-      }
-
-      showLoading(true, 'YouTube wird geladen …');
-      setStatus('⏳ YouTube lädt …');
-
-      // Iframe erstellen (wird von API oder direkt verwendet)
-      const iframe = document.createElement('iframe');
-      iframe.id = 'youtube-iframe';
-      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-      iframe.allowFullscreen = true;
-      iframe.style.display = 'block';
-      wrapper.prepend(iframe);
-
-      // Versuche zuerst die API
-      const tryApi = () => {
-        if (typeof YT !== 'undefined' && YT.Player) {
-          // API verfügbar
-          createYoutubePlayer(iframe, videoId, startTime);
-        } else {
-          // API nicht verfügbar – Fallback: einfaches Iframe
-          fallbackYoutubeIframe(iframe, videoId, startTime);
-        }
-      };
-
-      // API-Initialisierung
-      if (typeof YT === 'undefined') {
-        // Warten auf onYouTubeIframeAPIReady
-        window.onYouTubeIframeAPIReady = () => {
-          // Kurze Verzögerung, damit YT definiert ist
-          setTimeout(tryApi, 200);
-        };
-        // Fallback: wenn API nach 5 Sekunden nicht da ist, direkt Iframe
-        setTimeout(() => {
-          if (!document.querySelector('#youtube-iframe')?.src) {
-            // Wenn noch kein Iframe geladen wurde
-            fallbackYoutubeIframe(iframe, videoId, startTime);
-          }
-        }, 5000);
-      } else {
-        // API bereits geladen
-        tryApi();
-      }
-    }
-
-    function createYoutubePlayer(iframe, videoId, startTime) {
-      ytPlayer = new YT.Player(iframe, {
-        videoId: videoId,
-        playerVars: {
-          autoplay: 1,
-          controls: 1,
-          rel: 0,
-          start: Math.floor(startTime) || 0
-        },
-        events: {
-          onReady: (event) => {
-            showLoading(false);
-            setStatus('▶️ YouTube läuft');
-            if (saveInterval) clearInterval(saveInterval);
-            saveInterval = setInterval(() => {
-              if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
-                const time = ytPlayer.getCurrentTime();
-                if (time > 0) saveProgress(currentUrl, time);
-                const duration = ytPlayer.getDuration();
-                updateTimeDisplay(time, duration);
-              }
-            }, 1500);
-            saveProgress(currentUrl, startTime || 0);
-          },
-          onStateChange: (event) => {
-            const state = event.data;
-            if (state === YT.PlayerState.PLAYING) setStatus('▶️ YouTube läuft');
-            else if (state === YT.PlayerState.PAUSED) setStatus('⏸️ YouTube pausiert');
-            else if (state === YT.PlayerState.ENDED) {
-              setStatus('⏹️ Ende');
-              if (currentUrl) saveProgress(currentUrl, ytPlayer.getDuration());
-            } else if (state === YT.PlayerState.BUFFERING) setStatus('⏳ YouTube puffert …');
-          },
-          onError: (err) => {
-            showLoading(false);
-            setStatus('❌ YouTube-Fehler', true);
-            // Fallback: einfaches Iframe versuchen
-            fallbackYoutubeIframe(iframe, videoId, startTime);
-          }
-        }
-      });
-    }
-
-    function fallbackYoutubeIframe(iframe, videoId, startTime) {
-      // Einfaches Iframe ohne API (keine Fortschrittsspeicherung möglich)
-      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&start=${Math.floor(startTime)}`;
-      iframe.onload = () => {
-        showLoading(false);
-        setStatus('▶️ YouTube (einfaches Iframe)');
-        // Wir können keine Zeit abfragen, also speichern wir nur die Startzeit
-        saveProgress(currentUrl, startTime || 0);
-        // Alle 5 Sekunden die geschätzte Zeit speichern
-        if (saveInterval) clearInterval(saveInterval);
-        let elapsed = startTime || 0;
-        const startTimestamp = Date.now() - (elapsed * 1000);
-        saveInterval = setInterval(() => {
-          const now = Date.now();
-          const seconds = (now - startTimestamp) / 1000;
-          if (seconds > 0) saveProgress(currentUrl, seconds);
-          updateTimeDisplay(seconds, null);
-        }, 2000);
-      };
-      iframe.onerror = () => {
-        showLoading(false);
-        setStatus('❌ YouTube-Iframe-Fehler', true);
-        alert('YouTube konnte nicht geladen werden. Bitte versuche es später erneut.');
-      };
-    }
-
-    // ===== Vimeo / Dailymotion (einfacher Iframe) =====
-    function loadEmbedVideo(url, startTime = 0, platform) {
+    // ===== Iframe-basierte Player (YouTube, Vimeo, Dailymotion) =====
+    function loadIframeVideo(url, startTime = 0, platform) {
       resetPlayer();
       currentPlatform = platform;
       currentUrl = url;
+      isIframe = true;
 
       let embedUrl = '';
-      if (platform === 'vimeo') {
+      if (platform === 'youtube') {
+        const id = extractYoutubeId(url);
+        if (!id) { setStatus('❌ Ungültige YouTube-URL', true); alert('YouTube-ID nicht erkannt.'); return; }
+        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&rel=0&start=${Math.floor(startTime)}`;
+      } else if (platform === 'vimeo') {
         const id = extractVimeoId(url);
         if (!id) { setStatus('❌ Ungültige Vimeo-URL', true); alert('Vimeo-ID nicht erkannt.'); return; }
         embedUrl = `https://player.vimeo.com/video/${id}?autoplay=1&loop=0&portrait=0&title=0&byline=0`;
@@ -713,7 +525,7 @@
         return;
       }
 
-      showLoading(true, `${platform} wird geladen …`);
+      showLoading(true);
       setStatus(`⏳ ${platform} lädt …`);
 
       const iframe = document.createElement('iframe');
@@ -723,26 +535,29 @@
       iframe.style.display = 'block';
       wrapper.prepend(iframe);
 
-      // Nach dem Laden
+      // Fortschritt speichern (geschätzt)
+      let elapsed = startTime || 0;
+      startTimestamp = Date.now() - (elapsed * 1000);
+
       iframe.onload = () => {
         showLoading(false);
         setStatus(`▶️ ${platform} läuft`);
-        // Fortschritt schätzen
-        let elapsed = startTime || 0;
-        const startTimestamp = Date.now() - (elapsed * 1000);
+        // Intervall starten
         if (saveInterval) clearInterval(saveInterval);
         saveInterval = setInterval(() => {
           const now = Date.now();
           const seconds = (now - startTimestamp) / 1000;
-          if (seconds > 0) saveProgress(currentUrl, seconds);
-          updateTimeDisplay(seconds, null);
+          if (seconds > 0) {
+            saveProgress(currentUrl, seconds);
+            updateTimeDisplay(seconds, null);
+          }
         }, 2000);
         saveProgress(currentUrl, startTime || 0);
       };
 
       iframe.onerror = () => {
         showLoading(false);
-        setStatus(`❌ ${platform} konnte nicht geladen werden`, true);
+        setStatus(`❌ ${platform} fehlgeschlagen`, true);
         alert(`Fehler beim Laden von ${platform}. Bitte prüfe die URL.`);
       };
     }
@@ -753,21 +568,18 @@
       const platform = detectPlatform(url);
       currentUrl = url;
 
-      // Vor dem Laden: Overlay anzeigen, alten Player zurücksetzen
-      resetPlayer(); // resetet auch Overlay, aber wir zeigen es gleich wieder
-      // Wir rufen resetPlayer auf, aber das Overlay wird darin ausgeblendet.
-      // Da wir es aber gleich wieder brauchen, setzen wir es manuell.
-      showLoading(true, 'Starte …');
+      // Reset, dann entsprechend laden
+      resetPlayer();
 
       switch (platform) {
         case 'youtube':
-          loadYoutubeVideo(url, startTime);
+          loadIframeVideo(url, startTime, 'youtube');
           break;
         case 'vimeo':
-          loadEmbedVideo(url, startTime, 'Vimeo');
+          loadIframeVideo(url, startTime, 'vimeo');
           break;
         case 'dailymotion':
-          loadEmbedVideo(url, startTime, 'Dailymotion');
+          loadIframeVideo(url, startTime, 'dailymotion');
           break;
         default:
           loadDirectVideo(url, startTime);
@@ -794,10 +606,9 @@
 
     clearHistoryBtn.addEventListener('click', clearHistory);
 
-    // ===== Tastaturkürzel =====
+    // ===== Tastaturkürzel (nur für direktes Video) =====
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
       if (currentPlatform === 'direct') {
         switch (e.key) {
           case ' ':
@@ -820,35 +631,14 @@
             else videoEl.requestFullscreen().catch(() => {});
             break;
         }
-      } else if (currentPlatform === 'youtube' && ytPlayer) {
-        switch (e.key) {
-          case ' ':
-            e.preventDefault();
-            if (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
-              ytPlayer.pauseVideo();
-            } else {
-              ytPlayer.playVideo();
-            }
-            break;
-          case 'ArrowRight':
-            e.preventDefault();
-            const newTime = Math.min(ytPlayer.getCurrentTime() + 5, ytPlayer.getDuration());
-            ytPlayer.seekTo(newTime, true);
-            break;
-          case 'ArrowLeft':
-            e.preventDefault();
-            const prevTime = Math.max(ytPlayer.getCurrentTime() - 5, 0);
-            ytPlayer.seekTo(prevTime, true);
-            break;
-          case 'f':
-          case 'F':
-            e.preventDefault();
-            const iframe = wrapper.querySelector('#youtube-iframe');
-            if (iframe) {
-              if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-              else iframe.requestFullscreen().catch(() => {});
-            }
-            break;
+      }
+      // Bei Iframes können wir keine Tastaturkürzel unterstützen (außer Fullscreen)
+      if (isIframe && (e.key === 'f' || e.key === 'F')) {
+        e.preventDefault();
+        const iframe = wrapper.querySelector('iframe');
+        if (iframe) {
+          if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+          else iframe.requestFullscreen().catch(() => {});
         }
       }
     });
@@ -856,7 +646,7 @@
     // ===== Initialisierung =====
     renderHistory();
 
-    // Beispiel-URL setzen, falls kein Verlauf existiert
+    // Beispiel-URL setzen, falls kein Verlauf
     const history = getHistory();
     if (Object.keys(history).length === 0) {
       input.value = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
@@ -865,7 +655,7 @@
       if (first) input.value = first.url;
     }
 
-    console.log('✅ Universal Player optimiert – jetzt mit robuster Fehlerbehandlung.');
+    console.log('✅ Stabiler Universal Player gestartet.');
   })();
 </script>
 </body>
