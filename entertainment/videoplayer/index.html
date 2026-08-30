@@ -148,7 +148,7 @@
     .loading-overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.7);
       display: none;
       align-items: center;
       justify-content: center;
@@ -157,6 +157,8 @@
       backdrop-filter: blur(2px);
       z-index: 5;
       border-radius: var(--radius);
+      flex-direction: column;
+      gap: 10px;
     }
     .loading-overlay.active { display: flex; }
     .spinner {
@@ -166,9 +168,9 @@
       border-top-color: var(--primary);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      margin-right: 14px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-weight: 500; }
 
     .history-card {
       background: var(--card);
@@ -249,6 +251,8 @@
       color: var(--text-muted);
       padding: 0 4px;
     }
+    .status-error { color: #f87171; }
+    .status-loading { color: #fbbf24; }
 
     @media (max-width: 640px) {
       body { padding: 12px; }
@@ -284,7 +288,7 @@
       <video id="mainVideo" controls preload="metadata" playsinline style="display:none;"></video>
       <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
-        <span>Lade Video …</span>
+        <div class="loading-text" id="loadingText">Video wird geladen …</div>
       </div>
     </div>
 
@@ -321,21 +325,23 @@
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     const historyGrid = document.getElementById('historyGrid');
     const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingText = document.getElementById('loadingText');
     const videoStatus = document.getElementById('videoStatus');
     const timeDisplay = document.getElementById('timeDisplay');
 
     // ===== State =====
     let currentUrl = '';
-    let currentPlatform = 'direct'; // 'direct', 'youtube', 'vimeo', 'dailymotion'
+    let currentPlatform = 'direct';
     let saveInterval = null;
-    let ytPlayer = null;          // YouTube-API-Instanz
-    let isYouTubeReady = false;   // Flag, ob API geladen ist
+    let ytPlayer = null;
+    let loadingTimeout = null;
+    let isYouTubeReady = false;
 
     const STORAGE_KEY = 'videoPlayerHistory';
 
     // ===== Hilfsfunktionen =====
     function formatTime(seconds) {
-      if (!seconds || isNaN(seconds)) return '0:00';
+      if (!seconds || isNaN(seconds) || seconds < 0) return '0:00';
       const m = Math.floor(seconds / 60);
       const s = Math.floor(seconds % 60);
       return `${m}:${s.toString().padStart(2, '0')}`;
@@ -349,16 +355,20 @@
       } catch { return url; }
     }
 
-    // ===== Plattform-Erkennung =====
+    // ===== Plattform-Erkennung (erweitert) =====
     function detectPlatform(url) {
-      if (/youtube\.com\/watch\?v=|youtu\.be\//i.test(url)) return 'youtube';
+      // YouTube: verschiedene Formate
+      if (/youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\//i.test(url)) return 'youtube';
       if (/vimeo\.com\/\d+/i.test(url)) return 'vimeo';
       if (/dailymotion\.com\/video\//i.test(url)) return 'dailymotion';
+      // Direkte Datei: typische Video-Endungen
+      if (/\.(mp4|webm|mov|avi|mkv|flv|m4v|mpg|mpeg)(\?.*)?$/i.test(url)) return 'direct';
+      // Alles andere versuchen wir als direkten Link (kann fehlschlagen)
       return 'direct';
     }
 
     function extractYoutubeId(url) {
-      const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/i);
+      const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?]+)/i);
       return match ? match[1] : null;
     }
 
@@ -372,7 +382,7 @@
       return match ? match[1] : null;
     }
 
-    // ===== History (localStorage) =====
+    // ===== History =====
     function getHistory() {
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
     }
@@ -435,32 +445,62 @@
     }
 
     // ===== Status & UI =====
-    function setStatus(text) {
+    function setStatus(text, isError = false) {
       videoStatus.textContent = text;
+      videoStatus.className = isError ? 'status-error' : '';
+      if (text.includes('Lädt') || text.includes('Puffert')) {
+        videoStatus.className = 'status-loading';
+      }
     }
 
-    function showLoading(show) {
-      loadingOverlay.classList.toggle('active', show);
+    function showLoading(show, msg = 'Video wird geladen …') {
+      if (show) {
+        loadingText.textContent = msg;
+        loadingOverlay.classList.add('active');
+        // Timeout: nach 10 Sekunden ausblenden, falls noch aktiv
+        if (loadingTimeout) clearTimeout(loadingTimeout);
+        loadingTimeout = setTimeout(() => {
+          if (loadingOverlay.classList.contains('active')) {
+            showLoading(false);
+            setStatus('⏱️ Ladezeit überschritten – bitte erneut versuchen', true);
+          }
+        }, 10000);
+      } else {
+        loadingOverlay.classList.remove('active');
+        if (loadingTimeout) {
+          clearTimeout(loadingTimeout);
+          loadingTimeout = null;
+        }
+      }
     }
 
     function updateTimeDisplay(current, duration) {
       if (duration && duration > 0) {
         timeDisplay.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
-      } else {
+      } else if (current >= 0) {
         timeDisplay.textContent = formatTime(current);
+      } else {
+        timeDisplay.textContent = '–';
       }
     }
 
     // ===== Player zurücksetzen =====
     function resetPlayer() {
-      // Video-Element ausblenden, Iframe entfernen
+      // Video-Element ausblenden, zurücksetzen
       videoEl.style.display = 'none';
       videoEl.pause();
       videoEl.src = '';
       videoEl.load();
+      videoEl.onloadedmetadata = null;
+      videoEl.onerror = null;
+      videoEl.ontimeupdate = null;
+      videoEl.onplay = null;
+      videoEl.onpause = null;
+      videoEl.onended = null;
 
-      const iframe = wrapper.querySelector('iframe');
-      if (iframe) iframe.remove();
+      // Iframes entfernen
+      const iframes = wrapper.querySelectorAll('iframe');
+      iframes.forEach(ifr => ifr.remove());
 
       if (ytPlayer) {
         try { ytPlayer.destroy(); } catch(e) {}
@@ -469,11 +509,12 @@
       clearInterval(saveInterval);
       saveInterval = null;
       currentPlatform = 'direct';
+      showLoading(false);
       setStatus('⏸️ Bereit');
       timeDisplay.textContent = '–';
     }
 
-    // ===== Direktes Video (MP4, WebM, …) =====
+    // ===== Direktes Video =====
     function loadDirectVideo(url, startTime = 0) {
       resetPlayer();
       currentPlatform = 'direct';
@@ -481,27 +522,39 @@
       videoEl.style.display = 'block';
       videoEl.src = url;
       videoEl.load();
-      showLoading(true);
-      setStatus('⏳ Lädt …');
+      showLoading(true, 'Lade Video-Datei …');
+      setStatus('⏳ Lade …');
 
+      // Erfolg
       videoEl.onloadedmetadata = () => {
+        showLoading(false);
         if (startTime > 0 && startTime < videoEl.duration) {
           videoEl.currentTime = startTime;
         }
         videoEl.play().catch(() => {});
-        showLoading(false);
         setStatus('▶️ Wiedergabe');
         saveProgress(url, videoEl.currentTime);
         updateTimeDisplay(videoEl.currentTime, videoEl.duration);
       };
 
+      // Fehler
       videoEl.onerror = () => {
         showLoading(false);
-        setStatus('❌ Fehler');
-        const msg = videoEl.error ? videoEl.error.message : 'Unbekannter Fehler';
-        alert(`Video konnte nicht geladen werden:\n${msg}`);
+        setStatus('❌ Fehler beim Laden', true);
+        let msg = 'Unbekannter Fehler';
+        if (videoEl.error) {
+          switch (videoEl.error.code) {
+            case 1: msg = 'Abgebrochen'; break;
+            case 2: msg = 'Netzwerkfehler'; break;
+            case 3: msg = 'Decoder-Fehler'; break;
+            case 4: msg = 'Format nicht unterstützt'; break;
+            default: msg = videoEl.error.message || msg;
+          }
+        }
+        alert(`Video konnte nicht geladen werden:\n${msg}\n\nBitte prüfe die URL.`);
       };
 
+      // Fortschritt
       videoEl.ontimeupdate = () => {
         if (currentUrl && videoEl.currentTime > 0) {
           saveProgress(currentUrl, videoEl.currentTime);
@@ -517,41 +570,57 @@
       };
     }
 
-    // ===== YouTube (Iframe-API) =====
+    // ===== YouTube (mit Fallback) =====
     function loadYoutubeVideo(url, startTime = 0) {
       resetPlayer();
       currentPlatform = 'youtube';
       currentUrl = url;
       const videoId = extractYoutubeId(url);
       if (!videoId) {
-        alert('Ungültige YouTube-URL');
+        setStatus('❌ Ungültige YouTube-URL', true);
+        alert('Die YouTube-URL konnte nicht erkannt werden.');
         return;
       }
 
-      showLoading(true);
-      setStatus('⏳ YouTube wird geladen …');
+      showLoading(true, 'YouTube wird geladen …');
+      setStatus('⏳ YouTube lädt …');
 
-      // Iframe erstellen (wird von API gefüllt)
+      // Iframe erstellen (wird von API oder direkt verwendet)
       const iframe = document.createElement('iframe');
       iframe.id = 'youtube-iframe';
-      iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&controls=1&rel=0`;
       iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
       iframe.allowFullscreen = true;
       iframe.style.display = 'block';
-      wrapper.prepend(iframe); // vor das video-Element (das ist ausgeblendet)
+      wrapper.prepend(iframe);
 
-      // YouTube-API initialisieren (wenn noch nicht geschehen)
-      if (typeof YT !== 'undefined' && YT.Player) {
-        createYoutubePlayer(iframe, videoId, startTime);
-      } else {
-        // API wird asynchron geladen – warten
-        window.onYouTubeIframeAPIReady = () => {
-          createYoutubePlayer(iframe, videoId, startTime);
-        };
-        // Falls API schon geladen ist, aber YT noch nicht definiert (selten)
+      // Versuche zuerst die API
+      const tryApi = () => {
         if (typeof YT !== 'undefined' && YT.Player) {
+          // API verfügbar
           createYoutubePlayer(iframe, videoId, startTime);
+        } else {
+          // API nicht verfügbar – Fallback: einfaches Iframe
+          fallbackYoutubeIframe(iframe, videoId, startTime);
         }
+      };
+
+      // API-Initialisierung
+      if (typeof YT === 'undefined') {
+        // Warten auf onYouTubeIframeAPIReady
+        window.onYouTubeIframeAPIReady = () => {
+          // Kurze Verzögerung, damit YT definiert ist
+          setTimeout(tryApi, 200);
+        };
+        // Fallback: wenn API nach 5 Sekunden nicht da ist, direkt Iframe
+        setTimeout(() => {
+          if (!document.querySelector('#youtube-iframe')?.src) {
+            // Wenn noch kein Iframe geladen wurde
+            fallbackYoutubeIframe(iframe, videoId, startTime);
+          }
+        }, 5000);
+      } else {
+        // API bereits geladen
+        tryApi();
       }
     }
 
@@ -568,7 +637,6 @@
           onReady: (event) => {
             showLoading(false);
             setStatus('▶️ YouTube läuft');
-            // Fortschritt regelmäßig speichern
             if (saveInterval) clearInterval(saveInterval);
             saveInterval = setInterval(() => {
               if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
@@ -578,9 +646,6 @@
                 updateTimeDisplay(time, duration);
               }
             }, 1500);
-
-            // Wenn startTime > 0, wurde es bereits über den start-Parameter gesetzt
-            // Wir speichern den Fortschritt initial
             saveProgress(currentUrl, startTime || 0);
           },
           onStateChange: (event) => {
@@ -590,18 +655,45 @@
             else if (state === YT.PlayerState.ENDED) {
               setStatus('⏹️ Ende');
               if (currentUrl) saveProgress(currentUrl, ytPlayer.getDuration());
-            } else if (state === YT.PlayerState.BUFFERING) setStatus('⏳ Puffert …');
+            } else if (state === YT.PlayerState.BUFFERING) setStatus('⏳ YouTube puffert …');
           },
           onError: (err) => {
             showLoading(false);
-            setStatus('❌ YouTube-Fehler');
-            alert('YouTube-Fehler: ' + err.data);
+            setStatus('❌ YouTube-Fehler', true);
+            // Fallback: einfaches Iframe versuchen
+            fallbackYoutubeIframe(iframe, videoId, startTime);
           }
         }
       });
     }
 
-    // ===== Vimeo / Dailymotion (einfacher Iframe, Fortschritt über Intervall) =====
+    function fallbackYoutubeIframe(iframe, videoId, startTime) {
+      // Einfaches Iframe ohne API (keine Fortschrittsspeicherung möglich)
+      iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&rel=0&start=${Math.floor(startTime)}`;
+      iframe.onload = () => {
+        showLoading(false);
+        setStatus('▶️ YouTube (einfaches Iframe)');
+        // Wir können keine Zeit abfragen, also speichern wir nur die Startzeit
+        saveProgress(currentUrl, startTime || 0);
+        // Alle 5 Sekunden die geschätzte Zeit speichern
+        if (saveInterval) clearInterval(saveInterval);
+        let elapsed = startTime || 0;
+        const startTimestamp = Date.now() - (elapsed * 1000);
+        saveInterval = setInterval(() => {
+          const now = Date.now();
+          const seconds = (now - startTimestamp) / 1000;
+          if (seconds > 0) saveProgress(currentUrl, seconds);
+          updateTimeDisplay(seconds, null);
+        }, 2000);
+      };
+      iframe.onerror = () => {
+        showLoading(false);
+        setStatus('❌ YouTube-Iframe-Fehler', true);
+        alert('YouTube konnte nicht geladen werden. Bitte versuche es später erneut.');
+      };
+    }
+
+    // ===== Vimeo / Dailymotion (einfacher Iframe) =====
     function loadEmbedVideo(url, startTime = 0, platform) {
       resetPlayer();
       currentPlatform = platform;
@@ -610,19 +702,19 @@
       let embedUrl = '';
       if (platform === 'vimeo') {
         const id = extractVimeoId(url);
-        if (!id) { alert('Ungültige Vimeo-URL'); return; }
+        if (!id) { setStatus('❌ Ungültige Vimeo-URL', true); alert('Vimeo-ID nicht erkannt.'); return; }
         embedUrl = `https://player.vimeo.com/video/${id}?autoplay=1&loop=0&portrait=0&title=0&byline=0`;
       } else if (platform === 'dailymotion') {
         const id = extractDailymotionId(url);
-        if (!id) { alert('Ungültige Dailymotion-URL'); return; }
+        if (!id) { setStatus('❌ Ungültige Dailymotion-URL', true); alert('Dailymotion-ID nicht erkannt.'); return; }
         embedUrl = `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
       } else {
-        alert('Unbekannte Plattform');
+        setStatus('❌ Unbekannte Plattform', true);
         return;
       }
 
-      showLoading(true);
-      setStatus(`⏳ ${platform} wird geladen …`);
+      showLoading(true, `${platform} wird geladen …`);
+      setStatus(`⏳ ${platform} lädt …`);
 
       const iframe = document.createElement('iframe');
       iframe.src = embedUrl;
@@ -631,32 +723,28 @@
       iframe.style.display = 'block';
       wrapper.prepend(iframe);
 
-      // Nach dem Laden (onload) – wir können keine genaue Zeit abfragen, daher nur Schätzung über Intervall
+      // Nach dem Laden
       iframe.onload = () => {
         showLoading(false);
         setStatus(`▶️ ${platform} läuft`);
-        // Fortschritt kann nicht abgefragt werden – wir speichern nur die Startzeit und später eine Schätzung?
-        // Besser: Wir speichern die abgelaufene Zeit seit Start (nicht genau, aber besser als nichts)
+        // Fortschritt schätzen
         let elapsed = startTime || 0;
-        const startTimestamp = Date.now() - (startTime * 1000);
+        const startTimestamp = Date.now() - (elapsed * 1000);
         if (saveInterval) clearInterval(saveInterval);
         saveInterval = setInterval(() => {
           const now = Date.now();
           const seconds = (now - startTimestamp) / 1000;
           if (seconds > 0) saveProgress(currentUrl, seconds);
-          // Keine Dauer verfügbar – nur aktuelle Zeit anzeigen
           updateTimeDisplay(seconds, null);
-        }, 1500);
+        }, 2000);
         saveProgress(currentUrl, startTime || 0);
       };
 
-      // Fallback: Wenn iframe nicht lädt
-      setTimeout(() => {
-        if (loadingOverlay.classList.contains('active')) {
-          showLoading(false);
-          setStatus('❌ Ladezeit überschritten');
-        }
-      }, 15000);
+      iframe.onerror = () => {
+        showLoading(false);
+        setStatus(`❌ ${platform} konnte nicht geladen werden`, true);
+        alert(`Fehler beim Laden von ${platform}. Bitte prüfe die URL.`);
+      };
     }
 
     // ===== Haupt-Ladefunktion =====
@@ -664,6 +752,12 @@
       if (!url) return;
       const platform = detectPlatform(url);
       currentUrl = url;
+
+      // Vor dem Laden: Overlay anzeigen, alten Player zurücksetzen
+      resetPlayer(); // resetet auch Overlay, aber wir zeigen es gleich wieder
+      // Wir rufen resetPlayer auf, aber das Overlay wird darin ausgeblendet.
+      // Da wir es aber gleich wieder brauchen, setzen wir es manuell.
+      showLoading(true, 'Starte …');
 
       switch (platform) {
         case 'youtube':
@@ -700,7 +794,7 @@
 
     clearHistoryBtn.addEventListener('click', clearHistory);
 
-    // ===== Tastaturkürzel (für Video-Element und YouTube) =====
+    // ===== Tastaturkürzel =====
     document.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
@@ -771,7 +865,7 @@
       if (first) input.value = first.url;
     }
 
-    console.log('✅ Universal Player gestartet – YouTube, Vimeo, Dailymotion und direkte Links werden unterstützt.');
+    console.log('✅ Universal Player optimiert – jetzt mit robuster Fehlerbehandlung.');
   })();
 </script>
 </body>
