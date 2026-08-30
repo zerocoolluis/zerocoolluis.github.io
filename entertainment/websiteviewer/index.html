@@ -15,14 +15,10 @@
       --text-muted: #94a3b8;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -40,8 +36,7 @@
       gap: 16px;
     }
 
-    /* Header */
-    .header {
+    header {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -49,19 +44,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .header-info h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .header-info p {
-      font-size: 0.875rem;
-      color: var(--text-muted);
     }
 
     .btn-home {
@@ -72,14 +54,8 @@
       border-radius: 8px;
       text-decoration: none;
       font-size: 0.875rem;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-    .btn-home:hover {
-      background: rgba(255, 255, 255, 0.1);
     }
 
-    /* Navigation Bar */
     .nav-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -93,23 +69,16 @@
     .search-bar {
       display: flex;
       gap: 8px;
-      flex-wrap: wrap;
     }
 
     input[type="text"] {
       flex: 1;
-      min-width: 260px;
       background: #090d16;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 10px 14px;
       color: var(--text);
       font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input[type="text"]:focus {
-      border-color: var(--primary);
     }
 
     button {
@@ -119,45 +88,30 @@
       border-radius: 8px;
       padding: 10px 16px;
       font-size: 0.9rem;
-      font-weight: 500;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.2s;
     }
-    button:hover {
-      background: var(--primary-hover);
-    }
+    button:hover { background: var(--primary-hover); }
 
     .btn-secondary {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid var(--border);
       color: var(--text);
     }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
 
-    /* Viewer Frame */
     .frame-wrapper {
       position: relative;
       width: 100%;
-      height: 680px;
+      height: 700px;
       background: #000;
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--border);
     }
 
-    /* CSS Fix für Vollbildmodus */
-    .frame-wrapper:fullscreen,
-    .frame-wrapper:-webkit-full-screen,
-    .frame-wrapper:-moz-full-screen {
+    .frame-wrapper:fullscreen {
       width: 100vw !important;
       height: 100vh !important;
       border-radius: 0 !important;
-      border: none !important;
     }
 
     iframe {
@@ -167,7 +121,6 @@
       background: #ffffff;
     }
 
-    /* Verlauf Section */
     .history-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -175,74 +128,51 @@
       padding: 16px;
     }
 
-    .history-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .history-header h2 {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-
     .history-list {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 10px;
+      margin-top: 12px;
     }
 
     .history-item {
       background: rgba(0, 0, 0, 0.2);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px 12px;
+      padding: 10px;
       font-size: 0.85rem;
-      color: var(--text-muted);
       cursor: pointer;
-      white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: all 0.2s;
-    }
-    .history-item:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-      border-color: var(--primary);
+      white-space: nowrap;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Header -->
-  <header class="header">
-    <div class="header-info">
+  <header>
+    <div>
       <h1>Web Viewer</h1>
-      <p>Webseiten eingeben, betrachten und im Vollbild nutzen</p>
+      <p style="color: var(--text-muted); font-size: 0.875rem;">Unterstützt Webseiten, YouTube und Twitch</p>
     </div>
     <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
   </header>
 
-  <!-- Viewer Controls & Frame -->
   <main class="nav-card">
     <div class="search-bar">
-      <input type="text" id="urlInput" placeholder="Webadresse eingeben (z. B. wikipedia.org)..." onkeypress="handleKeyPress(event)">
-      <button onclick="loadSite(false)">Öffnen</button>
-      <button class="btn-secondary" title="Im Proxy-Modus öffnen (falls blockiert)" onclick="loadSite(true)">🔓 Proxy-Modus</button>
-      <button class="btn-secondary" onclick="reloadFrame()">🔄 Neu laden</button>
+      <input type="text" id="urlInput" placeholder="URL eingeben (z. B. twitch.tv/streamer oder youtube.com/watch?v=...)" onkeypress="if(event.key==='Enter') loadSite()">
+      <button onclick="loadSite()">Öffnen</button>
       <button class="btn-secondary" onclick="toggleFullscreen()">⛶ Vollbild</button>
     </div>
 
     <div class="frame-wrapper" id="frameContainer">
-      <iframe id="webFrame" src="about:blank" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true"></iframe>
+      <iframe id="webFrame" src="about:blank" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>
     </div>
   </main>
 
-  <!-- Verlauf -->
   <section class="history-card">
-    <div class="history-header">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
       <h2>Zuletzt besucht</h2>
       <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="clearHistory()">Verlauf leeren</button>
     </div>
@@ -253,100 +183,74 @@
 <script>
   document.addEventListener('DOMContentLoaded', updateHistoryUI);
 
-  function handleKeyPress(event) {
-    if (event.key === 'Enter') {
-      loadSite(false);
-    }
-  }
-
-  function loadSite(useProxy = false) {
+  function loadSite() {
     const input = document.getElementById('urlInput');
-    let rawUrl = input.value.trim();
-    if (!rawUrl) return;
+    let url = input.value.trim();
+    if (!url) return;
 
-    // Automatisches Vervollständigen von https://
-    if (!/^https?:\/\//i.test(rawUrl)) {
-      rawUrl = 'https://' + rawUrl;
-    }
-    input.value = rawUrl;
-
-    let targetUrl = rawUrl;
-
-    // Falls Proxy-Modus gewählt wurde (für blockierte Seiten wie YouTube/Google)
-    if (useProxy) {
-      targetUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rawUrl);
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
     }
 
-    const frame = document.getElementById('webFrame');
-    frame.src = targetUrl;
+    let finalEmbedUrl = url;
 
-    saveToHistory(rawUrl);
+    // YouTube-Erkennung und Auto-Embed
+    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))([\w-]{11})/);
+    if (ytMatch && ytMatch[1]) {
+      finalEmbedUrl = `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`;
+    }
+
+    // Twitch-Erkennung und Auto-Embed (Kanal oder Stream)
+    const twitchMatch = url.match(/twitch\.tv\/([a-zA-Z0-9_]+)/);
+    if (twitchMatch && twitchMatch[1]) {
+      const channel = twitchMatch[1];
+      const parentDomain = window.location.hostname || 'localhost';
+      finalEmbedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${parentDomain}`;
+    }
+
+    document.getElementById('webFrame').src = finalEmbedUrl;
+    saveToHistory(url);
   }
 
-  function reloadFrame() {
-    const frame = document.getElementById('webFrame');
-    if (frame.src && frame.src !== 'about:blank') {
-      frame.src = frame.src;
-    }
-  }
-
-  /* Funktion für echten Vollbildmodus */
   function toggleFullscreen() {
     const container = document.getElementById('frameContainer');
-
-    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-      if (container.requestFullscreen) {
-        container.requestFullscreen();
-      } else if (container.webkitRequestFullscreen) { /* Safari */
-        container.webkitRequestFullscreen();
-      } else if (container.msRequestFullscreen) { /* IE11 */
-        container.msRequestFullscreen();
-      }
+    if (!document.fullscreenElement) {
+      if (container.requestFullscreen) container.requestFullscreen();
+      else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
     } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
+      if (document.exitFullscreen) document.exitFullscreen();
     }
   }
 
-  /* Verlauf-Steuerung */
   function saveToHistory(url) {
-    let history = JSON.parse(localStorage.getItem('webViewerHistorySimple')) || [];
-    history = history.filter(item => item !== url); // Duplikate entfernen
+    let history = JSON.parse(localStorage.getItem('webViewerHistory')) || [];
+    history = history.filter(item => item !== url);
     history.unshift(url);
-    if (history.length > 8) history.pop(); // Max. 8 Einträge
-
-    localStorage.setItem('webViewerHistorySimple', JSON.stringify(history));
+    if (history.length > 8) history.pop();
+    localStorage.setItem('webViewerHistory', JSON.stringify(history));
     updateHistoryUI();
   }
 
   function clearHistory() {
-    localStorage.removeItem('webViewerHistorySimple');
+    localStorage.removeItem('webViewerHistory');
     updateHistoryUI();
   }
 
   function updateHistoryUI() {
     const historyList = document.getElementById('historyList');
-    const history = JSON.parse(localStorage.getItem('webViewerHistorySimple')) || [];
-
+    const history = JSON.parse(localStorage.getItem('webViewerHistory')) || [];
     if (history.length === 0) {
-      historyList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; grid-column: 1 / -1;">Noch keine Seiten aufgerufen.</p>';
+      historyList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Noch keine Seiten aufgerufen.</p>';
       return;
     }
-
     historyList.innerHTML = '';
     history.forEach(url => {
       const item = document.createElement('div');
       item.className = 'history-item';
       item.innerText = url.replace(/^https?:\/\//i, '');
-      item.title = url;
       item.onclick = () => {
         document.getElementById('urlInput').value = url;
-        loadSite(false);
+        loadSite();
       };
       historyList.appendChild(item);
     });
