@@ -3,34 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Web & Media Viewer</title>
+  <title>Universal Web Viewer</title>
   <style>
     :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
       --primary: #3b82f6;
-      --primary-glow: rgba(59, 130, 246, 0.4);
-      --secondary: #8b5cf6;
-      --bg-color: #0b0f19;
-      --surface: rgba(20, 29, 47, 0.75);
-      --surface-border: rgba(255, 255, 255, 0.12);
-      --text-main: #f8fafc;
+      --primary-hover: #2563eb;
+      --text: #f8fafc;
       --text-muted: #94a3b8;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background-color: var(--bg-color);
-      background-image: 
-        radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.25) 0%, transparent 45%),
-        radial-gradient(circle at 90% 90%, rgba(139, 92, 246, 0.25) 0%, transparent 45%);
-      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 20px;
-      background-attachment: fixed;
+      padding: 24px 16px;
     }
 
     .container {
@@ -38,151 +37,127 @@
       max-width: 1200px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
-    }
-
-    .glass-panel {
-      background: var(--surface);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--surface-border);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      gap: 16px;
     }
 
     /* Header */
     .header {
-      position: relative;
-      text-align: center;
-      padding: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .header-info h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .header-info p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
     }
 
     .btn-home {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-main);
-      border: 1px solid var(--surface-border);
-      padding: 10px 18px;
-      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 8px;
       text-decoration: none;
-      font-weight: 600;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s ease;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background 0.2s;
     }
-
     .btn-home:hover {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: var(--primary);
-      transform: translateY(-50%) scale(1.03);
-    }
-
-    h1 {
-      font-size: 2.4rem;
-      background: linear-gradient(135deg, #60a5fa, #c084fc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
+      background: rgba(255, 255, 255, 0.1);
     }
 
     /* Navigation Bar */
-    .nav-bar {
+    .nav-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
       display: flex;
+      flex-direction: column;
       gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
-    .url-input-container {
+    input[type="text"] {
       flex: 1;
-      position: relative;
-      display: flex;
-      align-items: center;
-      min-width: 280px;
-    }
-
-    input {
-      width: 100%;
-      padding: 16px 20px;
-      padding-right: 120px;
-      border-radius: 14px;
-      border: 1px solid var(--surface-border);
-      background: rgba(0, 0, 0, 0.4);
-      color: #fff;
-      font-size: 15px;
-      transition: all 0.3s;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 20px var(--primary-glow);
-    }
-
-    .status-tag {
-      position: absolute;
-      right: 12px;
-      font-size: 11px;
-      padding: 4px 10px;
+      min-width: 260px;
+      background: #090d16;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      font-weight: 700;
-      text-transform: uppercase;
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-muted);
-      pointer-events: none;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
     }
-
-    .status-tag.yt-mode { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid #ef4444; }
-    .status-tag.web-mode { background: rgba(59, 130, 246, 0.25); color: #93c5fd; border: 1px solid #3b82f6; }
-
-    .btn-group {
-      display: flex;
-      gap: 8px;
+    input[type="text"]:focus {
+      border-color: var(--primary);
     }
 
     button {
-      padding: 15px 22px;
-      border-radius: 14px;
+      background: var(--primary);
+      color: #fff;
       border: none;
-      font-weight: 600;
-      font-size: 15px;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-      color: white;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: var(--primary-hover);
     }
 
-    .btn-load { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
-    .btn-load:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--primary-glow); }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
 
-    .btn-action { background: rgba(255, 255, 255, 0.06); border: 1px solid var(--surface-border); }
-    .btn-action:hover { background: rgba(255, 255, 255, 0.15); }
-
-    /* Frame Wrapper */
-    .frame-container {
+    /* Viewer Frame */
+    .frame-wrapper {
       position: relative;
       width: 100%;
-      height: 700px;
+      height: 680px;
       background: #000;
-      border-radius: 16px;
+      border-radius: 12px;
       overflow: hidden;
-      border: 1px solid var(--surface-border);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      border: 1px solid var(--border);
     }
 
-    .frame-container:fullscreen {
-      border-radius: 0;
-      height: 100vh;
-      width: 100vw;
+    /* CSS Fix für Vollbildmodus */
+    .frame-wrapper:fullscreen,
+    .frame-wrapper:-webkit-full-screen,
+    .frame-wrapper:-moz-full-screen {
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+      border: none !important;
     }
 
     iframe {
@@ -192,53 +167,49 @@
       background: #ffffff;
     }
 
-    /* History Grid */
+    /* Verlauf Section */
+    .history-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
     .history-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
-    .history-grid {
+    .history-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .history-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 10px;
     }
 
-    .history-card {
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid var(--surface-border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .history-item {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
       cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .history-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--primary);
-      background: rgba(59, 130, 246, 0.12);
-    }
-
-    .card-title {
-      font-size: 13px;
-      color: #e2e8f0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      flex: 1;
+      transition: all 0.2s;
     }
-
-    @media (max-width: 768px) {
-      .header { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-      .btn-home { position: static; transform: none; }
-      .url-input-container { width: 100%; }
-      input { padding-right: 20px; }
-      .status-tag { display: none; }
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      border-color: var(--primary);
     }
   </style>
 </head>
@@ -246,96 +217,70 @@
 
 <div class="container">
   <!-- Header -->
-  <div class="glass-panel header">
+  <header class="header">
+    <div class="header-info">
+      <h1>Web Viewer</h1>
+      <p>Webseiten eingeben, betrachten und im Vollbild nutzen</p>
+    </div>
     <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
-    <h1>Smart Web & Media Viewer</h1>
-    <p style="color: var(--text-muted);">Webseiten & YouTube-Videos direkt aufrufen und im Vollbild nutzen</p>
-  </div>
+  </header>
 
-  <!-- Viewer Controls -->
-  <div class="glass-panel">
-    <div class="nav-bar">
-      <div class="url-input-container">
-        <input type="text" id="urlInput" placeholder="Adresse oder YouTube-Link eingeben..." onkeypress="handleKey(event)">
-        <span id="statusTag" class="status-tag">Bereit</span>
-      </div>
-
-      <div class="btn-group">
-        <button class="btn-load" onclick="loadSite()">🌐 Öffnen</button>
-        <button class="btn-action" title="Neu laden" onclick="reloadFrame()">🔄</button>
-        <button class="btn-action" title="In neuem Tab öffnen" onclick="openExternal()">↗️ Ext.</button>
-        <button class="btn-action" title="Vollbild" onclick="toggleFullscreen()">⛶ Vollbild</button>
-      </div>
+  <!-- Viewer Controls & Frame -->
+  <main class="nav-card">
+    <div class="search-bar">
+      <input type="text" id="urlInput" placeholder="Webadresse eingeben (z. B. wikipedia.org)..." onkeypress="handleKeyPress(event)">
+      <button onclick="loadSite(false)">Öffnen</button>
+      <button class="btn-secondary" title="Im Proxy-Modus öffnen (falls blockiert)" onclick="loadSite(true)">🔓 Proxy-Modus</button>
+      <button class="btn-secondary" onclick="reloadFrame()">🔄 Neu laden</button>
+      <button class="btn-secondary" onclick="toggleFullscreen()">⛶ Vollbild</button>
     </div>
 
-    <!-- Frame -->
-    <div class="frame-container" id="frameContainer">
-      <iframe id="webFrame" src="about:blank" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+    <div class="frame-wrapper" id="frameContainer">
+      <iframe id="webFrame" src="about:blank" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true"></iframe>
     </div>
-  </div>
+  </main>
 
   <!-- Verlauf -->
-  <div class="glass-panel">
+  <section class="history-card">
     <div class="history-header">
-      <h3>🕒 Zuletzt besucht</h3>
-      <button class="btn-action" style="padding: 8px 14px; font-size: 13px;" onclick="clearHistory()">🗑️ Verlauf leeren</button>
+      <h2>Zuletzt besucht</h2>
+      <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="clearHistory()">Verlauf leeren</button>
     </div>
-    <div class="history-grid" id="historyGrid"></div>
-  </div>
+    <div class="history-list" id="historyList"></div>
+  </section>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', updateHistoryUI);
 
-  function handleKey(event) {
-    if (event.key === 'Enter') loadSite();
+  function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+      loadSite(false);
+    }
   }
 
-  function processUrl(rawUrl) {
-    let url = rawUrl.trim();
-    if (!/^https?:\/\//i.test(url)) {
-      url = 'https://' + url;
-    }
-
-    // Erkennung von YouTube Links (Normal, Shorts, Embeds)
-    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))([\w-]{11})/);
-
-    if (ytMatch && ytMatch[1]) {
-      return {
-        type: 'youtube',
-        targetUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`,
-        displayUrl: url
-      };
-    }
-
-    return {
-      type: 'web',
-      targetUrl: url,
-      displayUrl: url
-    };
-  }
-
-  function loadSite(urlOverride = null) {
+  function loadSite(useProxy = false) {
     const input = document.getElementById('urlInput');
-    const rawUrl = urlOverride || input.value.trim();
+    let rawUrl = input.value.trim();
     if (!rawUrl) return;
 
-    const parsed = processUrl(rawUrl);
-    input.value = parsed.displayUrl;
+    // Automatisches Vervollständigen von https://
+    if (!/^https?:\/\//i.test(rawUrl)) {
+      rawUrl = 'https://' + rawUrl;
+    }
+    input.value = rawUrl;
 
-    const frame = document.getElementById('webFrame');
-    const tag = document.getElementById('statusTag');
+    let targetUrl = rawUrl;
 
-    if (parsed.type === 'youtube') {
-      tag.innerText = "YouTube Mode";
-      tag.className = "status-tag yt-mode";
-    } else {
-      tag.innerText = "Web Mode";
-      tag.className = "status-tag web-mode";
+    // Falls Proxy-Modus gewählt wurde (für blockierte Seiten wie YouTube/Google)
+    if (useProxy) {
+      targetUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(rawUrl);
     }
 
-    frame.src = parsed.targetUrl;
-    saveToHistory(parsed.displayUrl, parsed.type);
+    const frame = document.getElementById('webFrame');
+    frame.src = targetUrl;
+
+    saveToHistory(rawUrl);
   }
 
   function reloadFrame() {
@@ -345,63 +290,65 @@
     }
   }
 
-  function openExternal() {
-    const input = document.getElementById('urlInput').value.trim();
-    if (input) {
-      const parsed = processUrl(input);
-      window.open(parsed.displayUrl, '_blank');
-    }
-  }
-
+  /* Funktion für echten Vollbildmodus */
   function toggleFullscreen() {
     const container = document.getElementById('frameContainer');
-    if (!document.fullscreenElement) {
-      if (container.requestFullscreen) container.requestFullscreen();
-      else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+      } else if (container.webkitRequestFullscreen) { /* Safari */
+        container.webkitRequestFullscreen();
+      } else if (container.msRequestFullscreen) { /* IE11 */
+        container.msRequestFullscreen();
+      }
     } else {
-      if (document.exitFullscreen) document.exitFullscreen();
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
     }
   }
 
-  function saveToHistory(url, type) {
-    let history = JSON.parse(localStorage.getItem('smartViewerHistory')) || [];
-    history = history.filter(item => item.url !== url);
-    
-    history.unshift({ url, type });
-    if (history.length > 8) history.pop();
-    
-    localStorage.setItem('smartViewerHistory', JSON.stringify(history));
+  /* Verlauf-Steuerung */
+  function saveToHistory(url) {
+    let history = JSON.parse(localStorage.getItem('webViewerHistorySimple')) || [];
+    history = history.filter(item => item !== url); // Duplikate entfernen
+    history.unshift(url);
+    if (history.length > 8) history.pop(); // Max. 8 Einträge
+
+    localStorage.setItem('webViewerHistorySimple', JSON.stringify(history));
     updateHistoryUI();
   }
 
   function clearHistory() {
-    localStorage.removeItem('smartViewerHistory');
+    localStorage.removeItem('webViewerHistorySimple');
     updateHistoryUI();
   }
 
   function updateHistoryUI() {
-    const historyGrid = document.getElementById('historyGrid');
-    const history = JSON.parse(localStorage.getItem('smartViewerHistory')) || [];
-    
+    const historyList = document.getElementById('historyList');
+    const history = JSON.parse(localStorage.getItem('webViewerHistorySimple')) || [];
+
     if (history.length === 0) {
-      historyGrid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1 / -1;">Noch keine Seiten aufgerufen.</p>';
+      historyList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; grid-column: 1 / -1;">Noch keine Seiten aufgerufen.</p>';
       return;
     }
 
-    historyGrid.innerHTML = '';
-    history.forEach(item => {
-      const card = document.createElement('div');
-      card.className = 'history-card';
-      card.onclick = () => loadSite(item.url);
-      
-      const domain = item.url.replace(/^https?:\/\//i, '').split('/')[0];
-      const icon = item.type === 'youtube' ? '▶️' : '🌐';
-
-      card.innerHTML = `
-        <span>${icon}</span>
-        <span class="card-title" title="${item.url}">${domain}</span>
-      `;
-      historyGrid.appendChild(card);
+    historyList.innerHTML = '';
+    history.forEach(url => {
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      item.innerText = url.replace(/^https?:\/\//i, '');
+      item.title = url;
+      item.onclick = () => {
+        document.getElementById('urlInput').value = url;
+        loadSite(false);
+      };
+      historyList.appendChild(item);
     });
   }
 </script>
