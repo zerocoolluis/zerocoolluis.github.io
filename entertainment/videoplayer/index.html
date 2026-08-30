@@ -1,662 +1,436 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Universal Media Player</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Media Player</title>
   <style>
     :root {
-      --bg: #0b1120;
-      --card: #1a2332;
-      --border: #2a3a4e;
-      --primary: #4f8cf7;
-      --primary-hover: #6a9ff9;
-      --text: #f0f4fa;
-      --text-muted: #8ba0b8;
-      --radius: 14px;
-      --shadow: 0 8px 24px rgba(0,0,0,0.6);
+      --primary: #8b5cf6;
+      --primary-glow: rgba(139, 92, 246, 0.5);
+      --secondary: #ec4899;
+      --bg-color: #0f172a;
+      --surface: rgba(30, 41, 59, 0.7);
+      --surface-border: rgba(255, 255, 255, 0.1);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(139, 92, 246, 0.2) 0%, transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(236, 72, 153, 0.2) 0%, transparent 40%);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
-      justify-content: center;
-      padding: 20px;
-      line-height: 1.5;
-    }
-    .container {
-      max-width: 1100px;
-      width: 100%;
-      display: flex;
       flex-direction: column;
-      gap: 18px;
-    }
-    .header {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 24px;
-      display: flex;
-      flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      padding: 40px 20px;
+      transition: background-color 0.5s ease;
+      background-attachment: fixed;
     }
-    .header-title h1 { font-size:1.5rem; font-weight:600; }
-    .header-title p { font-size:0.85rem; color:var(--text-muted); }
-    .btn-home {
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 0.875rem;
-      transition: background 0.2s;
-    }
-    .btn-home:hover { background: rgba(255,255,255,0.12); }
 
-    .player-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: var(--shadow);
+    /* Kino-Modus */
+    body.cinema-mode {
+      background: #000;
+    }
+    body.cinema-mode .header, 
+    body.cinema-mode .history-section {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      z-index: 10;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 24px;
     }
-    .controls-bar {
+
+    /* Glass Panels */
+    .glass-panel {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    /* Header */
+    .header { 
+      position: relative;
+      text-align: center; 
+      padding: 24px; 
+    }
+    
+    /* Home Button */
+    .btn-home {
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--surface-border);
+      padding: 10px 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
       display: flex;
-      gap: 10px;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-home:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: var(--primary);
+      transform: translateY(-50%) scale(1.03);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      background: linear-gradient(135deg, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+    }
+
+    /* Controls */
+    .controls-wrapper {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
       flex-wrap: wrap;
     }
-    .controls-bar input[type="text"] {
-      flex: 1 1 200px;
-      background: #0d1522;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px 16px;
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .controls-bar input[type="text"]:focus { border-color: var(--primary); }
-    .controls-bar button {
-      background: var(--primary);
+    
+    input {
+      flex: 1;
+      min-width: 280px;
+      padding: 18px 24px;
+      border-radius: 14px;
+      border: 1px solid var(--surface-border);
+      background: rgba(0, 0, 0, 0.3);
       color: #fff;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 22px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-      white-space: nowrap;
+      font-size: 16px;
+      transition: all 0.3s;
     }
-    .controls-bar button:hover { background: var(--primary-hover); }
-    .controls-bar button:active { transform: scale(0.96); }
-    .btn-secondary {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid var(--border);
-      color: var(--text);
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 20px var(--primary-glow);
     }
-    .btn-secondary:hover { background: rgba(255,255,255,0.15); }
 
-    .video-wrapper {
+    button {
+      padding: 18px 30px;
+      border-radius: 14px;
+      border: none;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-play {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
+    }
+    .btn-play:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 25px rgba(236, 72, 153, 0.4);
+    }
+
+    .btn-cinema {
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      border: 1px solid var(--surface-border);
+    }
+    .btn-cinema:hover { background: rgba(255, 255, 255, 0.15); }
+
+    /* Player Area */
+    .player-wrapper {
       position: relative;
       width: 100%;
-      aspect-ratio: 16/9;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
       background: #000;
-      border-radius: var(--radius);
+      border-radius: 16px;
       overflow: hidden;
-      border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.05);
     }
-    .video-wrapper video,
-    .video-wrapper iframe {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border: none;
-      outline: none;
-    }
-
-    .loading-overlay {
+    .player-wrapper::before {
+      content: "🍿 Bereit für den Film";
       position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(255,255,255,0.2);
       font-size: 1.2rem;
-      backdrop-filter: blur(2px);
-      z-index: 5;
-      border-radius: var(--radius);
-      flex-direction: column;
-      gap: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      z-index: 1;
     }
-    .loading-overlay.active { display: flex; }
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 4px solid rgba(255,255,255,0.2);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+    video, iframe {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      border: none; z-index: 2; background: #000;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none !important; }
 
-    .history-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px 20px;
-      box-shadow: var(--shadow);
-    }
+    /* History Rubrik */
     .history-header {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 14px;
+      align-items: center;
+      margin-bottom: 20px;
     }
-    .history-header h2 { font-size:1.2rem; font-weight:500; }
+    .history-header h3 {
+      font-size: 1.5rem;
+      color: var(--text-main);
+    }
+    .btn-clear {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .btn-clear:hover { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border-color: rgba(239, 68, 68, 0.5); }
+
     .history-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
     }
-    .history-item {
-      background: rgba(0,0,0,0.3);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px 16px;
+
+    .video-card {
+      background: rgba(0,0,0,0.4);
+      border-radius: 12px;
+      overflow: hidden;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      border: 1px solid var(--surface-border);
+      transition: all 0.3s ease;
+      position: relative;
     }
-    .history-item:hover {
+    .video-card:hover {
+      transform: translateY(-5px);
       border-color: var(--primary);
-      background: rgba(79,140,247,0.08);
+      box-shadow: 0 10px 20px var(--primary-glow);
     }
-    .history-url {
-      font-size:0.9rem;
-      font-weight:500;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .history-meta {
+    .thumbnail {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #1e293b;
       display: flex;
-      justify-content: space-between;
-      font-size:0.75rem;
-      color:var(--text-muted);
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background-size: cover;
+      background-position: center;
     }
-    .history-progress {
-      height:4px;
-      background:var(--border);
-      border-radius:4px;
-      margin-top:6px;
-      overflow:hidden;
+    .thumbnail.mp4-thumb {
+      background: linear-gradient(45deg, #1e293b, #334155);
+      font-size: 2rem;
     }
-    .history-progress-bar {
-      height:100%;
-      background:var(--primary);
-      width:0%;
-      border-radius:4px;
-      transition:width 0.3s;
+    .card-info {
+      padding: 12px;
     }
-    .empty-history { color:var(--text-muted); font-size:0.9rem; padding:8px 0; }
+    .card-url {
+      font-size: 13px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 8px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge.yt { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid #ef4444; }
+    .badge.mp4 { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid #3b82f6; }
 
-    .player-status {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      font-size:0.85rem;
-      color:var(--text-muted);
-      padding:0 4px;
-    }
-    .status-error { color:#f87171; }
-
-    @media (max-width:640px) {
-      body { padding:12px; }
-      .header { flex-direction:column; align-items:stretch; }
-      .controls-bar input[type="text"] { flex:1 1 100%; }
-      .controls-bar button { flex:1 1 auto; }
+    @media (max-width: 640px) {
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+      .btn-home {
+        position: static;
+        transform: none;
+      }
+      .btn-home:hover {
+        transform: scale(1.03);
+      }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-
-  <header class="header">
-    <div class="header-title">
-      <h1>🎬 Universal Player</h1>
-      <p>YouTube, Vimeo, Dailymotion oder direkte Video-URLs</p>
-    </div>
+  <!-- Header mit Home Button -->
+  <div class="glass-panel header">
     <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
-  </header>
+    <h1>Ultimate Media Player</h1>
+    <p style="color: var(--text-muted);">Dein High-End Player mit intelligenter Mediathek</p>
+  </div>
 
-  <section class="player-card">
-    <div class="controls-bar">
-      <input type="text" id="videoUrlInput" placeholder="https://youtube.com/watch?v=... oder .mp4-Link" spellcheck="false" />
-      <button id="loadBtn">▶ Abspielen</button>
-      <button id="clearBtn" class="btn-secondary" title="Eingabefeld leeren">✕</button>
+  <!-- Player Sektion -->
+  <div class="glass-panel">
+    <div class="controls-wrapper">
+      <input type="text" id="videoUrl" placeholder="Füge hier eine YouTube- oder Video-URL ein..." onkeypress="handleEnter(event)">
+      <button class="btn-play" onclick="processAndPlay()">▶ Abspielen</button>
+      <button class="btn-cinema" onclick="toggleCinema()" id="cinemaBtn">🎥 Kino-Modus</button>
     </div>
 
-    <div class="video-wrapper" id="videoWrapper">
-      <video id="mainVideo" controls preload="metadata" playsinline style="display:none;"></video>
-      <div class="loading-overlay" id="loadingOverlay">
-        <div class="spinner"></div>
-        <span>Lade …</span>
-      </div>
+    <div class="player-wrapper" id="playerContainer">
+      <video id="htmlPlayer" controls class="hidden"></video>
+      <iframe id="ytPlayer" class="hidden" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
+  </div>
 
-    <div class="player-status">
-      <span id="videoStatus">⏸️ Bereit</span>
-      <span id="timeDisplay">–</span>
-    </div>
-  </section>
-
-  <section class="history-card">
+  <!-- Mediathek Sektion -->
+  <div class="glass-panel history-section">
     <div class="history-header">
-      <h2>📜 Zuletzt gesehen</h2>
-      <button id="clearHistoryBtn" class="btn-secondary" style="padding:6px 14px; font-size:0.8rem;">Verlauf leeren</button>
+      <h3>📚 Zuletzt angesehen</h3>
+      <button class="btn-clear" onclick="clearHistory()">🗑️ Verlauf leeren</button>
     </div>
-    <div class="history-grid" id="historyGrid"></div>
-  </section>
-
+    <div class="history-grid" id="historyGrid">
+      <!-- Wird per JavaScript generiert -->
+    </div>
+  </div>
 </div>
 
 <script>
-  (() => {
-    'use strict';
+  let isCinemaMode = false;
 
-    // ===== DOM =====
-    const wrapper = document.getElementById('videoWrapper');
-    const videoEl = document.getElementById('mainVideo');
-    const input = document.getElementById('videoUrlInput');
-    const loadBtn = document.getElementById('loadBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-    const historyGrid = document.getElementById('historyGrid');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const videoStatus = document.getElementById('videoStatus');
-    const timeDisplay = document.getElementById('timeDisplay');
+  document.addEventListener('DOMContentLoaded', updateHistoryUI);
 
-    // ===== State =====
-    let currentUrl = '';
-    let currentPlatform = 'direct'; // 'direct', 'youtube', 'vimeo', 'dailymotion'
-    let saveInterval = null;
-    let startTimestamp = 0; // für Iframe-Zeitschätzung
-    let isIframe = false;
+  function handleEnter(e) {
+    if (e.key === 'Enter') processAndPlay();
+  }
 
-    const STORAGE_KEY = 'videoPlayerHistory';
-
-    // ===== Hilfsfunktionen =====
-    function formatTime(seconds) {
-      if (!seconds || isNaN(seconds) || seconds < 0) return '0:00';
-      const m = Math.floor(seconds / 60);
-      const s = Math.floor(seconds % 60);
-      return `${m}:${s.toString().padStart(2, '0')}`;
+  function toggleCinema() {
+    isCinemaMode = !isCinemaMode;
+    document.body.classList.toggle('cinema-mode', isCinemaMode);
+    document.getElementById('cinemaBtn').innerHTML = isCinemaMode ? '💡 Licht an' : '🎥 Kino-Modus';
+    if (isCinemaMode) {
+      document.getElementById('playerContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+  }
 
-    function getFileName(url) {
-      try {
-        let file = url.split('/').pop() || url;
-        file = file.split('?')[0];
-        return decodeURIComponent(file) || url;
-      } catch { return url; }
-    }
+  function processAndPlay(urlOverride = null) {
+    const inputField = document.getElementById('videoUrl');
+    let url = urlOverride || inputField.value.trim();
+    if (!url) return;
+    
+    if (urlOverride) inputField.value = url;
 
-    // ===== Plattform-Erkennung =====
-    function detectPlatform(url) {
-      if (/youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\//i.test(url)) return 'youtube';
-      if (/vimeo\.com\/\d+/i.test(url)) return 'vimeo';
-      if (/dailymotion\.com\/video\//i.test(url)) return 'dailymotion';
-      if (/\.(mp4|webm|mov|avi|mkv|flv|m4v|mpg|mpeg)(\?.*)?$/i.test(url)) return 'direct';
-      return 'direct'; // Fallback: versuchen als direktes Video
-    }
+    const htmlPlayer = document.getElementById('htmlPlayer');
+    const ytPlayer = document.getElementById('ytPlayer');
 
-    function extractYoutubeId(url) {
-      const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&?]+)/i);
-      return m ? m[1] : null;
-    }
-    function extractVimeoId(url) {
-      const m = url.match(/vimeo\.com\/(\d+)/i);
-      return m ? m[1] : null;
-    }
-    function extractDailymotionId(url) {
-      const m = url.match(/dailymotion\.com\/video\/([^_?]+)/i);
-      return m ? m[1] : null;
-    }
+    htmlPlayer.classList.add('hidden');
+    ytPlayer.classList.add('hidden');
+    htmlPlayer.pause();
+    ytPlayer.src = "";
 
-    // ===== History =====
-    function getHistory() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
-    }
-    function saveHistory(history) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-    }
+    const ytMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))([\w-]{11})/);
+    let type = 'mp4';
+    let ytId = null;
 
-    function saveProgress(url, time) {
-      if (!url || time < 0) return;
-      const history = getHistory();
-      history[url] = { url, time: Math.max(0, time), timestamp: Date.now() };
-      saveHistory(history);
-      renderHistory();
-    }
-
-    function clearHistory() {
-      if (confirm('Verlauf löschen?')) {
-        localStorage.removeItem(STORAGE_KEY);
-        renderHistory();
-      }
-    }
-
-    function renderHistory() {
-      const history = getHistory();
-      const entries = Object.values(history).sort((a, b) => b.timestamp - a.timestamp);
-      if (entries.length === 0) {
-        historyGrid.innerHTML = `<div class="empty-history">Noch keine Videos abgespielt.</div>`;
-        return;
-      }
-      historyGrid.innerHTML = '';
-      for (const entry of entries) {
-        const item = document.createElement('div');
-        item.className = 'history-item';
-        const fileName = getFileName(entry.url);
-        const progressPercent = entry.time > 0 ? Math.min(100, (entry.time / 60) * 5) : 0;
-        item.innerHTML = `
-          <div class="history-url" title="${entry.url}">${fileName}</div>
-          <div class="history-meta">
-            <span>⏱️ ${formatTime(entry.time)}</span>
-            <span>${new Date(entry.timestamp).toLocaleDateString('de-DE')}</span>
-          </div>
-          <div class="history-progress"><div class="history-progress-bar" style="width:${progressPercent}%;"></div></div>
-        `;
-        item.addEventListener('click', () => {
-          input.value = entry.url;
-          loadVideo(entry.url, entry.time);
-        });
-        historyGrid.appendChild(item);
-      }
-    }
-
-    // ===== Status & UI =====
-    function setStatus(text, isError = false) {
-      videoStatus.textContent = text;
-      videoStatus.className = isError ? 'status-error' : '';
-    }
-
-    function showLoading(show) {
-      loadingOverlay.classList.toggle('active', show);
-      // Automatisch nach 3 Sekunden ausblenden, falls es noch aktiv ist
-      if (show) {
-        setTimeout(() => {
-          if (loadingOverlay.classList.contains('active')) {
-            loadingOverlay.classList.remove('active');
-          }
-        }, 3000);
-      }
-    }
-
-    function updateTimeDisplay(current, duration) {
-      if (duration && duration > 0) {
-        timeDisplay.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
-      } else if (current >= 0) {
-        timeDisplay.textContent = formatTime(current);
-      } else {
-        timeDisplay.textContent = '–';
-      }
-    }
-
-    // ===== Player zurücksetzen =====
-    function resetPlayer() {
-      // Video ausblenden, stoppen
-      videoEl.style.display = 'none';
-      videoEl.pause();
-      videoEl.src = '';
-      videoEl.load();
-      videoEl.onloadedmetadata = null;
-      videoEl.onerror = null;
-      videoEl.ontimeupdate = null;
-      videoEl.onplay = null;
-      videoEl.onpause = null;
-      videoEl.onended = null;
-
-      // Iframes entfernen
-      const iframes = wrapper.querySelectorAll('iframe');
-      iframes.forEach(ifr => ifr.remove());
-
-      clearInterval(saveInterval);
-      saveInterval = null;
-      isIframe = false;
-      currentPlatform = 'direct';
-      showLoading(false);
-      setStatus('⏸️ Bereit');
-      timeDisplay.textContent = '–';
-    }
-
-    // ===== Direktes Video (HTML5) =====
-    function loadDirectVideo(url, startTime = 0) {
-      resetPlayer();
-      currentPlatform = 'direct';
-      currentUrl = url;
-      videoEl.style.display = 'block';
-      videoEl.src = url;
-      videoEl.load();
-      showLoading(true);
-      setStatus('⏳ Lade …');
-
-      videoEl.onloadedmetadata = () => {
-        showLoading(false);
-        if (startTime > 0 && startTime < videoEl.duration) {
-          videoEl.currentTime = startTime;
-        }
-        videoEl.play().catch(() => {});
-        setStatus('▶️ Wiedergabe');
-        saveProgress(url, videoEl.currentTime);
-        updateTimeDisplay(videoEl.currentTime, videoEl.duration);
-      };
-
-      videoEl.onerror = () => {
-        showLoading(false);
-        setStatus('❌ Fehler beim Laden', true);
-        let msg = 'Unbekannter Fehler';
-        if (videoEl.error) {
-          switch (videoEl.error.code) {
-            case 1: msg = 'Abgebrochen'; break;
-            case 2: msg = 'Netzwerkfehler'; break;
-            case 3: msg = 'Decoder-Fehler'; break;
-            case 4: msg = 'Format nicht unterstützt'; break;
-            default: msg = videoEl.error.message || msg;
-          }
-        }
-        alert(`Video konnte nicht geladen werden:\n${msg}\n\nBitte prüfe die URL.`);
-      };
-
-      videoEl.ontimeupdate = () => {
-        if (currentUrl && videoEl.currentTime > 0) {
-          saveProgress(currentUrl, videoEl.currentTime);
-        }
-        updateTimeDisplay(videoEl.currentTime, videoEl.duration);
-      };
-
-      videoEl.onplay = () => setStatus('▶️ Wiedergabe');
-      videoEl.onpause = () => setStatus('⏸️ Pause');
-      videoEl.onended = () => {
-        setStatus('⏹️ Ende');
-        if (currentUrl) saveProgress(currentUrl, videoEl.duration);
-      };
-    }
-
-    // ===== Iframe-basierte Player (YouTube, Vimeo, Dailymotion) =====
-    function loadIframeVideo(url, startTime = 0, platform) {
-      resetPlayer();
-      currentPlatform = platform;
-      currentUrl = url;
-      isIframe = true;
-
-      let embedUrl = '';
-      if (platform === 'youtube') {
-        const id = extractYoutubeId(url);
-        if (!id) { setStatus('❌ Ungültige YouTube-URL', true); alert('YouTube-ID nicht erkannt.'); return; }
-        embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1&controls=1&rel=0&start=${Math.floor(startTime)}`;
-      } else if (platform === 'vimeo') {
-        const id = extractVimeoId(url);
-        if (!id) { setStatus('❌ Ungültige Vimeo-URL', true); alert('Vimeo-ID nicht erkannt.'); return; }
-        embedUrl = `https://player.vimeo.com/video/${id}?autoplay=1&loop=0&portrait=0&title=0&byline=0`;
-      } else if (platform === 'dailymotion') {
-        const id = extractDailymotionId(url);
-        if (!id) { setStatus('❌ Ungültige Dailymotion-URL', true); alert('Dailymotion-ID nicht erkannt.'); return; }
-        embedUrl = `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
-      } else {
-        setStatus('❌ Unbekannte Plattform', true);
-        return;
-      }
-
-      showLoading(true);
-      setStatus(`⏳ ${platform} lädt …`);
-
-      const iframe = document.createElement('iframe');
-      iframe.src = embedUrl;
-      iframe.allow = 'autoplay; fullscreen; encrypted-media';
-      iframe.allowFullscreen = true;
-      iframe.style.display = 'block';
-      wrapper.prepend(iframe);
-
-      // Fortschritt speichern (geschätzt)
-      let elapsed = startTime || 0;
-      startTimestamp = Date.now() - (elapsed * 1000);
-
-      iframe.onload = () => {
-        showLoading(false);
-        setStatus(`▶️ ${platform} läuft`);
-        // Intervall starten
-        if (saveInterval) clearInterval(saveInterval);
-        saveInterval = setInterval(() => {
-          const now = Date.now();
-          const seconds = (now - startTimestamp) / 1000;
-          if (seconds > 0) {
-            saveProgress(currentUrl, seconds);
-            updateTimeDisplay(seconds, null);
-          }
-        }, 2000);
-        saveProgress(currentUrl, startTime || 0);
-      };
-
-      iframe.onerror = () => {
-        showLoading(false);
-        setStatus(`❌ ${platform} fehlgeschlagen`, true);
-        alert(`Fehler beim Laden von ${platform}. Bitte prüfe die URL.`);
-      };
-    }
-
-    // ===== Haupt-Ladefunktion =====
-    function loadVideo(url, startTime = 0) {
-      if (!url) return;
-      const platform = detectPlatform(url);
-      currentUrl = url;
-
-      // Reset, dann entsprechend laden
-      resetPlayer();
-
-      switch (platform) {
-        case 'youtube':
-          loadIframeVideo(url, startTime, 'youtube');
-          break;
-        case 'vimeo':
-          loadIframeVideo(url, startTime, 'vimeo');
-          break;
-        case 'dailymotion':
-          loadIframeVideo(url, startTime, 'dailymotion');
-          break;
-        default:
-          loadDirectVideo(url, startTime);
-      }
-    }
-
-    // ===== Event-Listener =====
-    loadBtn.addEventListener('click', () => {
-      const url = input.value.trim();
-      if (url) loadVideo(url);
-    });
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        loadBtn.click();
-      }
-    });
-
-    clearBtn.addEventListener('click', () => {
-      input.value = '';
-      input.focus();
-    });
-
-    clearHistoryBtn.addEventListener('click', clearHistory);
-
-    // ===== Tastaturkürzel (nur für direktes Video) =====
-    document.addEventListener('keydown', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      if (currentPlatform === 'direct') {
-        switch (e.key) {
-          case ' ':
-            e.preventDefault();
-            if (videoEl.paused) videoEl.play().catch(() => {});
-            else videoEl.pause();
-            break;
-          case 'ArrowRight':
-            e.preventDefault();
-            videoEl.currentTime = Math.min(videoEl.currentTime + 5, videoEl.duration || 0);
-            break;
-          case 'ArrowLeft':
-            e.preventDefault();
-            videoEl.currentTime = Math.max(videoEl.currentTime - 5, 0);
-            break;
-          case 'f':
-          case 'F':
-            e.preventDefault();
-            if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-            else videoEl.requestFullscreen().catch(() => {});
-            break;
-        }
-      }
-      // Bei Iframes können wir keine Tastaturkürzel unterstützen (außer Fullscreen)
-      if (isIframe && (e.key === 'f' || e.key === 'F')) {
-        e.preventDefault();
-        const iframe = wrapper.querySelector('iframe');
-        if (iframe) {
-          if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-          else iframe.requestFullscreen().catch(() => {});
-        }
-      }
-    });
-
-    // ===== Initialisierung =====
-    renderHistory();
-
-    // Beispiel-URL setzen, falls kein Verlauf
-    const history = getHistory();
-    if (Object.keys(history).length === 0) {
-      input.value = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+    if (ytMatch && ytMatch[1]) {
+      type = 'yt';
+      ytId = ytMatch[1];
+      ytPlayer.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
+      ytPlayer.classList.remove('hidden');
     } else {
-      const first = Object.values(history).sort((a, b) => b.timestamp - a.timestamp)[0];
-      if (first) input.value = first.url;
+      type = 'mp4';
+      htmlPlayer.src = url;
+      htmlPlayer.classList.remove('hidden');
+      htmlPlayer.play();
     }
 
-    console.log('✅ Stabiler Universal Player gestartet.');
-  })();
+    saveToHistory(url, type, ytId);
+  }
+
+  function saveToHistory(url, type, ytId) {
+    let history = JSON.parse(localStorage.getItem('ultimateVideoHistory')) || [];
+    history = history.filter(item => item.url !== url);
+    
+    history.unshift({ url, type, ytId });
+    if (history.length > 8) history.pop();
+    
+    localStorage.setItem('ultimateVideoHistory', JSON.stringify(history));
+    updateHistoryUI();
+  }
+
+  function clearHistory() {
+    localStorage.removeItem('ultimateVideoHistory');
+    updateHistoryUI();
+  }
+
+  function updateHistoryUI() {
+    const historyGrid = document.getElementById('historyGrid');
+    const history = JSON.parse(localStorage.getItem('ultimateVideoHistory')) || [];
+    
+    if (history.length === 0) {
+      historyGrid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1 / -1;">Deine Mediathek ist aktuell leer. Spiele ein Video ab, um es hier zu speichern.</p>';
+      return;
+    }
+
+    historyGrid.innerHTML = '';
+    history.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'video-card';
+      card.onclick = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        processAndPlay(item.url);
+      };
+      
+      let thumbHtml = '';
+      if (item.type === 'yt' && item.ytId) {
+        const thumbUrl = `https://img.youtube.com/vi/${item.ytId}/mqdefault.jpg`;
+        thumbHtml = `<div class="thumbnail" style="background-image: url('${thumbUrl}')"></div>`;
+      } else {
+        thumbHtml = `<div class="thumbnail mp4-thumb">🎬</div>`;
+      }
+
+      const badgeText = item.type === 'yt' ? 'YouTube' : 'Direkt-Video';
+      const badgeClass = item.type === 'yt' ? 'yt' : 'mp4';
+
+      card.innerHTML = `
+        ${thumbHtml}
+        <div class="card-info">
+          <div class="card-url" title="${item.url}">${item.url}</div>
+          <span class="badge ${badgeClass}">${badgeText}</span>
+        </div>
+      `;
+      historyGrid.appendChild(card);
+    });
+  }
 </script>
+
 </body>
 </html>
