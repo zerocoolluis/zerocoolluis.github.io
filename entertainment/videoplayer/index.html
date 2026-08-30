@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Media Player Pro</title>
+  <title>Universal Media Player</title>
   <style>
-    /* ===== CSS-Variablen (dunkles Theme) ===== */
+    /* ===== Dunkles Theme ===== */
     :root {
       --bg: #0b1120;
       --card: #1a2332;
@@ -18,11 +18,7 @@
       --shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -43,7 +39,6 @@
       gap: 18px;
     }
 
-    /* ===== Header ===== */
     .header {
       background: var(--card);
       border: 1px solid var(--border);
@@ -76,11 +71,8 @@
       font-size: 0.875rem;
       transition: background 0.2s;
     }
-    .btn-home:hover {
-      background: rgba(255, 255, 255, 0.12);
-    }
+    .btn-home:hover { background: rgba(255, 255, 255, 0.12); }
 
-    /* ===== Player-Card ===== */
     .player-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -123,21 +115,15 @@
       transition: background 0.2s, transform 0.1s;
       white-space: nowrap;
     }
-    .controls-bar button:hover {
-      background: var(--primary-hover);
-    }
-    .controls-bar button:active {
-      transform: scale(0.96);
-    }
+    .controls-bar button:hover { background: var(--primary-hover); }
+    .controls-bar button:active { transform: scale(0.96); }
 
     .btn-secondary {
       background: rgba(255, 255, 255, 0.07);
       border: 1px solid var(--border);
       color: var(--text);
     }
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
 
     /* Video-Container */
     .video-wrapper {
@@ -150,16 +136,15 @@
       border: 1px solid var(--border);
     }
 
-    video {
+    .video-wrapper video,
+    .video-wrapper iframe {
       display: block;
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      background: #000;
+      border: none;
       outline: none;
     }
 
-    /* Lade-Overlay */
     .loading-overlay {
       position: absolute;
       inset: 0;
@@ -173,9 +158,7 @@
       z-index: 5;
       border-radius: var(--radius);
     }
-    .loading-overlay.active {
-      display: flex;
-    }
+    .loading-overlay.active { display: flex; }
     .spinner {
       width: 40px;
       height: 40px;
@@ -185,11 +168,8 @@
       animation: spin 0.8s linear infinite;
       margin-right: 14px;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ===== History ===== */
     .history-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -205,10 +185,7 @@
       gap: 10px;
       margin-bottom: 14px;
     }
-    .history-header h2 {
-      font-size: 1.2rem;
-      font-weight: 500;
-    }
+    .history-header h2 { font-size: 1.2rem; font-weight: 500; }
 
     .history-grid {
       display: grid;
@@ -226,13 +203,11 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
-      position: relative;
     }
     .history-item:hover {
       border-color: var(--primary);
       background: rgba(79, 140, 247, 0.08);
     }
-
     .history-url {
       font-size: 0.9rem;
       font-weight: 500;
@@ -260,18 +235,24 @@
       border-radius: 4px;
       transition: width 0.3s;
     }
-
     .empty-history {
       color: var(--text-muted);
       font-size: 0.9rem;
       padding: 8px 0;
     }
 
-    /* ===== Responsive ===== */
+    .player-status {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
     @media (max-width: 640px) {
       body { padding: 12px; }
       .header { flex-direction: column; align-items: stretch; }
-      .header-title h1 { font-size: 1.3rem; }
       .controls-bar input[type="text"] { flex: 1 1 100%; }
       .controls-bar button { flex: 1 1 auto; }
     }
@@ -284,8 +265,8 @@
   <!-- Header -->
   <header class="header">
     <div class="header-title">
-      <h1>🎬 Media Player</h1>
-      <p>Direkte Video-URLs abspielen · Fortschritt wird gespeichert</p>
+      <h1>🎬 Universal Player</h1>
+      <p>YouTube, Vimeo, Dailymotion oder direkte Video-URLs</p>
     </div>
     <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
   </header>
@@ -293,21 +274,21 @@
   <!-- Player -->
   <section class="player-card">
     <div class="controls-bar">
-      <input type="text" id="videoUrlInput" placeholder="z. B. https://example.com/video.mp4" spellcheck="false" />
+      <input type="text" id="videoUrlInput" placeholder="https://youtube.com/watch?v=... oder .mp4-Link" spellcheck="false" />
       <button id="loadBtn">▶ Abspielen</button>
       <button id="clearBtn" class="btn-secondary" title="Eingabefeld leeren">✕</button>
     </div>
 
-    <div class="video-wrapper">
-      <video id="mainVideo" controls preload="metadata" playsinline></video>
+    <div class="video-wrapper" id="videoWrapper">
+      <!-- Hier wird entweder video oder iframe eingefügt -->
+      <video id="mainVideo" controls preload="metadata" playsinline style="display:none;"></video>
       <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
         <span>Lade Video …</span>
       </div>
     </div>
 
-    <!-- Zusätzliche Player-Informationen (optional) -->
-    <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted); padding: 0 4px;">
+    <div class="player-status">
       <span id="videoStatus">⏸️ Bereit</span>
       <span id="timeDisplay">–</span>
     </div>
@@ -317,21 +298,23 @@
   <section class="history-card">
     <div class="history-header">
       <h2>📜 Zuletzt gesehen</h2>
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button id="clearHistoryBtn" class="btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">Verlauf leeren</button>
-      </div>
+      <button id="clearHistoryBtn" class="btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">Verlauf leeren</button>
     </div>
     <div class="history-grid" id="historyGrid"></div>
   </section>
 
 </div>
 
+<!-- YouTube-Iframe-API (wird bei Bedarf geladen) -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
 <script>
   (() => {
     'use strict';
 
-    // ===== DOM-Referenzen =====
-    const video = document.getElementById('mainVideo');
+    // ===== DOM =====
+    const wrapper = document.getElementById('videoWrapper');
+    const videoEl = document.getElementById('mainVideo');
     const input = document.getElementById('videoUrlInput');
     const loadBtn = document.getElementById('loadBtn');
     const clearBtn = document.getElementById('clearBtn');
@@ -343,7 +326,11 @@
 
     // ===== State =====
     let currentUrl = '';
-    let saveTimeout = null;
+    let currentPlatform = 'direct'; // 'direct', 'youtube', 'vimeo', 'dailymotion'
+    let saveInterval = null;
+    let ytPlayer = null;          // YouTube-API-Instanz
+    let isYouTubeReady = false;   // Flag, ob API geladen ist
+
     const STORAGE_KEY = 'videoPlayerHistory';
 
     // ===== Hilfsfunktionen =====
@@ -356,30 +343,45 @@
 
     function getFileName(url) {
       try {
-        const parts = url.split('/');
-        let file = parts.pop() || url;
+        let file = url.split('/').pop() || url;
         file = file.split('?')[0];
         return decodeURIComponent(file) || url;
-      } catch {
-        return url;
-      }
+      } catch { return url; }
+    }
+
+    // ===== Plattform-Erkennung =====
+    function detectPlatform(url) {
+      if (/youtube\.com\/watch\?v=|youtu\.be\//i.test(url)) return 'youtube';
+      if (/vimeo\.com\/\d+/i.test(url)) return 'vimeo';
+      if (/dailymotion\.com\/video\//i.test(url)) return 'dailymotion';
+      return 'direct';
+    }
+
+    function extractYoutubeId(url) {
+      const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/i);
+      return match ? match[1] : null;
+    }
+
+    function extractVimeoId(url) {
+      const match = url.match(/vimeo\.com\/(\d+)/i);
+      return match ? match[1] : null;
+    }
+
+    function extractDailymotionId(url) {
+      const match = url.match(/dailymotion\.com\/video\/([^_?]+)/i);
+      return match ? match[1] : null;
     }
 
     // ===== History (localStorage) =====
     function getHistory() {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-      } catch {
-        return {};
-      }
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch { return {}; }
     }
-
     function saveHistory(history) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
     }
 
     function saveProgress(url, time) {
-      if (!url) return;
+      if (!url || time < 0) return;
       const history = getHistory();
       history[url] = {
         url,
@@ -391,7 +393,7 @@
     }
 
     function clearHistory() {
-      if (confirm('Möchtest du den gesamten Verlauf löschen?')) {
+      if (confirm('Verlauf löschen?')) {
         localStorage.removeItem(STORAGE_KEY);
         renderHistory();
       }
@@ -400,8 +402,7 @@
     // ===== History rendern =====
     function renderHistory() {
       const history = getHistory();
-      const entries = Object.values(history)
-        .sort((a, b) => b.timestamp - a.timestamp);
+      const entries = Object.values(history).sort((a, b) => b.timestamp - a.timestamp);
 
       if (entries.length === 0) {
         historyGrid.innerHTML = `<div class="empty-history">Noch keine Videos abgespielt.</div>`;
@@ -412,9 +413,8 @@
       for (const entry of entries) {
         const item = document.createElement('div');
         item.className = 'history-item';
-
         const fileName = getFileName(entry.url);
-        const progressPercent = entry.time > 0 ? Math.min(100, (entry.time / 60) * 5) : 0; // Schätzung: 5 min = 100%
+        const progressPercent = entry.time > 0 ? Math.min(100, (entry.time / 60) * 5) : 0;
 
         item.innerHTML = `
           <div class="history-url" title="${entry.url}">${fileName}</div>
@@ -426,82 +426,266 @@
             <div class="history-progress-bar" style="width: ${progressPercent}%;"></div>
           </div>
         `;
-
         item.addEventListener('click', () => {
           input.value = entry.url;
           loadVideo(entry.url, entry.time);
         });
-
         historyGrid.appendChild(item);
       }
     }
 
-    // ===== Video laden =====
-    function loadVideo(url, startTime = 0) {
-      if (!url) return;
+    // ===== Status & UI =====
+    function setStatus(text) {
+      videoStatus.textContent = text;
+    }
+
+    function showLoading(show) {
+      loadingOverlay.classList.toggle('active', show);
+    }
+
+    function updateTimeDisplay(current, duration) {
+      if (duration && duration > 0) {
+        timeDisplay.textContent = `${formatTime(current)} / ${formatTime(duration)}`;
+      } else {
+        timeDisplay.textContent = formatTime(current);
+      }
+    }
+
+    // ===== Player zurücksetzen =====
+    function resetPlayer() {
+      // Video-Element ausblenden, Iframe entfernen
+      videoEl.style.display = 'none';
+      videoEl.pause();
+      videoEl.src = '';
+      videoEl.load();
+
+      const iframe = wrapper.querySelector('iframe');
+      if (iframe) iframe.remove();
+
+      if (ytPlayer) {
+        try { ytPlayer.destroy(); } catch(e) {}
+        ytPlayer = null;
+      }
+      clearInterval(saveInterval);
+      saveInterval = null;
+      currentPlatform = 'direct';
+      setStatus('⏸️ Bereit');
+      timeDisplay.textContent = '–';
+    }
+
+    // ===== Direktes Video (MP4, WebM, …) =====
+    function loadDirectVideo(url, startTime = 0) {
+      resetPlayer();
+      currentPlatform = 'direct';
+      currentUrl = url;
+      videoEl.style.display = 'block';
+      videoEl.src = url;
+      videoEl.load();
+      showLoading(true);
+      setStatus('⏳ Lädt …');
+
+      videoEl.onloadedmetadata = () => {
+        if (startTime > 0 && startTime < videoEl.duration) {
+          videoEl.currentTime = startTime;
+        }
+        videoEl.play().catch(() => {});
+        showLoading(false);
+        setStatus('▶️ Wiedergabe');
+        saveProgress(url, videoEl.currentTime);
+        updateTimeDisplay(videoEl.currentTime, videoEl.duration);
+      };
+
+      videoEl.onerror = () => {
+        showLoading(false);
+        setStatus('❌ Fehler');
+        const msg = videoEl.error ? videoEl.error.message : 'Unbekannter Fehler';
+        alert(`Video konnte nicht geladen werden:\n${msg}`);
+      };
+
+      videoEl.ontimeupdate = () => {
+        if (currentUrl && videoEl.currentTime > 0) {
+          saveProgress(currentUrl, videoEl.currentTime);
+        }
+        updateTimeDisplay(videoEl.currentTime, videoEl.duration);
+      };
+
+      videoEl.onplay = () => setStatus('▶️ Wiedergabe');
+      videoEl.onpause = () => setStatus('⏸️ Pause');
+      videoEl.onended = () => {
+        setStatus('⏹️ Ende');
+        if (currentUrl) saveProgress(currentUrl, videoEl.duration);
+      };
+    }
+
+    // ===== YouTube (Iframe-API) =====
+    function loadYoutubeVideo(url, startTime = 0) {
+      resetPlayer();
+      currentPlatform = 'youtube';
+      currentUrl = url;
+      const videoId = extractYoutubeId(url);
+      if (!videoId) {
+        alert('Ungültige YouTube-URL');
+        return;
+      }
+
+      showLoading(true);
+      setStatus('⏳ YouTube wird geladen …');
+
+      // Iframe erstellen (wird von API gefüllt)
+      const iframe = document.createElement('iframe');
+      iframe.id = 'youtube-iframe';
+      iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&controls=1&rel=0`;
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.style.display = 'block';
+      wrapper.prepend(iframe); // vor das video-Element (das ist ausgeblendet)
+
+      // YouTube-API initialisieren (wenn noch nicht geschehen)
+      if (typeof YT !== 'undefined' && YT.Player) {
+        createYoutubePlayer(iframe, videoId, startTime);
+      } else {
+        // API wird asynchron geladen – warten
+        window.onYouTubeIframeAPIReady = () => {
+          createYoutubePlayer(iframe, videoId, startTime);
+        };
+        // Falls API schon geladen ist, aber YT noch nicht definiert (selten)
+        if (typeof YT !== 'undefined' && YT.Player) {
+          createYoutubePlayer(iframe, videoId, startTime);
+        }
+      }
+    }
+
+    function createYoutubePlayer(iframe, videoId, startTime) {
+      ytPlayer = new YT.Player(iframe, {
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+          controls: 1,
+          rel: 0,
+          start: Math.floor(startTime) || 0
+        },
+        events: {
+          onReady: (event) => {
+            showLoading(false);
+            setStatus('▶️ YouTube läuft');
+            // Fortschritt regelmäßig speichern
+            if (saveInterval) clearInterval(saveInterval);
+            saveInterval = setInterval(() => {
+              if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+                const time = ytPlayer.getCurrentTime();
+                if (time > 0) saveProgress(currentUrl, time);
+                const duration = ytPlayer.getDuration();
+                updateTimeDisplay(time, duration);
+              }
+            }, 1500);
+
+            // Wenn startTime > 0, wurde es bereits über den start-Parameter gesetzt
+            // Wir speichern den Fortschritt initial
+            saveProgress(currentUrl, startTime || 0);
+          },
+          onStateChange: (event) => {
+            const state = event.data;
+            if (state === YT.PlayerState.PLAYING) setStatus('▶️ YouTube läuft');
+            else if (state === YT.PlayerState.PAUSED) setStatus('⏸️ YouTube pausiert');
+            else if (state === YT.PlayerState.ENDED) {
+              setStatus('⏹️ Ende');
+              if (currentUrl) saveProgress(currentUrl, ytPlayer.getDuration());
+            } else if (state === YT.PlayerState.BUFFERING) setStatus('⏳ Puffert …');
+          },
+          onError: (err) => {
+            showLoading(false);
+            setStatus('❌ YouTube-Fehler');
+            alert('YouTube-Fehler: ' + err.data);
+          }
+        }
+      });
+    }
+
+    // ===== Vimeo / Dailymotion (einfacher Iframe, Fortschritt über Intervall) =====
+    function loadEmbedVideo(url, startTime = 0, platform) {
+      resetPlayer();
+      currentPlatform = platform;
       currentUrl = url;
 
-      // Lade-Overlay anzeigen
-      loadingOverlay.classList.add('active');
-      videoStatus.textContent = '⏳ Lädt …';
+      let embedUrl = '';
+      if (platform === 'vimeo') {
+        const id = extractVimeoId(url);
+        if (!id) { alert('Ungültige Vimeo-URL'); return; }
+        embedUrl = `https://player.vimeo.com/video/${id}?autoplay=1&loop=0&portrait=0&title=0&byline=0`;
+      } else if (platform === 'dailymotion') {
+        const id = extractDailymotionId(url);
+        if (!id) { alert('Ungültige Dailymotion-URL'); return; }
+        embedUrl = `https://www.dailymotion.com/embed/video/${id}?autoplay=1`;
+      } else {
+        alert('Unbekannte Plattform');
+        return;
+      }
 
-      // Videoquelle setzen
-      video.src = url;
-      video.load();
+      showLoading(true);
+      setStatus(`⏳ ${platform} wird geladen …`);
 
-      // Nach dem Laden der Metadaten zur gewünschten Position springen
-      video.onloadedmetadata = () => {
-        if (startTime > 0 && startTime < video.duration) {
-          video.currentTime = startTime;
+      const iframe = document.createElement('iframe');
+      iframe.src = embedUrl;
+      iframe.allow = 'autoplay; fullscreen; encrypted-media';
+      iframe.allowFullscreen = true;
+      iframe.style.display = 'block';
+      wrapper.prepend(iframe);
+
+      // Nach dem Laden (onload) – wir können keine genaue Zeit abfragen, daher nur Schätzung über Intervall
+      iframe.onload = () => {
+        showLoading(false);
+        setStatus(`▶️ ${platform} läuft`);
+        // Fortschritt kann nicht abgefragt werden – wir speichern nur die Startzeit und später eine Schätzung?
+        // Besser: Wir speichern die abgelaufene Zeit seit Start (nicht genau, aber besser als nichts)
+        let elapsed = startTime || 0;
+        const startTimestamp = Date.now() - (startTime * 1000);
+        if (saveInterval) clearInterval(saveInterval);
+        saveInterval = setInterval(() => {
+          const now = Date.now();
+          const seconds = (now - startTimestamp) / 1000;
+          if (seconds > 0) saveProgress(currentUrl, seconds);
+          // Keine Dauer verfügbar – nur aktuelle Zeit anzeigen
+          updateTimeDisplay(seconds, null);
+        }, 1500);
+        saveProgress(currentUrl, startTime || 0);
+      };
+
+      // Fallback: Wenn iframe nicht lädt
+      setTimeout(() => {
+        if (loadingOverlay.classList.contains('active')) {
+          showLoading(false);
+          setStatus('❌ Ladezeit überschritten');
         }
-        // Automatisch abspielen (nutzerinteraktion nötig? aber wir haben controls)
-        video.play().catch(() => {});
-        loadingOverlay.classList.remove('active');
-        videoStatus.textContent = '▶️ Wiedergabe';
-        saveProgress(url, video.currentTime);
-      };
+      }, 15000);
+    }
 
-      // Fehlerbehandlung
-      video.onerror = () => {
-        loadingOverlay.classList.remove('active');
-        videoStatus.textContent = '❌ Fehler';
-        const errorMsg = video.error ? video.error.message : 'Unbekannter Fehler';
-        alert(`Video konnte nicht geladen werden:\n${errorMsg}\n\nBitte prüfe die URL.`);
-      };
+    // ===== Haupt-Ladefunktion =====
+    function loadVideo(url, startTime = 0) {
+      if (!url) return;
+      const platform = detectPlatform(url);
+      currentUrl = url;
 
-      // Wenn das Video bereits geladen ist (onloadeddata wird vor onloadedmetadata aufgerufen)
-      video.onloadeddata = () => {
-        loadingOverlay.classList.remove('active');
-      };
-
-      // Fortschritt speichern (mit Throttling)
-      video.ontimeupdate = () => {
-        if (currentUrl && video.currentTime > 0) {
-          clearTimeout(saveTimeout);
-          saveTimeout = setTimeout(() => {
-            saveProgress(currentUrl, video.currentTime);
-          }, 1500); // alle 1,5 Sekunden speichern
-        }
-        // Status und Zeit anzeigen
-        if (video.duration) {
-          timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
-        }
-      };
-
-      // Bei Pause/Play Status aktualisieren
-      video.onplay = () => { videoStatus.textContent = '▶️ Wiedergabe'; };
-      video.onpause = () => { videoStatus.textContent = '⏸️ Pause'; };
-      video.onended = () => { videoStatus.textContent = '⏹️ Ende'; };
+      switch (platform) {
+        case 'youtube':
+          loadYoutubeVideo(url, startTime);
+          break;
+        case 'vimeo':
+          loadEmbedVideo(url, startTime, 'Vimeo');
+          break;
+        case 'dailymotion':
+          loadEmbedVideo(url, startTime, 'Dailymotion');
+          break;
+        default:
+          loadDirectVideo(url, startTime);
+      }
     }
 
     // ===== Event-Listener =====
-    // Load-Button
     loadBtn.addEventListener('click', () => {
       const url = input.value.trim();
       if (url) loadVideo(url);
     });
 
-    // Enter-Taste im Eingabefeld
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -509,73 +693,86 @@
       }
     });
 
-    // Clear-Button (Eingabefeld)
     clearBtn.addEventListener('click', () => {
       input.value = '';
       input.focus();
     });
 
-    // Verlauf leeren
     clearHistoryBtn.addEventListener('click', clearHistory);
 
-    // Initial: History rendern
-    renderHistory();
-
-    // Extra: Wenn ein Video beendet wird, Fortschritt speichern
-    video.addEventListener('ended', () => {
-      if (currentUrl) saveProgress(currentUrl, video.currentTime);
-    });
-
-    // ===== Tastaturkürzel (global) =====
+    // ===== Tastaturkürzel (für Video-Element und YouTube) =====
     document.addEventListener('keydown', (e) => {
-      // Nur wenn kein Eingabefeld fokussiert ist
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
-      switch (e.key) {
-        case ' ':
-          e.preventDefault();
-          if (video.paused) video.play().catch(() => {});
-          else video.pause();
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          video.currentTime = Math.min(video.currentTime + 5, video.duration || 0);
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          video.currentTime = Math.max(video.currentTime - 5, 0);
-          break;
-        case 'f':
-        case 'F':
-          e.preventDefault();
-          if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-          else video.requestFullscreen().catch(() => {});
-          break;
+      if (currentPlatform === 'direct') {
+        switch (e.key) {
+          case ' ':
+            e.preventDefault();
+            if (videoEl.paused) videoEl.play().catch(() => {});
+            else videoEl.pause();
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            videoEl.currentTime = Math.min(videoEl.currentTime + 5, videoEl.duration || 0);
+            break;
+          case 'ArrowLeft':
+            e.preventDefault();
+            videoEl.currentTime = Math.max(videoEl.currentTime - 5, 0);
+            break;
+          case 'f':
+          case 'F':
+            e.preventDefault();
+            if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+            else videoEl.requestFullscreen().catch(() => {});
+            break;
+        }
+      } else if (currentPlatform === 'youtube' && ytPlayer) {
+        switch (e.key) {
+          case ' ':
+            e.preventDefault();
+            if (ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) {
+              ytPlayer.pauseVideo();
+            } else {
+              ytPlayer.playVideo();
+            }
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
+            const newTime = Math.min(ytPlayer.getCurrentTime() + 5, ytPlayer.getDuration());
+            ytPlayer.seekTo(newTime, true);
+            break;
+          case 'ArrowLeft':
+            e.preventDefault();
+            const prevTime = Math.max(ytPlayer.getCurrentTime() - 5, 0);
+            ytPlayer.seekTo(prevTime, true);
+            break;
+          case 'f':
+          case 'F':
+            e.preventDefault();
+            const iframe = wrapper.querySelector('#youtube-iframe');
+            if (iframe) {
+              if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+              else iframe.requestFullscreen().catch(() => {});
+            }
+            break;
+        }
       }
     });
 
-    // ===== Initiales Beispielvideo (optional) =====
-    // Beispiel: Big Buck Bunny (kleine mp4)
-    const demoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
-    // Nur setzen, wenn kein Verlauf existiert
+    // ===== Initialisierung =====
+    renderHistory();
+
+    // Beispiel-URL setzen, falls kein Verlauf existiert
     const history = getHistory();
     if (Object.keys(history).length === 0) {
-      input.value = demoUrl;
-      // Nicht automatisch abspielen – Benutzer soll selbst starten
+      input.value = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
     } else {
-      // Erstes Element aus Verlauf laden (optional)
-      const firstEntry = Object.values(history).sort((a, b) => b.timestamp - a.timestamp)[0];
-      if (firstEntry) {
-        input.value = firstEntry.url;
-        // Lade das Video automatisch? Vielleicht nicht, um den Benutzer nicht zu überraschen.
-        // Man könnte es vorschlagen.
-      }
+      const first = Object.values(history).sort((a, b) => b.timestamp - a.timestamp)[0];
+      if (first) input.value = first.url;
     }
 
-    // ===== Cleanup (keine globalen Variablen mehr) =====
-    console.log('✅ Media Player optimiert gestartet.');
+    console.log('✅ Universal Player gestartet – YouTube, Vimeo, Dailymotion und direkte Links werden unterstützt.');
   })();
 </script>
-
 </body>
 </html>
