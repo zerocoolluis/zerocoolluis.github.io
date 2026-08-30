@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Optimized Media Player</title>
+  <title>Media Player</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -99,7 +99,6 @@
       color: var(--text);
     }
 
-    /* GPU Hardware-Accelerated Video Container */
     .video-wrapper {
       position: relative;
       width: 100%;
@@ -108,8 +107,6 @@
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid var(--border);
-      transform: translateZ(0); /* Hardware Acceleration trigger */
-      will-change: transform;
     }
 
     video {
@@ -165,20 +162,20 @@
 <div class="container">
   <header>
     <div>
-      <h1>High-Performance Video Player</h1>
-      <p style="color: var(--text-muted); font-size: 0.875rem;">Optimiert für HD/4K Wiedergabe & automatischem Zeitstempel-Speicher</p>
+      <h1>Media Player</h1>
+      <p style="color: var(--text-muted); font-size: 0.875rem;">Spiel die gängigen Video-Formate ab und merkt sich den Fortschritt</p>
     </div>
     <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
   </header>
 
   <main class="player-card">
     <div class="controls-bar">
-      <input type="text" id="videoUrlInput" placeholder="Video-URL eingeben (MP4, WebM, Direct Stream)..." onkeypress="if(event.key==='Enter') loadVideo()">
+      <input type="text" id="videoUrlInput" placeholder="Direkten Video-Link eingeben (z. B. .mp4, .webm)..." onkeypress="if(event.key==='Enter') loadVideo()">
       <button onclick="loadVideo()">Abspielen</button>
     </div>
 
     <div class="video-wrapper">
-      <video id="mainVideo" controls preload="metadata"></video>
+      <video id="mainVideo" controls></video>
     </div>
   </main>
 
@@ -198,12 +195,19 @@
   document.addEventListener('DOMContentLoaded', () => {
     updateHistoryUI();
     
-    // Speicher-Intervall: Speichert alle 2 Sekunden die aktuelle Position
-    setInterval(() => {
-      if (currentUrl && !video.paused && video.currentTime > 0) {
+    // Regelmäßiges Speichern des Fortschritts
+    video.addEventListener('timeupdate', () => {
+      if (currentUrl && video.currentTime > 0) {
         saveProgress(currentUrl, video.currentTime);
       }
-    }, 2000);
+    });
+
+    // Fehler-Handling abfangen
+    video.addEventListener('error', () => {
+      if (video.src && video.src !== window.location.href) {
+        alert("Das Video konnte nicht geladen werden. Bitte stelle sicher, dass es sich um einen direkten Video-Link (z. B. .mp4) handelt.");
+      }
+    });
   });
 
   function loadVideo(targetUrl = null, startTime = 0) {
@@ -214,7 +218,7 @@
     if (!targetUrl) input.value = url;
     currentUrl = url;
 
-    // Zeitstempel aus Verlauf laden, falls vorhanden und keine Startzeit übergeben wurde
+    // Zeitstempel aus Verlauf laden, falls keine Zeit übergeben wurde
     if (startTime === 0) {
       const history = JSON.parse(localStorage.getItem('videoPlayerHistory')) || {};
       if (history[url] && history[url].time) {
@@ -224,12 +228,12 @@
 
     video.src = url;
     
-    // Nach dem Laden der Metadaten an die gespeicherte Stelle springen
-    video.onloadedmetadata = () => {
+    // Erst nach dem Laden der Daten an die Sekunde springen
+    video.onloadeddata = () => {
       if (startTime > 0) {
         video.currentTime = startTime;
       }
-      video.play().catch(() => {}); // Autoplay falls erlaubt
+      video.play().catch(() => {});
     };
 
     saveProgress(url, startTime);
@@ -280,7 +284,7 @@
 
       item.innerHTML = `
         <span class="history-url" title="${itemData.url}">${fileName}</span>
-        <span class="history-time">Stehengeblieben bei: ${formatTime(itemData.time)}</span>
+        <span class="history-time">Fortschritt: ${formatTime(itemData.time)}</span>
       `;
 
       item.onclick = () => {
