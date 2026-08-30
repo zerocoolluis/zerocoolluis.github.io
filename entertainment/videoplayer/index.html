@@ -1,300 +1,580 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Media Player</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Media Player Pro</title>
   <style>
+    /* ===== CSS-Variablen (dunkles Theme) ===== */
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg: #0b1120;
+      --card: #1a2332;
+      --border: #2a3a4e;
+      --primary: #4f8cf7;
+      --primary-hover: #6a9ff9;
+      --text: #f0f4fa;
+      --text-muted: #8ba0b8;
+      --radius: 14px;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 16px;
+      justify-content: center;
+      padding: 20px;
+      line-height: 1.5;
     }
 
     .container {
+      max-width: 1100px;
       width: 100%;
-      max-width: 1000px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
     }
 
-    header {
-      background: var(--card-bg);
+    /* ===== Header ===== */
+    .header {
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 20px;
+      border-radius: var(--radius);
+      padding: 16px 24px;
       display: flex;
-      justify-content: space-between;
+      flex-wrap: wrap;
       align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .header-title p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
     }
 
     .btn-home {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.06);
       color: var(--text);
       border: 1px solid var(--border);
-      padding: 8px 14px;
+      padding: 8px 16px;
       border-radius: 8px;
       text-decoration: none;
       font-size: 0.875rem;
+      transition: background 0.2s;
+    }
+    .btn-home:hover {
+      background: rgba(255, 255, 255, 0.12);
     }
 
+    /* ===== Player-Card ===== */
     .player-card {
-      background: var(--card-bg);
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .controls-bar {
       display: flex;
-      gap: 8px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
-
-    input[type="text"] {
-      flex: 1;
-      background: #090d16;
+    .controls-bar input[type="text"] {
+      flex: 1 1 200px;
+      background: #0d1522;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
+      border-radius: 10px;
+      padding: 12px 16px;
       color: var(--text);
       font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
     }
-
-    button {
+    .controls-bar input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+    .controls-bar button {
       background: var(--primary);
       color: #fff;
       border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-weight: 600;
       font-size: 0.9rem;
       cursor: pointer;
-      font-weight: 500;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
     }
-    button:hover { background: var(--primary-hover); }
+    .controls-bar button:hover {
+      background: var(--primary-hover);
+    }
+    .controls-bar button:active {
+      transform: scale(0.96);
+    }
 
     .btn-secondary {
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.07);
       border: 1px solid var(--border);
       color: var(--text);
     }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
 
+    /* Video-Container */
     .video-wrapper {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
       background: #000;
-      border-radius: 12px;
+      border-radius: var(--radius);
       overflow: hidden;
       border: 1px solid var(--border);
     }
 
     video {
+      display: block;
       width: 100%;
       height: 100%;
       object-fit: contain;
+      background: #000;
       outline: none;
     }
 
-    .history-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+    /* Lade-Overlay */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1.2rem;
+      backdrop-filter: blur(2px);
+      z-index: 5;
+      border-radius: var(--radius);
+    }
+    .loading-overlay.active {
+      display: flex;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 14px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
-    .history-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    /* ===== History ===== */
+    .history-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+    .history-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
       gap: 10px;
-      margin-top: 12px;
+      margin-bottom: 14px;
+    }
+    .history-header h2 {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
     }
 
     .history-item {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.3);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
       display: flex;
       flex-direction: column;
       gap: 4px;
-      cursor: pointer;
-      transition: border-color 0.2s;
+      position: relative;
     }
-    .history-item:hover { border-color: var(--primary); }
+    .history-item:hover {
+      border-color: var(--primary);
+      background: rgba(79, 140, 247, 0.08);
+    }
 
     .history-url {
-      font-size: 0.85rem;
-      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 500;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-
-    .history-time {
+    .history-meta {
+      display: flex;
+      justify-content: space-between;
       font-size: 0.75rem;
       color: var(--text-muted);
+    }
+    .history-progress {
+      height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .history-progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .empty-history {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 8px 0;
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 640px) {
+      body { padding: 12px; }
+      .header { flex-direction: column; align-items: stretch; }
+      .header-title h1 { font-size: 1.3rem; }
+      .controls-bar input[type="text"] { flex: 1 1 100%; }
+      .controls-bar button { flex: 1 1 auto; }
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <header>
-    <div>
-      <h1>Media Player</h1>
-      <p style="color: var(--text-muted); font-size: 0.875rem;">Spiel die gängigen Video-Formate ab und merkt sich den Fortschritt</p>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-title">
+      <h1>🎬 Media Player</h1>
+      <p>Direkte Video-URLs abspielen · Fortschritt wird gespeichert</p>
     </div>
     <a href="https://zerocoolluis.github.io" class="btn-home">🏠 Startseite</a>
   </header>
 
-  <main class="player-card">
+  <!-- Player -->
+  <section class="player-card">
     <div class="controls-bar">
-      <input type="text" id="videoUrlInput" placeholder="Direkten Video-Link eingeben (z. B. .mp4, .webm)..." onkeypress="if(event.key==='Enter') loadVideo()">
-      <button onclick="loadVideo()">Abspielen</button>
+      <input type="text" id="videoUrlInput" placeholder="z. B. https://example.com/video.mp4" spellcheck="false" />
+      <button id="loadBtn">▶ Abspielen</button>
+      <button id="clearBtn" class="btn-secondary" title="Eingabefeld leeren">✕</button>
     </div>
 
     <div class="video-wrapper">
-      <video id="mainVideo" controls></video>
+      <video id="mainVideo" controls preload="metadata" playsinline></video>
+      <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <span>Lade Video …</span>
+      </div>
     </div>
-  </main>
 
-  <section class="history-card">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>Zuletzt gesehen</h2>
-      <button class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="clearHistory()">Verlauf leeren</button>
+    <!-- Zusätzliche Player-Informationen (optional) -->
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.85rem; color: var(--text-muted); padding: 0 4px;">
+      <span id="videoStatus">⏸️ Bereit</span>
+      <span id="timeDisplay">–</span>
     </div>
-    <div class="history-list" id="historyList"></div>
   </section>
+
+  <!-- History -->
+  <section class="history-card">
+    <div class="history-header">
+      <h2>📜 Zuletzt gesehen</h2>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button id="clearHistoryBtn" class="btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;">Verlauf leeren</button>
+      </div>
+    </div>
+    <div class="history-grid" id="historyGrid"></div>
+  </section>
+
 </div>
 
 <script>
-  const video = document.getElementById('mainVideo');
-  let currentUrl = '';
+  (() => {
+    'use strict';
 
-  document.addEventListener('DOMContentLoaded', () => {
-    updateHistoryUI();
-    
-    // Regelmäßiges Speichern des Fortschritts
-    video.addEventListener('timeupdate', () => {
-      if (currentUrl && video.currentTime > 0) {
-        saveProgress(currentUrl, video.currentTime);
-      }
-    });
-
-    // Fehler-Handling abfangen
-    video.addEventListener('error', () => {
-      if (video.src && video.src !== window.location.href) {
-        alert("Das Video konnte nicht geladen werden. Bitte stelle sicher, dass es sich um einen direkten Video-Link (z. B. .mp4) handelt.");
-      }
-    });
-  });
-
-  function loadVideo(targetUrl = null, startTime = 0) {
+    // ===== DOM-Referenzen =====
+    const video = document.getElementById('mainVideo');
     const input = document.getElementById('videoUrlInput');
-    let url = targetUrl || input.value.trim();
-    if (!url) return;
+    const loadBtn = document.getElementById('loadBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+    const historyGrid = document.getElementById('historyGrid');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const videoStatus = document.getElementById('videoStatus');
+    const timeDisplay = document.getElementById('timeDisplay');
 
-    if (!targetUrl) input.value = url;
-    currentUrl = url;
+    // ===== State =====
+    let currentUrl = '';
+    let saveTimeout = null;
+    const STORAGE_KEY = 'videoPlayerHistory';
 
-    // Zeitstempel aus Verlauf laden, falls keine Zeit übergeben wurde
-    if (startTime === 0) {
-      const history = JSON.parse(localStorage.getItem('videoPlayerHistory')) || {};
-      if (history[url] && history[url].time) {
-        startTime = history[url].time;
+    // ===== Hilfsfunktionen =====
+    function formatTime(seconds) {
+      if (!seconds || isNaN(seconds)) return '0:00';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function getFileName(url) {
+      try {
+        const parts = url.split('/');
+        let file = parts.pop() || url;
+        file = file.split('?')[0];
+        return decodeURIComponent(file) || url;
+      } catch {
+        return url;
       }
     }
 
-    video.src = url;
-    
-    // Erst nach dem Laden der Daten an die Sekunde springen
-    video.onloadeddata = () => {
-      if (startTime > 0) {
-        video.currentTime = startTime;
+    // ===== History (localStorage) =====
+    function getHistory() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+      } catch {
+        return {};
       }
-      video.play().catch(() => {});
-    };
-
-    saveProgress(url, startTime);
-  }
-
-  function saveProgress(url, time) {
-    let history = JSON.parse(localStorage.getItem('videoPlayerHistory')) || {};
-    
-    history[url] = {
-      url: url,
-      time: time,
-      timestamp: Date.now()
-    };
-
-    localStorage.setItem('videoPlayerHistory', JSON.stringify(history));
-    updateHistoryUI();
-  }
-
-  function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  }
-
-  function clearHistory() {
-    localStorage.removeItem('videoPlayerHistory');
-    updateHistoryUI();
-  }
-
-  function updateHistoryUI() {
-    const historyList = document.getElementById('historyList');
-    const history = JSON.parse(localStorage.getItem('videoPlayerHistory')) || {};
-    
-    const sortedKeys = Object.keys(history).sort((a, b) => history[b].timestamp - history[a].timestamp);
-
-    if (sortedKeys.length === 0) {
-      historyList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Noch keine Videos abgespielt.</p>';
-      return;
     }
 
-    historyList.innerHTML = '';
-    sortedKeys.forEach(key => {
-      const itemData = history[key];
-      const item = document.createElement('div');
-      item.className = 'history-item';
-      
-      const fileName = itemData.url.split('/').pop().split('?')[0] || itemData.url;
+    function saveHistory(history) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    }
 
-      item.innerHTML = `
-        <span class="history-url" title="${itemData.url}">${fileName}</span>
-        <span class="history-time">Fortschritt: ${formatTime(itemData.time)}</span>
-      `;
+    function saveProgress(url, time) {
+      if (!url) return;
+      const history = getHistory();
+      history[url] = {
+        url,
+        time: Math.max(0, time),
+        timestamp: Date.now()
+      };
+      saveHistory(history);
+      renderHistory();
+    }
 
-      item.onclick = () => {
-        document.getElementById('videoUrlInput').value = itemData.url;
-        loadVideo(itemData.url, itemData.time);
+    function clearHistory() {
+      if (confirm('Möchtest du den gesamten Verlauf löschen?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        renderHistory();
+      }
+    }
+
+    // ===== History rendern =====
+    function renderHistory() {
+      const history = getHistory();
+      const entries = Object.values(history)
+        .sort((a, b) => b.timestamp - a.timestamp);
+
+      if (entries.length === 0) {
+        historyGrid.innerHTML = `<div class="empty-history">Noch keine Videos abgespielt.</div>`;
+        return;
+      }
+
+      historyGrid.innerHTML = '';
+      for (const entry of entries) {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+
+        const fileName = getFileName(entry.url);
+        const progressPercent = entry.time > 0 ? Math.min(100, (entry.time / 60) * 5) : 0; // Schätzung: 5 min = 100%
+
+        item.innerHTML = `
+          <div class="history-url" title="${entry.url}">${fileName}</div>
+          <div class="history-meta">
+            <span>⏱️ ${formatTime(entry.time)}</span>
+            <span>${new Date(entry.timestamp).toLocaleDateString('de-DE')}</span>
+          </div>
+          <div class="history-progress">
+            <div class="history-progress-bar" style="width: ${progressPercent}%;"></div>
+          </div>
+        `;
+
+        item.addEventListener('click', () => {
+          input.value = entry.url;
+          loadVideo(entry.url, entry.time);
+        });
+
+        historyGrid.appendChild(item);
+      }
+    }
+
+    // ===== Video laden =====
+    function loadVideo(url, startTime = 0) {
+      if (!url) return;
+      currentUrl = url;
+
+      // Lade-Overlay anzeigen
+      loadingOverlay.classList.add('active');
+      videoStatus.textContent = '⏳ Lädt …';
+
+      // Videoquelle setzen
+      video.src = url;
+      video.load();
+
+      // Nach dem Laden der Metadaten zur gewünschten Position springen
+      video.onloadedmetadata = () => {
+        if (startTime > 0 && startTime < video.duration) {
+          video.currentTime = startTime;
+        }
+        // Automatisch abspielen (nutzerinteraktion nötig? aber wir haben controls)
+        video.play().catch(() => {});
+        loadingOverlay.classList.remove('active');
+        videoStatus.textContent = '▶️ Wiedergabe';
+        saveProgress(url, video.currentTime);
       };
 
-      historyList.appendChild(item);
+      // Fehlerbehandlung
+      video.onerror = () => {
+        loadingOverlay.classList.remove('active');
+        videoStatus.textContent = '❌ Fehler';
+        const errorMsg = video.error ? video.error.message : 'Unbekannter Fehler';
+        alert(`Video konnte nicht geladen werden:\n${errorMsg}\n\nBitte prüfe die URL.`);
+      };
+
+      // Wenn das Video bereits geladen ist (onloadeddata wird vor onloadedmetadata aufgerufen)
+      video.onloadeddata = () => {
+        loadingOverlay.classList.remove('active');
+      };
+
+      // Fortschritt speichern (mit Throttling)
+      video.ontimeupdate = () => {
+        if (currentUrl && video.currentTime > 0) {
+          clearTimeout(saveTimeout);
+          saveTimeout = setTimeout(() => {
+            saveProgress(currentUrl, video.currentTime);
+          }, 1500); // alle 1,5 Sekunden speichern
+        }
+        // Status und Zeit anzeigen
+        if (video.duration) {
+          timeDisplay.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+        }
+      };
+
+      // Bei Pause/Play Status aktualisieren
+      video.onplay = () => { videoStatus.textContent = '▶️ Wiedergabe'; };
+      video.onpause = () => { videoStatus.textContent = '⏸️ Pause'; };
+      video.onended = () => { videoStatus.textContent = '⏹️ Ende'; };
+    }
+
+    // ===== Event-Listener =====
+    // Load-Button
+    loadBtn.addEventListener('click', () => {
+      const url = input.value.trim();
+      if (url) loadVideo(url);
     });
-  }
+
+    // Enter-Taste im Eingabefeld
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        loadBtn.click();
+      }
+    });
+
+    // Clear-Button (Eingabefeld)
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      input.focus();
+    });
+
+    // Verlauf leeren
+    clearHistoryBtn.addEventListener('click', clearHistory);
+
+    // Initial: History rendern
+    renderHistory();
+
+    // Extra: Wenn ein Video beendet wird, Fortschritt speichern
+    video.addEventListener('ended', () => {
+      if (currentUrl) saveProgress(currentUrl, video.currentTime);
+    });
+
+    // ===== Tastaturkürzel (global) =====
+    document.addEventListener('keydown', (e) => {
+      // Nur wenn kein Eingabefeld fokussiert ist
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      switch (e.key) {
+        case ' ':
+          e.preventDefault();
+          if (video.paused) video.play().catch(() => {});
+          else video.pause();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          video.currentTime = Math.min(video.currentTime + 5, video.duration || 0);
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          video.currentTime = Math.max(video.currentTime - 5, 0);
+          break;
+        case 'f':
+        case 'F':
+          e.preventDefault();
+          if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+          else video.requestFullscreen().catch(() => {});
+          break;
+      }
+    });
+
+    // ===== Initiales Beispielvideo (optional) =====
+    // Beispiel: Big Buck Bunny (kleine mp4)
+    const demoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+    // Nur setzen, wenn kein Verlauf existiert
+    const history = getHistory();
+    if (Object.keys(history).length === 0) {
+      input.value = demoUrl;
+      // Nicht automatisch abspielen – Benutzer soll selbst starten
+    } else {
+      // Erstes Element aus Verlauf laden (optional)
+      const firstEntry = Object.values(history).sort((a, b) => b.timestamp - a.timestamp)[0];
+      if (firstEntry) {
+        input.value = firstEntry.url;
+        // Lade das Video automatisch? Vielleicht nicht, um den Benutzer nicht zu überraschen.
+        // Man könnte es vorschlagen.
+      }
+    }
+
+    // ===== Cleanup (keine globalen Variablen mehr) =====
+    console.log('✅ Media Player optimiert gestartet.');
+  })();
 </script>
 
 </body>
