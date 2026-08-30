@@ -306,7 +306,7 @@
     </div>
 
     <div class="player-wrapper" id="playerContainer">
-      <video id="htmlPlayer" controls class="hidden"></video>
+      <video id="htmlPlayer" controls class="hidden" preload="metadata" playsinline></video>
       <iframe id="ytPlayer" class="hidden" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     </div>
   </div>
@@ -363,7 +363,8 @@
     if (ytMatch && ytMatch[1]) {
       type = 'yt';
       ytId = ytMatch[1];
-      ytPlayer.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
+      // 4K-Auflösung erzwingen (falls verfügbar) – vq=hd2160 für 4K
+      ytPlayer.src = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&vq=hd2160`;
       ytPlayer.classList.remove('hidden');
     } else {
       type = 'mp4';
